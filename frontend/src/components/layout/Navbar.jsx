@@ -16,6 +16,7 @@ const Navbar = () => {
                 <div className="hidden md:flex items-center space-x-8 font-medium">
                     <Link href="/shop" className="hover:text-vibrant-orange transition-colors">Shop</Link>
                     <Link href="/about" className="hover:text-vibrant-purple transition-colors">About</Link>
+                    <Link href="/contact" className="hover:text-vibrant-pink transition-colors">Contact</Link>
                     <Link href="/cart" className="relative group">
                         <span className="hover:text-vibrant-teal transition-colors">Cart</span>
                         <span className="absolute -top-2 -right-3 flex h-4 w-4 items-center justify-center rounded-full bg-vibrant-pink text-[10px] text-white">0</span>
