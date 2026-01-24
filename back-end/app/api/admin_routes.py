@@ -1,28 +1,17 @@
-# backend/app/api/admin_routes.py
 from fastapi import APIRouter, HTTPException, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
-from auth.auth import create_access_token, get_current_admin_user
-from models.db import db
-from schemas.user import UserOut
-from schemas.paintings import PaintingCreate, PaintingOut
-from schemas.order import OrderOut
-from schemas.payment import PaymentOut
-from schemas.review import ReviewOut
-#from bson.objectid import ObjectId
-from pydantic_mongo import ObjectId
+from app.auth.auth import get_current_admin_user
+from app.models.db import db
+from app.schemas.user import UserOut
+from app.schemas.paintings import PaintingCreate, PaintingOut
+from app.schemas.order import OrderOut
+from app.schemas.payment import PaymentOut
+from app.schemas.review import ReviewOut
+from bson import ObjectId
 from datetime import datetime
 
 router = APIRouter()
 
-# -------------------- Admin Login --------------------
-@router.post("/login")
-async def admin_login(form_data: OAuth2PasswordRequestForm = Depends()):
-    admin = await db["users"].find_one({"email": form_data.username, "is_admin": True})
-    if not admin or form_data.password != admin["password"]:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-
-    access_token = create_access_token(data={"sub": str(admin["_id"]), "is_admin": True})
-    return {"access_token": access_token, "token_type": "bearer"}
 
 # -------------------- Admin-Protected Routes --------------------
 @router.get("/users", response_model=list[UserOut])
@@ -125,7 +114,7 @@ async def get_all_reviews(current_admin: dict = Depends(get_current_admin_user))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-@router.get("/admin/inventory", response_model=list[PaintingOut])
+@router.get("/inventory", response_model=list[PaintingOut])
 async def view_inventory(current_admin: dict = Depends(get_current_admin_user)):
     try:
         paintings = await db["paintings"].find().to_list(100)
@@ -134,7 +123,7 @@ async def view_inventory(current_admin: dict = Depends(get_current_admin_user)):
         raise HTTPException(status_code=500, detail=f"Error fetching inventory: {e}")
 
 # 2. Update stock of a specific painting
-@router.post("/admin/inventory/{painting_id}", response_model=PaintingOut)
+@router.post("/inventory/{painting_id}", response_model=PaintingOut)
 async def update_inventory(painting_id: str, stock: int, current_admin: dict = Depends(get_current_admin_user)):
     try:
         # Check if the painting exists
@@ -153,7 +142,7 @@ async def update_inventory(painting_id: str, stock: int, current_admin: dict = D
         raise HTTPException(status_code=500, detail=f"Error updating inventory: {e}")
 
 # 3. Increase/Decrease stock after an order
-@router.put("/admin/inventory/{painting_id}", response_model=PaintingOut)
+@router.put("/inventory/{painting_id}", response_model=PaintingOut)
 async def adjust_inventory(painting_id: str, quantity: int, current_admin: dict = Depends(get_current_admin_user)):
     try:
         # Check if the painting exists
@@ -175,7 +164,7 @@ async def adjust_inventory(painting_id: str, quantity: int, current_admin: dict 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error adjusting inventory: {e}")
 
-@router.put("/admin/orders/{order_id}/status", response_model=OrderOut)
+@router.put("/orders/{order_id}/status", response_model=OrderOut)
 async def update_order_status(order_id: str, status: str, current_admin: dict = Depends(get_current_admin_user)):
     try:
         # Validate status
