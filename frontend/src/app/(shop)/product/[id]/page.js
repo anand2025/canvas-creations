@@ -3,7 +3,7 @@
 import React, { useEffect, useState, use } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { fetchData } from '@/services/api';
+import { apiRequest } from '@/services/api';
 
 const ProductDetailPage = ({ params }) => {
     // Unwrap params in Next.js 15+
@@ -19,7 +19,7 @@ const ProductDetailPage = ({ params }) => {
         const getProduct = async () => {
             try {
                 setLoading(true);
-                const data = await fetchData(`/paintings/${id}`);
+                const data = await apiRequest(`/paintings/${id}`);
                 setProduct(data);
             } catch (err) {
                 console.error("Failed to fetch product:", err);

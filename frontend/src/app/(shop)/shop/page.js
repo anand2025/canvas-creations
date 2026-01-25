@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import ProductCard from "@/components/products/ProductCard";
-import { fetchData } from '@/services/api';
+import { apiRequest } from '@/services/api';
 
 const categories = ["All", "Abstract", "Miniature", "Floral", "Landscape"];
 
@@ -15,7 +15,7 @@ export default function ShopPage() {
     const getProducts = async () => {
       try {
         setLoading(true);
-        const data = await fetchData('/paintings');
+        const data = await apiRequest('/paintings');
         setProducts(data);
       } catch (err) {
         console.error("Failed to fetch products:", err);
