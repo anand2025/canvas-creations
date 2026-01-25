@@ -11,6 +11,7 @@ from app.schemas.wishlist import WishlistCreate
 from app.models.db import db
 from app.auth.auth import get_password_hash
 from datetime import datetime
+from bson import ObjectId
 
 router = APIRouter()
 
@@ -56,6 +57,16 @@ async def get_all_paintings():
         async for doc in cursor:
             paintings.append(serialize_doc(doc))
         return paintings
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/paintings/{id}", response_model=PaintingOut)
+async def get_painting(id: str):
+    try:
+        painting = await db["paintings"].find_one({"_id": ObjectId(id)})
+        if not painting:
+            raise HTTPException(status_code=404, detail="Painting not found")
+        return serialize_doc(painting)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
