@@ -1,11 +1,15 @@
+"use client";
 /**
  * Navbar Component
  * This component renders the top navigation bar with a vibrant, artistic touch.
  */
 import React from 'react';
 import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
 
 const Navbar = () => {
+    const { user, logout } = useAuth();
+
     return (
         <nav className="sticky top-0 z-50 w-full glass-vibrant border-b border-white/10 px-6 py-4">
             <div className="container mx-auto flex items-center justify-between">
@@ -24,9 +28,18 @@ const Navbar = () => {
                 </div>
 
                 <div className="flex items-center space-x-4">
-                    <Link href="/login" className="px-6 py-2 rounded-full bg-vibrant-orange text-white font-bold hover:shadow-[0_0_20px_rgba(255,95,0,0.5)] transition-all">
-                        Login
-                    </Link>
+                    {user ? (
+                        <button 
+                            onClick={logout}
+                            className="px-6 py-2 rounded-full bg-vibrant-pink text-white font-bold hover:shadow-[0_0_20px_rgba(255,0,127,0.5)] transition-all"
+                        >
+                            Logout
+                        </button>
+                    ) : (
+                        <Link href="/login" className="px-6 py-2 rounded-full bg-vibrant-orange text-white font-bold hover:shadow-[0_0_20px_rgba(255,95,0,0.5)] transition-all">
+                            Login
+                        </Link>
+                    )}
                 </div>
             </div>
         </nav>

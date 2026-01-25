@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
-from app.auth.auth import get_current_admin_user
+from app.auth.auth import get_current_admin
 from app.models.db import db
 from app.schemas.user import UserOut
 from app.schemas.paintings import PaintingCreate, PaintingOut
@@ -15,7 +15,7 @@ router = APIRouter()
 
 # -------------------- Admin-Protected Routes --------------------
 @router.get("/users", response_model=list[UserOut])
-async def get_all_users(current_admin: dict = Depends(get_current_admin_user)):
+async def get_all_users(current_admin: dict = Depends(get_current_admin)):
     try:
         users = []
         cursor = db["users"].find()
@@ -28,7 +28,7 @@ async def get_all_users(current_admin: dict = Depends(get_current_admin_user)):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/orders", response_model=list[OrderOut])
-async def get_all_orders(current_admin: dict = Depends(get_current_admin_user)):
+async def get_all_orders(current_admin: dict = Depends(get_current_admin)):
     try:
         orders = []
         cursor = db["orders"].find()
@@ -41,7 +41,7 @@ async def get_all_orders(current_admin: dict = Depends(get_current_admin_user)):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/paintings", response_model=list[PaintingOut])
-async def get_all_paintings(current_admin: dict = Depends(get_current_admin_user)):
+async def get_all_paintings(current_admin: dict = Depends(get_current_admin)):
     try:
         paintings = []
         cursor = db["paintings"].find()
@@ -54,7 +54,7 @@ async def get_all_paintings(current_admin: dict = Depends(get_current_admin_user
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/paintings", response_model=PaintingOut)
-async def create_painting(painting: PaintingCreate, current_admin: dict = Depends(get_current_admin_user)):
+async def create_painting(painting: PaintingCreate, current_admin: dict = Depends(get_current_admin)):
     try:
         data = painting.dict()
         data["created_at"] = datetime.utcnow()
@@ -67,7 +67,7 @@ async def create_painting(painting: PaintingCreate, current_admin: dict = Depend
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.put("/paintings/{id}")
-async def update_painting(id: str, painting: PaintingCreate, current_admin: dict = Depends(get_current_admin_user)):
+async def update_painting(id: str, painting: PaintingCreate, current_admin: dict = Depends(get_current_admin)):
     try:
         update_data = painting.dict()
         await db["paintings"].update_one({"_id": ObjectId(id)}, {"$set": update_data})
@@ -79,7 +79,7 @@ async def update_painting(id: str, painting: PaintingCreate, current_admin: dict
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.delete("/paintings/{id}")
-async def delete_painting(id: str, current_admin: dict = Depends(get_current_admin_user)):
+async def delete_painting(id: str, current_admin: dict = Depends(get_current_admin)):
     try:
         res = await db["paintings"].delete_one({"_id": ObjectId(id)})
         if res.deleted_count == 0:
@@ -89,7 +89,7 @@ async def delete_painting(id: str, current_admin: dict = Depends(get_current_adm
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/payments", response_model=list[PaymentOut])
-async def get_all_payments(current_admin: dict = Depends(get_current_admin_user)):
+async def get_all_payments(current_admin: dict = Depends(get_current_admin)):
     try:
         payments = []
         cursor = db["payments"].find()
@@ -102,7 +102,7 @@ async def get_all_payments(current_admin: dict = Depends(get_current_admin_user)
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/reviews", response_model=list[ReviewOut])
-async def get_all_reviews(current_admin: dict = Depends(get_current_admin_user)):
+async def get_all_reviews(current_admin: dict = Depends(get_current_admin)):
     try:
         reviews = []
         cursor = db["reviews"].find()
@@ -115,7 +115,7 @@ async def get_all_reviews(current_admin: dict = Depends(get_current_admin_user))
         raise HTTPException(status_code=500, detail=str(e))
     
 @router.get("/inventory", response_model=list[PaintingOut])
-async def view_inventory(current_admin: dict = Depends(get_current_admin_user)):
+async def view_inventory(current_admin: dict = Depends(get_current_admin)):
     try:
         paintings = await db["paintings"].find().to_list(100)
         return paintings
@@ -124,7 +124,7 @@ async def view_inventory(current_admin: dict = Depends(get_current_admin_user)):
 
 # 2. Update stock of a specific painting
 @router.post("/inventory/{painting_id}", response_model=PaintingOut)
-async def update_inventory(painting_id: str, stock: int, current_admin: dict = Depends(get_current_admin_user)):
+async def update_inventory(painting_id: str, stock: int, current_admin: dict = Depends(get_current_admin)):
     try:
         # Check if the painting exists
         painting = await db["paintings"].find_one({"_id": ObjectId(painting_id)})
@@ -143,7 +143,7 @@ async def update_inventory(painting_id: str, stock: int, current_admin: dict = D
 
 # 3. Increase/Decrease stock after an order
 @router.put("/inventory/{painting_id}", response_model=PaintingOut)
-async def adjust_inventory(painting_id: str, quantity: int, current_admin: dict = Depends(get_current_admin_user)):
+async def adjust_inventory(painting_id: str, quantity: int, current_admin: dict = Depends(get_current_admin)):
     try:
         # Check if the painting exists
         painting = await db["paintings"].find_one({"_id": ObjectId(painting_id)})
@@ -165,7 +165,7 @@ async def adjust_inventory(painting_id: str, quantity: int, current_admin: dict 
         raise HTTPException(status_code=500, detail=f"Error adjusting inventory: {e}")
 
 @router.put("/orders/{order_id}/status", response_model=OrderOut)
-async def update_order_status(order_id: str, status: str, current_admin: dict = Depends(get_current_admin_user)):
+async def update_order_status(order_id: str, status: str, current_admin: dict = Depends(get_current_admin)):
     try:
         # Validate status
         valid_statuses = ["pending", "processing", "shipped", "delivered", "cancelled"]

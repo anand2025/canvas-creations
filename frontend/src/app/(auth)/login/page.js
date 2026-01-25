@@ -1,8 +1,36 @@
-import React from 'react';
+"use client";
+import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import AuthLayout from "@/components/layout/AuthLayout";
+import { loginUser } from '@/services/api';
+import { useAuth } from '@/context/AuthContext';
 
 export default function LoginPage() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const { login } = useAuth();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    try {
+      const data = await loginUser(email, password);
+      // For simplicity, we decode or assume a role here if it's not in the login response
+      // But ideally the login response should include minimal user info
+      login({ email, role: 'customer' }); // Default role or from token
+      router.push('/');
+    } catch (err) {
+      setError(err.message || "Invalid credentials. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <AuthLayout 
       title="Welcome Back to the World of Color."
@@ -15,13 +43,22 @@ export default function LoginPage() {
           <p className="text-foreground/50 font-medium">Don't have an account? <Link href="/register" className="text-vibrant-pink hover:underline">Create one for free</Link></p>
         </div>
 
-        <form className="space-y-6">
+        {error && (
+          <div className="p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm font-medium">
+            {error}
+          </div>
+        )}
+
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-2">
             <label className="text-sm font-bold uppercase tracking-widest text-foreground/60 px-1">Email Address</label>
             <input 
               type="email" 
-              placeholder="artist@canvas.com"
-              className="w-full px-6 py-4 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border-none focus:ring-2 ring-vibrant-pink outline-none font-medium transition-all shadow-sm"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              className="w-full px-6 py-4 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border-none focus:ring-2 ring-vibrant-pink outline-none font-medium transition-all shadow-sm text-black dark:text-white"
             />
           </div>
 
@@ -32,18 +69,20 @@ export default function LoginPage() {
             </div>
             <input 
               type="password" 
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full px-6 py-4 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border-none focus:ring-2 ring-vibrant-teal outline-none font-medium transition-all shadow-sm"
+              className="w-full px-6 py-4 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border-none focus:ring-2 ring-vibrant-teal outline-none font-medium transition-all shadow-sm text-black dark:text-white"
             />
           </div>
 
-          <div className="flex items-center gap-3 px-1">
-            <input type="checkbox" id="remember" className="w-5 h-5 rounded-md accent-vibrant-pink" />
-            <label htmlFor="remember" className="text-sm font-bold text-foreground/60 select-none">Remember me for 30 days</label>
-          </div>
-
-          <button className="w-full py-4 rounded-2xl bg-vibrant-gradient text-white font-black text-lg hover:shadow-[0_20px_40px_rgba(255,0,127,0.3)] hover:-translate-y-1 active:scale-[0.98] transition-all">
-            Unlock your Canvas
+          <button 
+            type="submit"
+            disabled={loading}
+            className={`w-full py-4 rounded-2xl bg-vibrant-gradient text-white font-black text-lg hover:shadow-[0_20px_40px_rgba(255,0,127,0.3)] hover:-translate-y-1 active:scale-[0.98] transition-all ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+          >
+            {loading ? 'Authenticating...' : 'Unlock your Canvas'}
           </button>
         </form>
 

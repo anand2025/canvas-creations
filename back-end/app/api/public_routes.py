@@ -9,7 +9,8 @@ from app.schemas.payment import PaymentCreate, PaymentOut
 from app.schemas.category import CategoryCreate, CategoryOut
 from app.schemas.wishlist import WishlistCreate
 from app.models.db import db
-from app.auth.auth import get_password_hash
+from app.auth.auth import get_password_hash, get_current_active_user
+from fastapi import APIRouter, HTTPException, Depends
 from datetime import datetime
 from bson import ObjectId
 
@@ -37,9 +38,9 @@ async def create_user(user: UserCreate):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# -------------------- PAINTINGS --------------------
+# -------------------- PAINTINGS (Protected Creation) --------------------
 @router.post("/paintings", response_model=PaintingOut)
-async def create_painting(painting: PaintingCreate):
+async def create_painting(painting: PaintingCreate, current_user: dict = Depends(get_current_active_user)):
     try:
         painting_dict = painting.dict()
         painting_dict["created_at"] = datetime.utcnow()
@@ -72,7 +73,7 @@ async def get_painting(id: str):
 
 # -------------------- ORDERS --------------------
 @router.post("/orders", response_model=OrderOut)
-async def create_order(order: OrderCreate):
+async def create_order(order: OrderCreate, current_user: dict = Depends(get_current_active_user)):
     try:
         order_dict = order.dict()
         order_dict["created_at"] = datetime.utcnow()
@@ -86,7 +87,7 @@ async def create_order(order: OrderCreate):
 
 # -------------------- REVIEWS --------------------
 @router.post("/reviews", response_model=ReviewOut)
-async def create_review(review: ReviewCreate):
+async def create_review(review: ReviewCreate, current_user: dict = Depends(get_current_active_user)):
     try:
         review_dict = review.dict()
         review_dict["created_at"] = datetime.utcnow()
@@ -98,7 +99,7 @@ async def create_review(review: ReviewCreate):
 
 # -------------------- CART --------------------
 @router.post("/cart")
-async def update_cart(cart: CartCreate):
+async def update_cart(cart: CartCreate, current_user: dict = Depends(get_current_active_user)):
     try:
         await db["cart"].delete_one({"user_id": cart.user_id})
         cart_dict = cart.dict()
@@ -109,7 +110,7 @@ async def update_cart(cart: CartCreate):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/cart/{user_id}")
-async def get_cart(user_id: str):
+async def get_cart(user_id: str, current_user: dict = Depends(get_current_active_user)):
     try:
         cart = await db["cart"].find_one({"user_id": user_id})
         if cart:
@@ -120,7 +121,7 @@ async def get_cart(user_id: str):
 
 # -------------------- PAYMENTS --------------------
 @router.post("/payments", response_model=PaymentOut)
-async def create_payment(payment: PaymentCreate):
+async def create_payment(payment: PaymentCreate, current_user: dict = Depends(get_current_active_user)):
     try:
         payment_dict = payment.dict()
         payment_dict["created_at"] = datetime.utcnow()
@@ -132,7 +133,7 @@ async def create_payment(payment: PaymentCreate):
 
 # -------------------- CATEGORIES --------------------
 @router.post("/categories", response_model=CategoryOut)
-async def create_category(category: CategoryCreate):
+async def create_category(category: CategoryCreate, current_user: dict = Depends(get_current_active_user)):
     try:
         category_dict = category.dict()
         category_dict["created_at"] = datetime.utcnow()
@@ -155,7 +156,7 @@ async def get_categories():
 
 # -------------------- WISHLIST --------------------
 @router.post("/wishlist")
-async def update_wishlist(wishlist: WishlistCreate):
+async def update_wishlist(wishlist: WishlistCreate, current_user: dict = Depends(get_current_active_user)):
     try:
         await db["wishlist"].delete_one({"user_id": wishlist.user_id})
         wishlist_dict = wishlist.dict()
@@ -166,7 +167,7 @@ async def update_wishlist(wishlist: WishlistCreate):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/wishlist/{user_id}")
-async def get_wishlist(user_id: str):
+async def get_wishlist(user_id: str, current_user: dict = Depends(get_current_active_user)):
     try:
         wishlist = await db["wishlist"].find_one({"user_id": user_id})
         if wishlist:

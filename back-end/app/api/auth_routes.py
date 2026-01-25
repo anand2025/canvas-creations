@@ -2,9 +2,18 @@
 from fastapi import APIRouter, HTTPException, status, Depends, Body
 from fastapi.security import OAuth2PasswordRequestForm
 from app.schemas.user import UserCreate, UserOut
-from app.auth.auth import create_access_token, get_password_hash, verify_password
+from app.auth.auth import (
+    create_access_token, 
+    create_refresh_token, 
+    get_password_hash, 
+    verify_password,
+    SECRET_KEY,
+    ALGORITHM
+)
 from app.models.db import db
 from datetime import datetime
+import jwt
+from bson import ObjectId
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -19,6 +28,7 @@ async def register(user: UserCreate):
     user_dict = user.dict()
     user_dict["password"] = get_password_hash(user.password)
     user_dict["created_at"] = datetime.utcnow()
+    user_dict["is_disabled"] = False
     
     # Insert
     res = await db["users"].insert_one(user_dict)
@@ -34,8 +44,35 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     if not user or not verify_password(form_data.password, user["password"]):
         raise HTTPException(status_code=401, detail="Invalid credentials")
         
-    # Create token
-    access_token = create_access_token(
-        data={"sub": str(user["_id"]), "role": user.get("role", "customer")}
-    )
-    return {"access_token": access_token, "token_type": "bearer"}
+    # Create tokens
+    user_id = str(user["_id"])
+    access_token = create_access_token(data={"sub": user_id})
+    refresh_token = create_refresh_token(data={"sub": user_id})
+    
+    return {
+        "access_token": access_token, 
+        "refresh_token": refresh_token,
+        "token_type": "bearer"
+    }
+
+@router.post("/refresh")
+async def refresh(refresh_token: str = Body(..., embed=True)):
+    try:
+        payload = jwt.decode(refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id: str = payload.get("sub")
+        token_type: str = payload.get("type")
+        
+        if user_id is None or token_type != "refresh":
+            raise HTTPException(status_code=401, detail="Invalid refresh token")
+            
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Refresh token expired")
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=401, detail="Invalid refresh token")
+        
+    user = await db["users"].find_one({"_id": ObjectId(user_id)})
+    if not user or user.get("is_disabled"):
+        raise HTTPException(status_code=401, detail="User not found or disabled")
+        
+    new_access_token = create_access_token(data={"sub": user_id})
+    return {"access_token": new_access_token, "token_type": "bearer"}
