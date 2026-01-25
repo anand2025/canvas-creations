@@ -10,7 +10,7 @@ const ProductCard = ({ product }) => {
     return (
         <div className="group relative bg-white dark:bg-zinc-900 rounded-3xl overflow-hidden border border-white/10 hover:border-vibrant-pink/50 transition-all hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)] hover:-translate-y-2">
             <div className="relative aspect-square overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-                {product.image_url ? (
+                {product.image_url && (product.image_url.startsWith('http') || product.image_url.startsWith('/')) ? (
                     <Image
                         src={product.image_url}
                         alt={product.title}

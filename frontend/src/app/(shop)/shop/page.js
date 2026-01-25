@@ -1,55 +1,33 @@
-import React from 'react';
-import ProductCard from "@/components/products/ProductCard";
+"use client";
 
-// Mock data for shop products
-const shopProducts = [
-  {
-    id: "1",
-    title: "Neon Sunset",
-    description: "A breathtaking mini-canvas capturing the essence of a neon sunset over a digital sea.",
-    price: 45.00,
-    image_url: "https://images.unsplash.com/photo-1541963463532-d68292c34b19?w=800&auto=format&fit=crop&q=60"
-  },
-  {
-    id: "2",
-    title: "Vibrant Bloom",
-    description: "Hand-painted floral masterpiece with layered textures and brilliant teals.",
-    price: 38.00,
-    image_url: "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=800&auto=format&fit=crop&q=60"
-  },
-  {
-    id: "3",
-    title: "Electric Dreams",
-    description: "An abstract exploration of color and light on a 4x4 mini canvas.",
-    price: 52.00,
-    image_url: "https://images.unsplash.com/photo-1549490349-8643362247b5?w=800&auto=format&fit=crop&q=60"
-  },
-  {
-    id: "4",
-    title: "Azure Waves",
-    description: "Soothing deep blue and teal abstract painting with gold leaf accents.",
-    price: 42.00,
-    image_url: "https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=800&auto=format&fit=crop&q=60"
-  },
-  {
-    id: "5",
-    title: "Crimson Spark",
-    description: "A fiery mix of reds and oranges, perfect for a bold statement.",
-    price: 35.00,
-    image_url: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&auto=format&fit=crop&q=60"
-  },
-  {
-    id: "6",
-    title: "Golden Hour",
-    description: "Warm tones and soft textures reflecting the beauty of the twilight sky.",
-    price: 48.00,
-    image_url: "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=800&auto=format&fit=crop&q=60"
-  }
-];
+import React, { useEffect, useState } from 'react';
+import ProductCard from "@/components/products/ProductCard";
+import { fetchData } from '@/services/api';
 
 const categories = ["All", "Abstract", "Miniature", "Floral", "Landscape"];
 
 export default function ShopPage() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const getProducts = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchData('/paintings');
+        setProducts(data);
+      } catch (err) {
+        console.error("Failed to fetch products:", err);
+        setError("Could not load products. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getProducts();
+  }, []);
+
   return (
     <div className="bg-white dark:bg-black min-h-screen py-20 px-6">
       <div className="container mx-auto">
@@ -86,19 +64,49 @@ export default function ShopPage() {
           </div>
         </div>
 
+        {/* Loading State */}
+        {loading && (
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="w-16 h-16 border-4 border-vibrant-teal/20 border-t-vibrant-teal rounded-full animate-spin mb-4"></div>
+            <p className="text-vibrant-teal font-bold animate-pulse uppercase tracking-widest text-sm">Loading Masterpieces...</p>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className="text-center py-20">
+            <h2 className="text-2xl font-black text-vibrant-pink mb-4 uppercase tracking-tighter">Art Block!</h2>
+            <p className="text-foreground/60">{error}</p>
+          </div>
+        )}
+
         {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-12">
-          {shopProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {!loading && !error && (
+          <>
+            {products.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-12">
+                {products.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-20 bg-zinc-50 dark:bg-zinc-900/50 rounded-[40px] border-2 border-dashed border-zinc-200 dark:border-zinc-800">
+                <div className="text-6xl mb-6 opacity-20">🎨</div>
+                <h3 className="text-2xl font-black mb-2 uppercase tracking-tighter">No products found</h3>
+                <p className="text-foreground/60">We're currently preparing new canvases. Check back soon!</p>
+              </div>
+            )}
+          </>
+        )}
         
         {/* Load More */}
-        <div className="mt-20 text-center">
-          <button className="px-12 py-4 rounded-full border-2 border-foreground font-black hover:bg-foreground hover:text-background transition-all">
-            Load More Products
-          </button>
-        </div>
+        {products.length > 0 && (
+          <div className="mt-20 text-center">
+            <button className="px-12 py-4 rounded-full border-2 border-foreground font-black hover:bg-foreground hover:text-background transition-all">
+              Load More Products
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

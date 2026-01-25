@@ -1,0 +1,190 @@
+"use client";
+
+import React, { useEffect, useState, use } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { fetchData } from '@/services/api';
+
+const ProductDetailPage = ({ params }) => {
+    // Unwrap params in Next.js 15+
+    const resolvedParams = use(params);
+    const { id } = resolvedParams;
+
+    const [product, setProduct] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [quantity, setQuantity] = useState(1);
+
+    useEffect(() => {
+        const getProduct = async () => {
+            try {
+                setLoading(true);
+                const data = await fetchData(`/paintings/${id}`);
+                setProduct(data);
+            } catch (err) {
+                console.error("Failed to fetch product:", err);
+                setError("Product not found or an error occurred.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (id) {
+            getProduct();
+        }
+    }, [id]);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black">
+                <div className="relative">
+                    <div className="w-20 h-20 border-4 border-vibrant-teal/20 border-t-vibrant-teal rounded-full animate-spin"></div>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-vibrant-pink font-black text-xs">CC</span>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (error || !product) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-black px-6 text-center">
+                <h1 className="text-4xl font-black mb-4 text-vibrant-pink uppercase tracking-tighter">Oops! Something went wrong.</h1>
+                <p className="text-foreground/60 mb-8">{error || "The product you are looking for does not exist."}</p>
+                <Link href="/shop" className="px-8 py-3 rounded-full bg-vibrant-teal text-white font-bold hover:shadow-[0_10px_20px_rgba(0,210,255,0.3)] transition-all">
+                    Back to Shop
+                </Link>
+            </div>
+        );
+    }
+
+    return (
+        <div className="bg-white dark:bg-black min-h-screen py-10 md:py-20 px-4 md:px-8">
+            <div className="container mx-auto">
+                {/* Breadcrumbs */}
+                <nav className="mb-8 flex items-center space-x-2 text-sm font-bold uppercase tracking-widest text-foreground/40">
+                    <Link href="/shop" className="hover:text-vibrant-pink transition-colors">Shop</Link>
+                    <span>/</span>
+                    <span className="text-vibrant-teal">{product.category}</span>
+                </nav>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20 items-start">
+                    {/* Image Section */}
+                    <div className="relative group">
+                        <div className="absolute -inset-1 bg-gradient-to-r from-vibrant-pink to-vibrant-orange rounded-[40px] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                        <div className="relative aspect-[4/5] md:aspect-square overflow-hidden rounded-[32px] bg-zinc-100 dark:bg-zinc-900 border border-white/10 shadow-2xl">
+                            {product.image_url && (product.image_url.startsWith('http') || product.image_url.startsWith('/')) ? (
+                                <Image 
+                                    src={product.image_url} 
+                                    alt={product.title} 
+                                    fill 
+                                    className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                                />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center bg-vibrant-pink/5">
+                                    <span className="text-vibrant-pink font-black text-6xl opacity-20">CC</span>
+                                </div>
+                            )}
+                            
+                            {/* Zoom Button Overlay */}
+                            <button className="absolute bottom-6 right-6 p-4 glass-vibrant rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity translate-y-4 group-hover:translate-y-0 duration-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Content Section */}
+                    <div className="flex flex-col">
+                        <div className="mb-8">
+                            <h4 className="text-vibrant-orange font-black text-sm uppercase tracking-widest mb-2">{product.artist}</h4>
+                            <h1 className="text-4xl md:text-6xl font-black mb-4 tracking-tighter uppercase leading-none">
+                                {product.title}
+                            </h1>
+                            <div className="flex items-center gap-4">
+                                <span className="text-3xl md:text-4xl font-black text-vibrant-teal">${product.price}</span>
+                                <div className="px-4 py-1 rounded-full bg-vibrant-pink/10 text-vibrant-pink text-xs font-black uppercase tracking-tighter border border-vibrant-pink/20">
+                                    Hand-Painted
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="space-y-6 mb-10">
+                            <p className="text-lg text-foreground/70 leading-relaxed max-w-xl">
+                                {product.description}
+                            </p>
+                            
+                            <div className="grid grid-cols-2 gap-4 max-w-sm">
+                                <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800">
+                                    <span className="text-[10px] font-bold text-foreground/40 uppercase tracking-widest block mb-1">Stock Status</span>
+                                    <span className={`font-bold ${product.stock > 0 ? 'text-green-500' : 'text-vibrant-pink'}`}>
+                                        {product.stock > 0 ? `${product.stock} Units Left` : 'Sold Out'}
+                                    </span>
+                                </div>
+                                <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800">
+                                    <span className="text-[10px] font-bold text-foreground/40 uppercase tracking-widest block mb-1">Delivery</span>
+                                    <span className="font-bold">3-5 Business Days</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="flex items-center border-2 border-zinc-100 dark:border-zinc-800 rounded-2xl p-1 bg-zinc-50 dark:bg-zinc-900">
+                                    <button 
+                                        onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
+                                        className="w-10 h-10 flex items-center justify-center hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-xl transition-colors font-bold"
+                                    >
+                                        -
+                                    </button>
+                                    <span className="w-12 text-center font-bold">{quantity}</span>
+                                    <button 
+                                        onClick={() => setQuantity(prev => Math.min(product.stock, prev + 1))}
+                                        className="w-10 h-10 flex items-center justify-center hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-xl transition-colors font-bold"
+                                    >
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col sm:flex-row gap-4">
+                                <button className="flex-1 py-5 rounded-2xl bg-foreground text-background font-black text-lg uppercase tracking-tighter hover:bg-vibrant-pink hover:text-white transition-all transform active:scale-[0.98] shadow-xl hover:shadow-vibrant-pink/20">
+                                    Add to Cart
+                                </button>
+                                <button className="flex-1 py-5 rounded-2xl bg-vibrant-orange text-white font-black text-lg uppercase tracking-tighter hover:shadow-[0_15px_30px_rgba(255,95,0,0.4)] transition-all transform active:scale-[0.98]">
+                                    Buy It Now
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Extra Info */}
+                        <div className="mt-12 pt-8 border-t border-zinc-100 dark:border-zinc-900 flex flex-wrap gap-8">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-vibrant-teal/10 flex items-center justify-center text-vibrant-teal">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                    </svg>
+                                </div>
+                                <span className="text-sm font-bold opacity-60">Verified Origin</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-vibrant-pink/10 flex items-center justify-center text-vibrant-pink">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4z" />
+                                        <path fillRule="evenodd" d="M3 8h14v7a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm5 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" clipRule="evenodd" />
+                                    </svg>
+                                </div>
+                                <span className="text-sm font-bold opacity-60">Secure Packing</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default ProductDetailPage;
