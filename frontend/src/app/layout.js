@@ -17,6 +17,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+import { Toaster } from 'react-hot-toast';
+
 export const metadata = {
   title: "Canvas & Creations | Vibrant Handcrafted Art",
   description: "Explore our collection of bright and vibrant mini-paintings and handmade crafts.",
@@ -29,6 +31,25 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased selection:bg-vibrant-pink selection:text-white`}
       >
         <AuthProvider>
+          <Toaster 
+            position="bottom-right"
+            toastOptions={{
+              style: {
+                background: '#18181b',
+                color: '#fff',
+                borderRadius: '16px',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                padding: '16px',
+                fontWeight: '600'
+              },
+              success: {
+                iconTheme: {
+                  primary: '#FF007F',
+                  secondary: '#fff',
+                },
+              },
+            }}
+          />
           <Navbar />
           {children}
         </AuthProvider>

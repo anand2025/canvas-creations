@@ -4,6 +4,8 @@ import React, { useEffect, useState, use } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { apiRequest } from '@/services/api';
+import { useAuth } from '@/context/AuthContext';
+import { toast } from 'react-hot-toast';
 
 const ProductDetailPage = ({ params }) => {
     // Unwrap params in Next.js 15+
@@ -14,6 +16,9 @@ const ProductDetailPage = ({ params }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [quantity, setQuantity] = useState(1);
+    const { user } = useAuth();
+    const [isWishlisted, setIsWishlisted] = useState(false);
+    const [wishlistLoading, setWishlistLoading] = useState(false);
 
     useEffect(() => {
         const getProduct = async () => {
@@ -33,6 +38,65 @@ const ProductDetailPage = ({ params }) => {
             getProduct();
         }
     }, [id]);
+
+    useEffect(() => {
+        const checkWishlist = async () => {
+            if (!user?.id || !id) return;
+            try {
+                const wishlistData = await apiRequest(`/wishlist`);
+                if (wishlistData?.paintings?.includes(id)) {
+                    setIsWishlisted(true);
+                }
+            } catch (err) {
+                console.error("Error fetching wishlist:", err);
+            }
+        };
+        checkWishlist();
+    }, [user?.id, id]);
+
+    const handleWishlistToggle = async () => {
+        if (!user?.id) {
+            toast.error("Please login to add items to your wishlist.", {
+                icon: '🔒',
+            });
+            return;
+        }
+
+        try {
+            setWishlistLoading(true);
+            let paintings = [];
+            try {
+                const currentWishlist = await apiRequest(`/wishlist`);
+                paintings = currentWishlist.paintings || [];
+            } catch (err) { }
+
+            let newPaintings;
+            if (isWishlisted) {
+                newPaintings = paintings.filter(pid => pid !== id);
+            } else {
+                newPaintings = [...paintings, id];
+            }
+
+            await apiRequest('/wishlist', {
+                method: 'POST',
+                body: JSON.stringify({
+                    user_id: user.id,
+                    paintings: newPaintings
+                })
+            });
+
+            setIsWishlisted(!isWishlisted);
+            toast.success(isWishlisted ? "Removed from wishlist" : "Added to wishlist", {
+                duration: 2000,
+                icon: isWishlisted ? '💔' : '💖',
+            });
+        } catch (err) {
+            console.error("Error updating wishlist:", err);
+            toast.error("Failed to update wishlist.");
+        } finally {
+            setWishlistLoading(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -156,6 +220,21 @@ const ProductDetailPage = ({ params }) => {
                                 </button>
                                 <button className="flex-1 py-5 rounded-2xl bg-vibrant-orange text-white font-black text-lg uppercase tracking-tighter hover:shadow-[0_15px_30px_rgba(255,95,0,0.4)] transition-all transform active:scale-[0.98]">
                                     Buy It Now
+                                </button>
+                                <button 
+                                    onClick={handleWishlistToggle}
+                                    disabled={wishlistLoading}
+                                    className={`p-5 rounded-2xl border-2 transition-all transform active:scale-[0.98] ${isWishlisted ? 'bg-vibrant-pink border-vibrant-pink text-white' : 'border-zinc-100 dark:border-zinc-800 hover:border-vibrant-pink text-foreground'}`}
+                                >
+                                    <svg 
+                                        xmlns="http://www.w3.org/2000/svg" 
+                                        className={`h-6 w-6 ${wishlistLoading ? 'animate-pulse' : ''}`} 
+                                        fill={isWishlisted ? "currentColor" : "none"} 
+                                        viewBox="0 0 24 24" 
+                                        stroke="currentColor"
+                                    >
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                    </svg>
                                 </button>
                             </div>
                         </div>
