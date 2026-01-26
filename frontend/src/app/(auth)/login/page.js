@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import AuthLayout from "@/components/layout/AuthLayout";
 import { loginUser } from '@/services/api';
 import { useAuth } from '@/context/AuthContext';
+import { toast } from 'react-hot-toast';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -20,9 +21,11 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const data = await loginUser(email, password);
-      // For simplicity, we decode or assume a role here if it's not in the login response
-      // But ideally the login response should include minimal user info
-      login({ email, role: 'customer' }); // Default role or from token
+      // Pass the full response data to AuthContext login
+      login(data);
+      toast.success("Welcome back!", {
+        icon: '👋',
+      });
       router.push('/');
     } catch (err) {
       setError(err.message || "Invalid credentials. Please try again.");

@@ -14,7 +14,7 @@ router = APIRouter()
 
 
 # -------------------- Admin-Protected Routes --------------------
-@router.get("/users", response_model=list[UserOut])
+@router.get("/users", response_model=list[UserOut], description="Get a list of all users. Admin only.")
 async def get_all_users(current_admin: dict = Depends(get_current_admin)):
     try:
         users = []
@@ -27,7 +27,7 @@ async def get_all_users(current_admin: dict = Depends(get_current_admin)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/orders", response_model=list[OrderOut])
+@router.get("/orders", response_model=list[OrderOut], description="Get a list of all orders. Admin only.")
 async def get_all_orders(current_admin: dict = Depends(get_current_admin)):
     try:
         orders = []
@@ -40,7 +40,7 @@ async def get_all_orders(current_admin: dict = Depends(get_current_admin)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/paintings", response_model=list[PaintingOut])
+@router.get("/paintings", response_model=list[PaintingOut], description="Get a list of all paintings. Admin only.")
 async def get_all_paintings(current_admin: dict = Depends(get_current_admin)):
     try:
         paintings = []
@@ -53,7 +53,7 @@ async def get_all_paintings(current_admin: dict = Depends(get_current_admin)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/paintings", response_model=PaintingOut)
+@router.post("/paintings", response_model=PaintingOut, description="Create a new painting. Admin only.")
 async def create_painting(painting: PaintingCreate, current_admin: dict = Depends(get_current_admin)):
     try:
         data = painting.dict()
@@ -66,7 +66,7 @@ async def create_painting(painting: PaintingCreate, current_admin: dict = Depend
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.put("/paintings/{id}")
+@router.put("/paintings/{id}", description="Update an existing painting by ID. Admin only.")
 async def update_painting(id: str, painting: PaintingCreate, current_admin: dict = Depends(get_current_admin)):
     try:
         update_data = painting.dict()
@@ -78,7 +78,7 @@ async def update_painting(id: str, painting: PaintingCreate, current_admin: dict
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.delete("/paintings/{id}")
+@router.delete("/paintings/{id}", description="Delete a painting by ID. Admin only.")
 async def delete_painting(id: str, current_admin: dict = Depends(get_current_admin)):
     try:
         res = await db["paintings"].delete_one({"_id": ObjectId(id)})
@@ -88,7 +88,7 @@ async def delete_painting(id: str, current_admin: dict = Depends(get_current_adm
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/payments", response_model=list[PaymentOut])
+@router.get("/payments", response_model=list[PaymentOut], description="Get a list of all payments. Admin only.")
 async def get_all_payments(current_admin: dict = Depends(get_current_admin)):
     try:
         payments = []
@@ -101,7 +101,7 @@ async def get_all_payments(current_admin: dict = Depends(get_current_admin)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/reviews", response_model=list[ReviewOut])
+@router.get("/reviews", response_model=list[ReviewOut], description="Get a list of all reviews. Admin only.")
 async def get_all_reviews(current_admin: dict = Depends(get_current_admin)):
     try:
         reviews = []
@@ -114,7 +114,7 @@ async def get_all_reviews(current_admin: dict = Depends(get_current_admin)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-@router.get("/inventory", response_model=list[PaintingOut])
+@router.get("/inventory", response_model=list[PaintingOut], description="View current painting inventory stock. Admin only.")
 async def view_inventory(current_admin: dict = Depends(get_current_admin)):
     try:
         paintings = await db["paintings"].find().to_list(100)
@@ -123,7 +123,7 @@ async def view_inventory(current_admin: dict = Depends(get_current_admin)):
         raise HTTPException(status_code=500, detail=f"Error fetching inventory: {e}")
 
 # 2. Update stock of a specific painting
-@router.post("/inventory/{painting_id}", response_model=PaintingOut)
+@router.post("/inventory/{painting_id}", response_model=PaintingOut, description="Update stock of a specific painting. Admin only.")
 async def update_inventory(painting_id: str, stock: int, current_admin: dict = Depends(get_current_admin)):
     try:
         # Check if the painting exists
@@ -142,7 +142,7 @@ async def update_inventory(painting_id: str, stock: int, current_admin: dict = D
         raise HTTPException(status_code=500, detail=f"Error updating inventory: {e}")
 
 # 3. Increase/Decrease stock after an order
-@router.put("/inventory/{painting_id}", response_model=PaintingOut)
+@router.put("/inventory/{painting_id}", response_model=PaintingOut, description="Adjust stock (increase/decrease) of a specific painting. Admin only.")
 async def adjust_inventory(painting_id: str, quantity: int, current_admin: dict = Depends(get_current_admin)):
     try:
         # Check if the painting exists
@@ -164,7 +164,7 @@ async def adjust_inventory(painting_id: str, quantity: int, current_admin: dict 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error adjusting inventory: {e}")
 
-@router.put("/orders/{order_id}/status", response_model=OrderOut)
+@router.put("/orders/{order_id}/status", response_model=OrderOut, description="Update status of an order. Admin only.")
 async def update_order_status(order_id: str, status: str, current_admin: dict = Depends(get_current_admin)):
     try:
         # Validate status

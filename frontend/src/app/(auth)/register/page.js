@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import AuthLayout from "@/components/layout/AuthLayout";
 import { registerUser } from '@/services/api';
+import { toast } from 'react-hot-toast';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -32,6 +33,10 @@ export default function RegisterPage() {
         role: "customer" // Default role
       });
       setSuccess(true);
+      toast.success("Account created! Redirecting to login...", {
+        duration: 3000,
+        icon: '🎨',
+      });
       setTimeout(() => router.push('/login'), 2000);
     } catch (err) {
       setError(err.message || "Registration failed. Check your details.");

@@ -13,24 +13,25 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Hydrate state from localStorage or a profile API call
+        // Hydrate state from localStorage
         const access = localStorage.getItem('access_token');
-        const role = localStorage.getItem('user_role');
-        if (access) {
-            setUser({ role }); // Simplified, in a real app you'd fetch profile
+        const storedUser = localStorage.getItem('user');
+        if (access && storedUser) {
+            setUser(JSON.parse(storedUser));
         }
         setLoading(false);
     }, []);
 
     const login = (userData) => {
-        setUser(userData);
-        if (userData.role) {
-            localStorage.setItem('user_role', userData.role);
+        setUser(userData.user);
+        if (userData.user) {
+            localStorage.setItem('user', JSON.stringify(userData.user));
         }
     };
 
     const logout = () => {
         setUser(null);
+        localStorage.removeItem('user');
         clearTokens();
     };
 

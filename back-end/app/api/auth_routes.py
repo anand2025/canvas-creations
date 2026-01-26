@@ -17,7 +17,7 @@ from bson import ObjectId
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
-@router.post("/register", response_model=UserOut)
+@router.post("/register", response_model=UserOut, description="Register a new user account.")
 async def register(user: UserCreate):
     # Check if user exists
     existing_user = await db["users"].find_one({"email": user.email})
@@ -37,7 +37,7 @@ async def register(user: UserCreate):
     new_user["id"] = str(new_user["_id"])
     return new_user
 
-@router.post("/login")
+@router.post("/login", description="Authenticate user and return access/refresh tokens.")
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     # Find user
     user = await db["users"].find_one({"email": form_data.username})
@@ -52,10 +52,15 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     return {
         "access_token": access_token, 
         "refresh_token": refresh_token,
-        "token_type": "bearer"
+        "token_type": "bearer",
+        "user": {
+            "id": user_id,
+            "email": user["email"],
+            "role": user.get("role", "user")
+        }
     }
 
-@router.post("/refresh")
+@router.post("/refresh", description="Refresh access token using a valid refresh token.")
 async def refresh(refresh_token: str = Body(..., embed=True)):
     try:
         payload = jwt.decode(refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
