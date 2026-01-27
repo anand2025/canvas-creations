@@ -20,7 +20,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from fastapi.staticfiles import StaticFiles
+from app.api.upload_routes import router as upload_router
+
+app.mount("/static", StaticFiles(directory="uploads"), name="static")
+
 # include routers
 app.include_router(public_router, tags=["Public"])
 app.include_router(auth_router)
 app.include_router(admin_router, prefix="/admin", tags=["Admin"])
+app.include_router(upload_router, prefix="/api", tags=["Upload"])

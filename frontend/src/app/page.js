@@ -3,38 +3,40 @@
  * This file serves as the entry point for the application's home page (route: /).
  * It currently displays the default Next.js template and should be replaced with the e-commerce storefront.
  */
+"use client";
 import Image from "next/image";
 
 import React from 'react';
 import Hero from "@/components/layout/Hero";
 import ProductCard from "@/components/products/ProductCard";
 
-// Mock data for featured products
-const featuredProducts = [
-  {
-    id: "1",
-    title: "Neon Sunset",
-    description: "A breathtaking mini-canvas capturing the essence of a neon sunset over a digital sea.",
-    price: 45.00,
-    image_url: "https://images.unsplash.com/photo-1541963463532-d68292c34b19?w=800&auto=format&fit=crop&q=60"
-  },
-  {
-    id: "2",
-    title: "Vibrant Bloom",
-    description: "Hand-painted floral masterpiece with layered textures and brilliant teals.",
-    price: 38.00,
-    image_url: "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=800&auto=format&fit=crop&q=60"
-  },
-  {
-    id: "3",
-    title: "Electric Dreams",
-    description: "An abstract exploration of color and light on a 4x4 mini canvas.",
-    price: 52.00,
-    image_url: "https://images.unsplash.com/photo-1549490349-8643362247b5?w=800&auto=format&fit=crop&q=60"
-  }
-];
+import { apiRequest } from "@/services/api";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBestsellers = async () => {
+      try {
+        const data = await apiRequest('/paintings/bestsellers');
+        if (data && data.length > 0) {
+            setFeaturedProducts(data);
+        } else {
+             // Fallback to empty or keep mock if desired, but user asked to replace hardcoded
+             setFeaturedProducts([]); 
+        }
+      } catch (error) {
+        console.error("Failed to fetch bestsellers", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBestsellers();
+  }, []);
+
   return (
     <main className="bg-white dark:bg-black min-h-screen">
       <Hero />
@@ -56,9 +58,20 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+            {loading ? (
+                // Simple skeletons
+                [1, 2, 3].map(i => (
+                    <div key={i} className="h-96 bg-gray-100 dark:bg-zinc-800 rounded-3xl animate-pulse"></div>
+                ))
+            ) : featuredProducts.length > 0 ? (
+                featuredProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))
+            ) : (
+                <div className="col-span-full text-center py-10 text-gray-500">
+                    <p>Coming soon! Check back later for our featured collection.</p>
+                </div>
+            )}
           </div>
         </div>
 

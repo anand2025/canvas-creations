@@ -113,10 +113,10 @@ export default function CartPage() {
                                             <h3 className="text-2xl font-black uppercase tracking-tight mb-1 group-hover:text-vibrant-pink transition-colors">
                                                 {item.painting_details.title}
                                             </h3>
-                                            <p className="text-vibrant-teal font-bold">${item.painting_details.price} per item</p>
+                                            <p className="text-vibrant-teal font-bold">₹{item.painting_details.price} per item</p>
                                         </div>
                                         <div className="text-2xl font-black text-foreground/80">
-                                            ${item.item_total}
+                                            ₹{item.item_total}
                                         </div>
                                     </div>
 
@@ -161,7 +161,7 @@ export default function CartPage() {
                             <div className="space-y-6 mb-10 relative">
                                 <div className="flex justify-between items-center text-lg">
                                     <span className="opacity-60 font-bold uppercase tracking-widest text-sm">Subtotal</span>
-                                    <span className="font-black">${cart.total_price}</span>
+                                    <span className="font-black">₹{cart.total_price}</span>
                                 </div>
                                 <div className="flex justify-between items-center text-lg">
                                     <span className="opacity-60 font-bold uppercase tracking-widest text-sm">Shipping</span>
@@ -171,7 +171,7 @@ export default function CartPage() {
                                 <div className="flex justify-between items-end pt-4">
                                     <span className="font-black uppercase tracking-tighter text-2xl leading-none">Total</span>
                                     <div className="text-right">
-                                        <div className="text-vibrant-teal font-black text-5xl leading-none">${cart.total_price}</div>
+                                        <div className="text-vibrant-teal font-black text-5xl leading-none">₹{cart.total_price}</div>
                                         <p className="text-[10px] uppercase font-bold tracking-widest opacity-40 mt-2">All taxes included</p>
                                     </div>
                                 </div>

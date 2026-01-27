@@ -13,9 +13,10 @@ const getTokens = () => {
     };
 };
 
-const setTokens = (access, refresh) => {
+const setTokens = (access, refresh, role) => {
     if (access) localStorage.setItem('access_token', access);
     if (refresh) localStorage.setItem('refresh_token', refresh);
+    if (role) localStorage.setItem('user_role', role);
 };
 
 export const clearTokens = () => {
@@ -90,10 +91,8 @@ export const loginUser = async (email, password) => {
     }
 
     const data = await response.json();
-    setTokens(data.access_token, data.refresh_token);
+    setTokens(data.access_token, data.refresh_token, data.user?.role);
     
-    // Decode token to get role if needed, or fetch user profile
-    // For now, let's assume we store the role or it's in the token
     return data;
 };
 
@@ -107,6 +106,29 @@ export const registerUser = async (userData) => {
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.detail || "Registration failed");
+    }
+
+    return await response.json();
+};
+
+export const uploadImage = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const tokens = getTokens();
+    const headers = {};
+    if (tokens?.access) {
+        headers['Authorization'] = `Bearer ${tokens.access}`;
+    }
+
+    const response = await fetch(`${API_URL}/api/upload`, {
+        method: 'POST',
+        headers: headers, // Do NOT set Content-Type for FormData, browser sets it with boundary
+        body: formData,
+    });
+
+    if (!response.ok) {
+        throw new Error("Upload failed");
     }
 
     return await response.json();

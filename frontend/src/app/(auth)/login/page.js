@@ -43,7 +43,7 @@ export default function LoginPage() {
       <div className="space-y-8">
         <div>
           <h1 className="text-4xl font-black tracking-tight mb-2">LOGIN.</h1>
-          <p className="text-foreground/50 font-medium">Don't have an account? <Link href="/register" className="text-vibrant-pink hover:underline">Create one for free</Link></p>
+          <p className="text-foreground/50 font-medium">Don't have an account? <Link href="/register" className="text-vibrant-pink hover:underline">Create your account</Link></p>
         </div>
 
         {error && (
@@ -85,7 +85,7 @@ export default function LoginPage() {
             disabled={loading}
             className={`w-full py-4 rounded-2xl bg-vibrant-gradient text-white font-black text-lg hover:shadow-[0_20px_40px_rgba(255,0,127,0.3)] hover:-translate-y-1 active:scale-[0.98] transition-all ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
-            {loading ? 'Authenticating...' : 'Unlock your Canvas'}
+            {loading ? 'Authenticating...' : 'Login'}
           </button>
         </form>
 

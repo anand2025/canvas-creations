@@ -73,7 +73,7 @@ const ProductCard = ({ product }) => {
             <div className="p-6">
                 <div className="flex justify-between items-start mb-2">
                     <h3 className="text-xl font-bold group-hover:text-vibrant-pink transition-colors line-clamp-1">{product.title}</h3>
-                    <span className="text-vibrant-teal font-black text-lg">${product.price}</span>
+                    <span className="text-vibrant-teal font-black text-lg">₹{product.price}</span>
                 </div>
                 <p className="text-foreground/60 text-sm mb-6 line-clamp-2">{product.description}</p>
                 

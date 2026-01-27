@@ -4,18 +4,27 @@ import React, { useEffect, useState } from 'react';
 import ProductCard from "@/components/products/ProductCard";
 import { apiRequest } from '@/services/api';
 
-const categories = ["All", "Abstract", "Miniature", "Floral", "Landscape"];
+const categories = ["All", "Paintings", "Handmade Crafts", "Gift Items", "Combos"];
 
 export default function ShopPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [sortBy, setSortBy] = useState("newest"); // Default sort
 
   useEffect(() => {
     const getProducts = async () => {
       try {
         setLoading(true);
-        const data = await apiRequest('/paintings');
+        // Build query params
+        const params = new URLSearchParams();
+        if (selectedCategory !== "All") params.append("category", selectedCategory);
+        if (sortBy) params.append("sort_by", sortBy);
+        
+        const endpoint = `/paintings?${params.toString()}`;
+            
+        const data = await apiRequest(endpoint);
         setProducts(data);
       } catch (err) {
         console.error("Failed to fetch products:", err);
@@ -26,7 +35,7 @@ export default function ShopPage() {
     };
 
     getProducts();
-  }, []);
+  }, [selectedCategory, sortBy]); // Re-run when category or sort changes
 
   return (
     <div className="bg-white dark:bg-black min-h-screen py-20 px-6">
@@ -42,8 +51,9 @@ export default function ShopPage() {
             {categories.map((cat) => (
               <button 
                 key={cat}
+                onClick={() => setSelectedCategory(cat)}
                 className={`px-6 py-2 rounded-full font-bold text-sm transition-all ${
-                  cat === "All" 
+                  selectedCategory === cat 
                     ? "bg-vibrant-pink text-white shadow-[0_10px_20px_rgba(255,0,127,0.3)]" 
                     : "bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700"
                 }`}
@@ -55,11 +65,14 @@ export default function ShopPage() {
           
           <div className="flex items-center gap-4 w-full md:w-auto">
             <span className="text-sm font-bold text-foreground/40 uppercase tracking-widest">Sort By:</span>
-            <select className="flex-1 md:flex-none px-4 py-2 bg-zinc-100 dark:bg-zinc-800 rounded-full font-bold text-sm focus:outline-none focus:ring-2 ring-vibrant-teal">
-              <option>Newest First</option>
-              <option>Price: Low to High</option>
-              <option>Price: High to Low</option>
-              <option>Most Popular</option>
+            <select 
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="flex-1 md:flex-none px-4 py-2 bg-zinc-100 dark:bg-zinc-800 rounded-full font-bold text-sm focus:outline-none focus:ring-2 ring-vibrant-teal"
+            >
+              <option value="newest">Newest First</option>
+              <option value="price_asc">Price: Low to High</option>
+              <option value="price_desc">Price: High to Low</option>
             </select>
           </div>
         </div>
