@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { apiRequest } from '@/services/api';
 import { useAuth } from '@/context/AuthContext';
+import { useWishlist } from '@/context/WishlistContext';
 import { toast } from 'react-hot-toast';
 
 const ProductDetailPage = ({ params }) => {
@@ -17,8 +18,7 @@ const ProductDetailPage = ({ params }) => {
     const [error, setError] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const { user } = useAuth();
-    const [isWishlisted, setIsWishlisted] = useState(false);
-    const [wishlistLoading, setWishlistLoading] = useState(false);
+    const { toggleWishlist, isInWishlist, loading: wishlistLoading } = useWishlist();
 
     useEffect(() => {
         const getProduct = async () => {
@@ -39,63 +39,10 @@ const ProductDetailPage = ({ params }) => {
         }
     }, [id]);
 
-    useEffect(() => {
-        const checkWishlist = async () => {
-            if (!user?.id || !id) return;
-            try {
-                const wishlistData = await apiRequest(`/wishlist`);
-                if (wishlistData?.paintings?.includes(id)) {
-                    setIsWishlisted(true);
-                }
-            } catch (err) {
-                console.error("Error fetching wishlist:", err);
-            }
-        };
-        checkWishlist();
-    }, [user?.id, id]);
+    const isWishlisted = isInWishlist(id);
 
     const handleWishlistToggle = async () => {
-        if (!user?.id) {
-            toast.error("Please login to add items to your wishlist.", {
-                icon: '🔒',
-            });
-            return;
-        }
-
-        try {
-            setWishlistLoading(true);
-            let paintings = [];
-            try {
-                const currentWishlist = await apiRequest(`/wishlist`);
-                paintings = currentWishlist.paintings || [];
-            } catch (err) { }
-
-            let newPaintings;
-            if (isWishlisted) {
-                newPaintings = paintings.filter(pid => pid !== id);
-            } else {
-                newPaintings = [...paintings, id];
-            }
-
-            await apiRequest('/wishlist', {
-                method: 'POST',
-                body: JSON.stringify({
-                    user_id: user.id,
-                    paintings: newPaintings
-                })
-            });
-
-            setIsWishlisted(!isWishlisted);
-            toast.success(isWishlisted ? "Removed from wishlist" : "Added to wishlist", {
-                duration: 2000,
-                icon: isWishlisted ? '💔' : '💖',
-            });
-        } catch (err) {
-            console.error("Error updating wishlist:", err);
-            toast.error("Failed to update wishlist.");
-        } finally {
-            setWishlistLoading(false);
-        }
+        await toggleWishlist(id);
     };
 
     if (loading) {

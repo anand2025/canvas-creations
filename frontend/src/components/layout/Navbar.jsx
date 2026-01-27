@@ -6,9 +6,11 @@
 import React from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { useCart } from '@/context/CartContext';
 
 const Navbar = () => {
     const { user, logout } = useAuth();
+    const { itemCount } = useCart();
 
     return (
         <nav className="sticky top-0 z-50 w-full glass-vibrant border-b border-white/10 px-6 py-4">
@@ -21,13 +23,19 @@ const Navbar = () => {
                     <Link href="/shop" className="hover:text-vibrant-orange transition-colors">Shop</Link>
                     <Link href="/about" className="hover:text-vibrant-purple transition-colors">About</Link>
                     <Link href="/contact" className="hover:text-vibrant-pink transition-colors">Contact</Link>
-                    <Link href="/cart" className="relative group">
-                        <span className="hover:text-vibrant-teal transition-colors">Cart</span>
-                        <span className="absolute -top-2 -right-3 flex h-4 w-4 items-center justify-center rounded-full bg-vibrant-pink text-[10px] text-white">0</span>
-                    </Link>
                 </div>
 
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2 md:space-x-4">
+                    <Link href="/cart" className="relative group p-2 rounded-full hover:bg-vibrant-teal/10 transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-foreground group-hover:text-vibrant-teal transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                        {itemCount > 0 && (
+                            <span className="absolute top-0 right-0 flex h-5 w-5 items-center justify-center rounded-full bg-vibrant-pink text-[10px] font-black text-white animate-in zoom-in">
+                                {itemCount}
+                            </span>
+                        )}
+                    </Link>
                     {user ? (
                         <>
                             <Link href="/wishlist" className="p-2 rounded-full hover:bg-vibrant-pink/10 text-vibrant-pink transition-all group" title="Wishlist">
