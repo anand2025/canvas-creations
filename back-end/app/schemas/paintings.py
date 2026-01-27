@@ -10,6 +10,7 @@ class PaintingBase(BaseModel):
     category: str
     stock: int
     artist: str
+    is_bestseller: Optional[bool] = False
 
 class PaintingCreate(PaintingBase):
     pass

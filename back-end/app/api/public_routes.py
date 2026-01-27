@@ -1,5 +1,6 @@
 # backend/app/api/public_routes.py
 from fastapi import APIRouter, HTTPException, Depends
+from app.models.db import db
 from app.schemas.user import UserCreate, UserOut
 from app.schemas.paintings import PaintingCreate, PaintingOut
 from app.schemas.order import OrderCreate, OrderOut
@@ -33,8 +34,22 @@ async def create_painting(painting: PaintingCreate, current_user: dict = Depends
     return await create_painting_logic(painting)
 
 @router.get("/paintings", response_model=list[PaintingOut], description="Retrieve a list of all paintings.")
-async def get_paintings():
-    return await get_all_paintings_logic()
+async def get_paintings(category: str = None, sort_by: str = None):
+    return await get_all_paintings_logic(category, sort_by)
+
+@router.get("/paintings/bestsellers", response_model=list[PaintingOut], description="Retrieve a list of bestseller paintings.")
+async def get_bestsellers():
+    try:
+        paintings = []
+        # Filter where is_bestseller is true
+        cursor = db["paintings"].find({"is_bestseller": True})
+        async for doc in cursor:
+            doc["id"] = str(doc["_id"])
+            doc.pop("_id")
+            paintings.append(doc)
+        return paintings
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/paintings/{id}", response_model=PaintingOut, description="Retrieve a specific painting by its ID.")
 async def get_painting(id: str):

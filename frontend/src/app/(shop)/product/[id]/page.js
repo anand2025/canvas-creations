@@ -115,7 +115,7 @@ const ProductDetailPage = ({ params }) => {
                                 {product.title}
                             </h1>
                             <div className="flex items-center gap-4">
-                                <span className="text-3xl md:text-4xl font-black text-vibrant-teal">${product.price}</span>
+                                <span className="text-3xl md:text-4xl font-black text-vibrant-teal">₹{product.price}</span>
                                 <div className="px-4 py-1 rounded-full bg-vibrant-pink/10 text-vibrant-pink text-xs font-black uppercase tracking-tighter border border-vibrant-pink/20">
                                     Hand-Painted
                                 </div>

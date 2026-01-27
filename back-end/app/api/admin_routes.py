@@ -14,6 +14,31 @@ router = APIRouter()
 
 
 # -------------------- Admin-Protected Routes --------------------
+@router.get("/stats", description="Get dashboard statistics (revenue, counts). Admin only.")
+async def get_dashboard_stats(current_admin: dict = Depends(get_current_admin)):
+    try:
+        # 1. Total Revenue (Sum of total_price for non-cancelled orders)
+        pipeline = [
+            {"$match": {"status": {"$ne": "cancelled"}}},
+            {"$group": {"_id": None, "totalRevenue": {"$sum": "$total_price"}}}
+        ]
+        revenue_result = await db["orders"].aggregate(pipeline).to_list(1)
+        total_revenue = revenue_result[0]["totalRevenue"] if revenue_result else 0
+
+        # 2. Counts
+        total_orders = await db["orders"].count_documents({})
+        total_users = await db["users"].count_documents({})
+        total_paintings = await db["paintings"].count_documents({})
+
+        return {
+            "total_revenue": total_revenue,
+            "total_orders": total_orders,
+            "total_users": total_users,
+            "total_paintings": total_paintings
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.get("/users", response_model=list[UserOut], description="Get a list of all users. Admin only.")
 async def get_all_users(current_admin: dict = Depends(get_current_admin)):
     try:
@@ -85,6 +110,23 @@ async def delete_painting(id: str, current_admin: dict = Depends(get_current_adm
         if res.deleted_count == 0:
             raise HTTPException(status_code=404, detail="Painting not found")
         return {"message": "Painting deleted"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.put("/paintings/{id}/bestseller", response_model=PaintingOut, description="Toggle bestseller status. Admin only.")
+async def update_bestseller_status(id: str, is_bestseller: bool, current_admin: dict = Depends(get_current_admin)):
+    try:
+        updated = await db["paintings"].find_one_and_update(
+            {"_id": ObjectId(id)},
+            {"$set": {"is_bestseller": is_bestseller}},
+            return_document=True
+        )
+        if not updated:
+             raise HTTPException(status_code=404, detail="Painting not found")
+             
+        updated["id"] = str(updated["_id"])
+        updated.pop("_id")
+        return updated
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

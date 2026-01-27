@@ -23,6 +23,11 @@ const Navbar = () => {
                     <Link href="/shop" className="hover:text-vibrant-orange transition-colors">Shop</Link>
                     <Link href="/about" className="hover:text-vibrant-purple transition-colors">About</Link>
                     <Link href="/contact" className="hover:text-vibrant-pink transition-colors">Contact</Link>
+                    {user?.role === 'admin' && (
+                        <Link href="/admin" className="text-vibrant-teal font-bold hover:scale-105 transition-transform">
+                            Admin
+                        </Link>
+                    )}
                 </div>
 
                 <div className="flex items-center space-x-2 md:space-x-4">
