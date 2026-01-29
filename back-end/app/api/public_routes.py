@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from app.models.db import db
 from app.schemas.user import UserCreate, UserOut
 from app.schemas.paintings import PaintingCreate, PaintingOut
-from app.schemas.order import OrderCreate, OrderOut
+from app.schemas.order import OrderCreate, OrderOut, CheckoutRequest, OrderResponse
 from app.schemas.review import ReviewCreate, ReviewOut
 from app.schemas.cart import CartCreate, AddToCartItem, UpdateCartItem
 from app.schemas.payment import PaymentCreate, PaymentOut
@@ -15,6 +15,7 @@ from app.auth.auth import get_current_active_user
 from app.users.users import create_user_logic
 from app.products.paintings import create_painting_logic, get_all_paintings_logic, get_painting_logic
 from app.products.orders import create_order_logic
+from app.products.checkout import create_order_from_cart_logic, get_user_orders_logic, get_order_by_id_logic
 from app.products.reviews import create_review_logic
 from app.products.cart import add_to_cart_logic, remove_from_cart_logic, update_cart_quantity_logic, get_cart_logic, clear_cart_logic
 from app.payments.payments import create_payment_logic
@@ -59,6 +60,24 @@ async def get_painting(id: str):
 @router.post("/orders", response_model=OrderOut, description="Create a new order. Requires active user authentication.")
 async def create_order(order: OrderCreate, current_user: dict = Depends(get_current_active_user)):
     return await create_order_logic(order)
+
+# -------------------- CHECKOUT --------------------
+@router.post("/checkout", response_model=OrderResponse, description="Create an order from cart. Requires active user authentication.")
+async def checkout(checkout_request: CheckoutRequest, current_user: dict = Depends(get_current_active_user)):
+    return await create_order_from_cart_logic(
+        user_id=current_user["id"],
+        checkout_request=checkout_request.dict(),
+        user_email=current_user["email"],
+        user_name=current_user["name"]
+    )
+
+@router.get("/orders/user", response_model=list[OrderOut], description="Get all orders for the current user.")
+async def get_user_orders(current_user: dict = Depends(get_current_active_user)):
+    return await get_user_orders_logic(current_user["id"])
+
+@router.get("/orders/{order_id}", response_model=OrderOut, description="Get a specific order by ID.")
+async def get_order(order_id: str, current_user: dict = Depends(get_current_active_user)):
+    return await get_order_by_id_logic(order_id, current_user["id"])
 
 # -------------------- REVIEWS --------------------
 @router.post("/reviews", response_model=ReviewOut, description="Submit a review for a product. Requires active user authentication.")
