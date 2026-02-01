@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { apiRequest } from '@/services/api';
 import { toast } from 'react-hot-toast';
-import Image from 'next/image';
 import Link from 'next/link';
 
 export default function OrdersPage() {

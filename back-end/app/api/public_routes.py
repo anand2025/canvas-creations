@@ -1,7 +1,7 @@
 # backend/app/api/public_routes.py
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, UploadFile, File
 from app.models.db import db
-from app.schemas.user import UserCreate, UserOut
+from app.schemas.user import UserCreate, UserOut, UserUpdate, PasswordChange, UserStats
 from app.schemas.paintings import PaintingCreate, PaintingOut
 from app.schemas.order import OrderCreate, OrderOut, CheckoutRequest, OrderResponse
 from app.schemas.review import ReviewCreate, ReviewOut
@@ -9,10 +9,26 @@ from app.schemas.cart import CartCreate, AddToCartItem, UpdateCartItem
 from app.schemas.payment import PaymentCreate, PaymentOut
 from app.schemas.category import CategoryCreate, CategoryOut
 from app.schemas.wishlist import WishlistCreate
+from app.schemas.address import AddressCreate, AddressUpdate, AddressOut
 from app.auth.auth import get_current_active_user
 
 # Import logic functions
 from app.users.users import create_user_logic
+from app.users.profile import (
+    get_user_profile_logic, 
+    update_user_profile_logic, 
+    change_password_logic,
+    get_user_stats_logic,
+    deactivate_user_logic
+)
+from app.users.addresses import (
+    create_address_logic,
+    get_user_addresses_logic,
+    get_address_by_id_logic,
+    update_address_logic,
+    delete_address_logic,
+    set_default_address_logic
+)
 from app.products.paintings import create_painting_logic, get_all_paintings_logic, get_painting_logic
 from app.products.orders import create_order_logic
 from app.products.checkout import create_order_from_cart_logic, get_user_orders_logic, get_order_by_id_logic
@@ -28,6 +44,52 @@ router = APIRouter()
 @router.post("/users", response_model=UserOut, description="Register a new user.")
 async def create_user(user: UserCreate):
     return await create_user_logic(user)
+
+# -------------------- PROFILE --------------------
+@router.get("/profile", response_model=UserOut, description="Get current user profile.")
+async def get_profile(current_user: dict = Depends(get_current_active_user)):
+    return await get_user_profile_logic(current_user["id"])
+
+@router.put("/profile", response_model=UserOut, description="Update user profile.")
+async def update_profile(user_update: UserUpdate, current_user: dict = Depends(get_current_active_user)):
+    return await update_user_profile_logic(current_user["id"], user_update)
+
+@router.put("/profile/password", description="Change user password.")
+async def change_password(password_change: PasswordChange, current_user: dict = Depends(get_current_active_user)):
+    return await change_password_logic(current_user["id"], password_change)
+
+@router.get("/profile/stats", response_model=UserStats, description="Get user statistics.")
+async def get_user_stats(current_user: dict = Depends(get_current_active_user)):
+    return await get_user_stats_logic(current_user["id"])
+
+@router.delete("/profile", description="Deactivate current user account.")
+async def deactivate_profile(current_user: dict = Depends(get_current_active_user)):
+    return await deactivate_user_logic(current_user["id"])
+
+# -------------------- ADDRESSES --------------------
+@router.post("/addresses", response_model=AddressOut, description="Create a new address.")
+async def create_address(address: AddressCreate, current_user: dict = Depends(get_current_active_user)):
+    return await create_address_logic(current_user["id"], address)
+
+@router.get("/addresses", response_model=list[AddressOut], description="Get all user addresses.")
+async def get_addresses(current_user: dict = Depends(get_current_active_user)):
+    return await get_user_addresses_logic(current_user["id"])
+
+@router.get("/addresses/{address_id}", response_model=AddressOut, description="Get a specific address.")
+async def get_address(address_id: str, current_user: dict = Depends(get_current_active_user)):
+    return await get_address_by_id_logic(address_id, current_user["id"])
+
+@router.put("/addresses/{address_id}", response_model=AddressOut, description="Update an address.")
+async def update_address(address_id: str, address_update: AddressUpdate, current_user: dict = Depends(get_current_active_user)):
+    return await update_address_logic(address_id, current_user["id"], address_update)
+
+@router.delete("/addresses/{address_id}", description="Delete an address.")
+async def delete_address(address_id: str, current_user: dict = Depends(get_current_active_user)):
+    return await delete_address_logic(address_id, current_user["id"])
+
+@router.put("/addresses/{address_id}/default", response_model=AddressOut, description="Set address as default.")
+async def set_default_address(address_id: str, current_user: dict = Depends(get_current_active_user)):
+    return await set_default_address_logic(address_id, current_user["id"])
 
 # -------------------- PAINTINGS --------------------
 @router.post("/paintings", response_model=PaintingOut, description="Create a new painting. Requires active user authentication.")

@@ -7,6 +7,8 @@ import { useAuth } from '@/context/AuthContext';
 import { apiRequest } from '@/services/api';
 import { toast } from 'react-hot-toast';
 import Image from 'next/image';
+import AddressSelector from '@/components/checkout/AddressSelector';
+import AddressForm from '@/components/checkout/AddressForm';
 
 export default function CheckoutPage() {
     const router = useRouter();
@@ -14,6 +16,9 @@ export default function CheckoutPage() {
     const { cart, loading: cartLoading, itemCount } = useCart();
     
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [selectedAddress, setSelectedAddress] = useState(null);
+    const [showNewAddressForm, setShowNewAddressForm] = useState(false);
+    
     const [formData, setFormData] = useState({
         full_name: '',
         phone: '',
@@ -91,28 +96,67 @@ export default function CheckoutPage() {
         }
     };
 
+    const handleAddressSelect = (address) => {
+        if (address) {
+            setSelectedAddress(address);
+            setShowNewAddressForm(false);
+        } else {
+            setSelectedAddress(null);
+            setShowNewAddressForm(true);
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        if (!validateForm()) {
-            toast.error("Please fill in all required fields correctly");
-            return;
+        let shippingAddress = null;
+
+        if (selectedAddress) {
+            shippingAddress = {
+                full_name: selectedAddress.full_name,
+                phone: selectedAddress.phone,
+                address_line1: selectedAddress.address_line1,
+                address_line2: selectedAddress.address_line2,
+                city: selectedAddress.city,
+                state: selectedAddress.state,
+                postal_code: selectedAddress.postal_code,
+                country: selectedAddress.country
+            };
+        } else {
+            if (!validateForm()) {
+                toast.error("Please fill in all required fields correctly");
+                return;
+            }
+            shippingAddress = {
+                full_name: formData.full_name,
+                phone: formData.phone,
+                address_line1: formData.address_line1,
+                address_line2: formData.address_line2,
+                city: formData.city,
+                state: formData.state,
+                postal_code: formData.postal_code,
+                country: formData.country
+            };
+            
+            // Optionally save the new address for future use
+            try {
+                await apiRequest('/addresses', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        ...shippingAddress,
+                        is_default: false
+                    })
+                });
+            } catch (err) {
+                console.warn("Failed to save new address to address book, but proceeding with checkout.", err);
+            }
         }
         
         setIsSubmitting(true);
         
         try {
             const checkoutData = {
-                shipping_address: {
-                    full_name: formData.full_name,
-                    phone: formData.phone,
-                    address_line1: formData.address_line1,
-                    address_line2: formData.address_line2,
-                    city: formData.city,
-                    state: formData.state,
-                    postal_code: formData.postal_code,
-                    country: formData.country
-                },
+                shipping_address: shippingAddress,
                 payment_method: formData.payment_method
             };
             
@@ -169,7 +213,7 @@ export default function CheckoutPage() {
                     <div className="lg:col-span-2">
                         <form onSubmit={handleSubmit} className="space-y-10">
                             {/* Shipping Information */}
-                            <div className="bg-zinc-50 dark:bg-zinc-900/50 rounded-[40px] p-8 md:p-12 border border-white/5">
+                            <div className="bg-zinc-50 dark:bg-zinc-900/50 rounded-[40px] p-8 md:p-12 border border-white/5 shadow-inner">
                                 <div className="flex items-center gap-4 mb-8">
                                     <div className="w-12 h-12 rounded-full bg-vibrant-teal flex items-center justify-center text-white font-black text-xl">
                                         1
@@ -177,110 +221,27 @@ export default function CheckoutPage() {
                                     <h2 className="text-3xl font-black uppercase tracking-tight">Shipping Information</h2>
                                 </div>
                                 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="md:col-span-2">
-                                        <label className="block text-sm font-bold uppercase tracking-widest mb-3 text-foreground/60">
-                                            Full Name *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="full_name"
-                                            value={formData.full_name}
-                                            onChange={handleInputChange}
-                                            className={`w-full px-6 py-4 rounded-2xl bg-white dark:bg-black border-2 ${errors.full_name ? 'border-red-500' : 'border-zinc-200 dark:border-zinc-800'} focus:border-vibrant-pink focus:outline-none transition-colors font-medium`}
-                                            placeholder="Enter your full name"
-                                        />
-                                        {errors.full_name && <p className="mt-2 text-sm text-red-500 font-medium">{errors.full_name}</p>}
-                                    </div>
+                                <div className="space-y-8">
+                                    <p className="text-sm font-bold uppercase tracking-widest text-foreground/40 mb-2">Select a saved address or add a new one</p>
                                     
-                                    <div>
-                                        <label className="block text-sm font-bold uppercase tracking-widest mb-3 text-foreground/60">
-                                            Phone Number *
-                                        </label>
-                                        <input
-                                            type="tel"
-                                            name="phone"
-                                            value={formData.phone}
-                                            onChange={handleInputChange}
-                                            className={`w-full px-6 py-4 rounded-2xl bg-white dark:bg-black border-2 ${errors.phone ? 'border-red-500' : 'border-zinc-200 dark:border-zinc-800'} focus:border-vibrant-pink focus:outline-none transition-colors font-medium`}
-                                            placeholder="10-digit mobile number"
-                                        />
-                                        {errors.phone && <p className="mt-2 text-sm text-red-500 font-medium">{errors.phone}</p>}
-                                    </div>
-                                    
-                                    <div>
-                                        <label className="block text-sm font-bold uppercase tracking-widest mb-3 text-foreground/60">
-                                            Postal Code *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="postal_code"
-                                            value={formData.postal_code}
-                                            onChange={handleInputChange}
-                                            className={`w-full px-6 py-4 rounded-2xl bg-white dark:bg-black border-2 ${errors.postal_code ? 'border-red-500' : 'border-zinc-200 dark:border-zinc-800'} focus:border-vibrant-pink focus:outline-none transition-colors font-medium`}
-                                            placeholder="6-digit PIN code"
-                                        />
-                                        {errors.postal_code && <p className="mt-2 text-sm text-red-500 font-medium">{errors.postal_code}</p>}
-                                    </div>
-                                    
-                                    <div className="md:col-span-2">
-                                        <label className="block text-sm font-bold uppercase tracking-widest mb-3 text-foreground/60">
-                                            Address Line 1 *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="address_line1"
-                                            value={formData.address_line1}
-                                            onChange={handleInputChange}
-                                            className={`w-full px-6 py-4 rounded-2xl bg-white dark:bg-black border-2 ${errors.address_line1 ? 'border-red-500' : 'border-zinc-200 dark:border-zinc-800'} focus:border-vibrant-pink focus:outline-none transition-colors font-medium`}
-                                            placeholder="House no., Building name"
-                                        />
-                                        {errors.address_line1 && <p className="mt-2 text-sm text-red-500 font-medium">{errors.address_line1}</p>}
-                                    </div>
-                                    
-                                    <div className="md:col-span-2">
-                                        <label className="block text-sm font-bold uppercase tracking-widest mb-3 text-foreground/60">
-                                            Address Line 2
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="address_line2"
-                                            value={formData.address_line2}
-                                            onChange={handleInputChange}
-                                            className="w-full px-6 py-4 rounded-2xl bg-white dark:bg-black border-2 border-zinc-200 dark:border-zinc-800 focus:border-vibrant-pink focus:outline-none transition-colors font-medium"
-                                            placeholder="Road name, Area, Colony (optional)"
-                                        />
-                                    </div>
-                                    
-                                    <div>
-                                        <label className="block text-sm font-bold uppercase tracking-widest mb-3 text-foreground/60">
-                                            City *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="city"
-                                            value={formData.city}
-                                            onChange={handleInputChange}
-                                            className={`w-full px-6 py-4 rounded-2xl bg-white dark:bg-black border-2 ${errors.city ? 'border-red-500' : 'border-zinc-200 dark:border-zinc-800'} focus:border-vibrant-pink focus:outline-none transition-colors font-medium`}
-                                            placeholder="Enter city"
-                                        />
-                                        {errors.city && <p className="mt-2 text-sm text-red-500 font-medium">{errors.city}</p>}
-                                    </div>
-                                    
-                                    <div>
-                                        <label className="block text-sm font-bold uppercase tracking-widest mb-3 text-foreground/60">
-                                            State *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="state"
-                                            value={formData.state}
-                                            onChange={handleInputChange}
-                                            className={`w-full px-6 py-4 rounded-2xl bg-white dark:bg-black border-2 ${errors.state ? 'border-red-500' : 'border-zinc-200 dark:border-zinc-800'} focus:border-vibrant-pink focus:outline-none transition-colors font-medium`}
-                                            placeholder="Enter state"
-                                        />
-                                        {errors.state && <p className="mt-2 text-sm text-red-500 font-medium">{errors.state}</p>}
-                                    </div>
+                                    <AddressSelector 
+                                        onAddressSelect={handleAddressSelect} 
+                                        selectedAddressId={selectedAddress ? selectedAddress.id : (showNewAddressForm ? null : '')} 
+                                    />
+
+                                    {showNewAddressForm && (
+                                        <div className="pt-8 border-t border-zinc-200 dark:border-zinc-800 animate-in fade-in slide-in-from-top-4 duration-500">
+                                            <h3 className="text-xl font-black uppercase tracking-tight mb-6 flex items-center gap-3">
+                                                <span className="w-1.5 h-6 bg-vibrant-pink rounded-full"></span>
+                                                Enter New Address
+                                            </h3>
+                                            <AddressForm 
+                                                formData={formData} 
+                                                errors={errors} 
+                                                onInputChange={handleInputChange} 
+                                            />
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
