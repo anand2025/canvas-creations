@@ -3,9 +3,11 @@
 import React, { useEffect, useState, use } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { apiRequest } from '@/services/api';
 import { useAuth } from '@/context/AuthContext';
 import { useWishlist } from '@/context/WishlistContext';
+import { useCart } from '@/context/CartContext';
 import { toast } from 'react-hot-toast';
 
 const ProductDetailPage = ({ params }) => {
@@ -13,12 +15,16 @@ const ProductDetailPage = ({ params }) => {
     const resolvedParams = use(params);
     const { id } = resolvedParams;
 
+    const router = useRouter();
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [quantity, setQuantity] = useState(1);
+    const [isActionLoading, setIsActionLoading] = useState(false);
+    
     const { user } = useAuth();
     const { toggleWishlist, isInWishlist, loading: wishlistLoading } = useWishlist();
+    const { addToCart } = useCart();
 
     useEffect(() => {
         const getProduct = async () => {
@@ -43,6 +49,27 @@ const ProductDetailPage = ({ params }) => {
 
     const handleWishlistToggle = async () => {
         await toggleWishlist(id);
+    };
+
+    const handleAddToCart = async () => {
+        if (isActionLoading) return;
+        setIsActionLoading(true);
+        try {
+            await addToCart(product._id || product.id, quantity);
+        } finally {
+            setIsActionLoading(false);
+        }
+    };
+
+    const handleBuyItNow = async () => {
+        if (isActionLoading) return;
+        setIsActionLoading(true);
+        try {
+            await addToCart(product._id || product.id, quantity);
+            router.push('/checkout');
+        } finally {
+            setIsActionLoading(false);
+        }
     };
 
     if (loading) {
@@ -162,11 +189,19 @@ const ProductDetailPage = ({ params }) => {
                             </div>
 
                             <div className="flex flex-col sm:flex-row gap-4">
-                                <button className="flex-1 py-5 rounded-2xl bg-foreground text-background font-black text-lg uppercase tracking-tighter hover:bg-vibrant-pink hover:text-white transition-all transform active:scale-[0.98] shadow-xl hover:shadow-vibrant-pink/20">
-                                    Add to Cart
+                                <button 
+                                    onClick={handleAddToCart}
+                                    disabled={isActionLoading || product.stock === 0}
+                                    className="flex-1 py-5 rounded-2xl bg-foreground text-background font-black text-lg uppercase tracking-tighter hover:bg-vibrant-pink hover:text-white transition-all transform active:scale-[0.98] shadow-xl hover:shadow-vibrant-pink/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-foreground disabled:hover:text-background"
+                                >
+                                    {isActionLoading ? 'Adding...' : 'Add to Cart'}
                                 </button>
-                                <button className="flex-1 py-5 rounded-2xl bg-vibrant-orange text-white font-black text-lg uppercase tracking-tighter hover:shadow-[0_15px_30px_rgba(255,95,0,0.4)] transition-all transform active:scale-[0.98]">
-                                    Buy It Now
+                                <button 
+                                    onClick={handleBuyItNow}
+                                    disabled={isActionLoading || product.stock === 0}
+                                    className="flex-1 py-5 rounded-2xl bg-vibrant-orange text-white font-black text-lg uppercase tracking-tighter hover:shadow-[0_15px_30px_rgba(255,95,0,0.4)] transition-all transform active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
+                                >
+                                    {isActionLoading ? 'Processing...' : 'Buy It Now'}
                                 </button>
                                 <button 
                                     onClick={handleWishlistToggle}

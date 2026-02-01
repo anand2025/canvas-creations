@@ -1,5 +1,5 @@
 # backend/app/api/public_routes.py
-from fastapi import APIRouter, HTTPException, Depends, UploadFile, File
+from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, BackgroundTasks
 from app.models.db import db
 from app.schemas.user import UserCreate, UserOut, UserUpdate, PasswordChange, UserStats
 from app.schemas.paintings import PaintingCreate, PaintingOut
@@ -10,6 +10,7 @@ from app.schemas.payment import PaymentCreate, PaymentOut
 from app.schemas.category import CategoryCreate, CategoryOut
 from app.schemas.wishlist import WishlistCreate
 from app.schemas.address import AddressCreate, AddressUpdate, AddressOut
+from app.schemas.newsletter import NewsletterCreate, NewsletterOut
 from app.auth.auth import get_current_active_user
 
 # Import logic functions
@@ -37,6 +38,8 @@ from app.products.cart import add_to_cart_logic, remove_from_cart_logic, update_
 from app.payments.payments import create_payment_logic
 from app.products.categories import create_category_logic, get_categories_logic
 from app.products.wishlist import update_wishlist_logic, get_wishlist_logic, get_wishlist_items_logic
+from app.users.newsletter import subscribe_newsletter_logic
+from app.utilities.email import send_welcome_email
 
 router = APIRouter()
 
@@ -193,3 +196,11 @@ async def get_wishlist(current_user: dict = Depends(get_current_active_user)):
 @router.get("/wishlist/items", response_model=list[PaintingOut], description="Retrieve full details for all items in a user's wishlist.")
 async def get_wishlist_items(current_user: dict = Depends(get_current_active_user)):
     return await get_wishlist_items_logic(current_user["id"])
+
+# -------------------- NEWSLETTER --------------------
+@router.post("/newsletter/subscribe", response_model=NewsletterOut, description="Subscribe to the newsletter.")
+async def subscribe_newsletter(newsletter: NewsletterCreate, background_tasks: BackgroundTasks):
+    subscription = await subscribe_newsletter_logic(newsletter)
+    # Trigger welcome email in background
+    background_tasks.add_task(send_welcome_email, newsletter.email)
+    return subscription

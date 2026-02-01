@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, HTTPException, Depends, status, BackgroundTasks
 from fastapi.security import OAuth2PasswordRequestForm
 from app.auth.auth import get_current_admin
 from app.models.db import db
@@ -7,6 +7,8 @@ from app.schemas.paintings import PaintingCreate, PaintingOut
 from app.schemas.order import OrderOut
 from app.schemas.payment import PaymentOut
 from app.schemas.review import ReviewOut
+from app.schemas.newsletter import BulkEmailRequest
+from app.utilities.email import send_email
 from bson import ObjectId
 from datetime import datetime
 
@@ -228,3 +230,29 @@ async def update_order_status(order_id: str, status: str, current_admin: dict = 
         return updated_order
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error updating order status: {e}")
+
+# -------------------- NEWSLETTER --------------------
+@router.post("/newsletter/send", description="Send a bulk email to all newsletter subscribers. Admin only.")
+async def send_bulk_newsletter(
+    email_req: BulkEmailRequest, 
+    background_tasks: BackgroundTasks,
+    current_admin: dict = Depends(get_current_admin)
+):
+    try:
+        # Fetch all subscriber emails
+        subscribers = await db["newsletter_subscriptions"].find({}, {"email": 1}).to_list(None)
+        
+        if not subscribers:
+            return {"message": "No subscribers found."}
+
+        # Define the background task for iterative sending
+        async def send_to_all(subject, body, emails):
+            for sub in emails:
+                await send_email(sub["email"], subject, body)
+        
+        # Add the task to the queue
+        background_tasks.add_task(send_to_all, email_req.subject, email_req.body, subscribers)
+        
+        return {"message": f"Newsletter sending initiated for {len(subscribers)} subscribers."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error initiating newsletter send: {e}")
