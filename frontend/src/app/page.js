@@ -111,7 +111,6 @@ export default function Home() {
           <p className="text-zinc-500 font-medium">© 2026 CANVAS CREATIONS. ALL RIGHTS RESERVED.</p>
           <div className="flex gap-8 text-zinc-500 font-bold uppercase text-xs tracking-widest">
             <a href="#" className="hover:text-vibrant-pink">Instagram</a>
-            <a href="#" className="hover:text-vibrant-teal">Twitter</a>
             <a href="#" className="hover:text-vibrant-orange">Pinterest</a>
           </div>
         </div>

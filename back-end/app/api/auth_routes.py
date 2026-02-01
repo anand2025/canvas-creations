@@ -44,6 +44,9 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     if not user or not verify_password(form_data.password, user["password"]):
         raise HTTPException(status_code=401, detail="Invalid credentials")
         
+    if user.get("is_disabled"):
+        raise HTTPException(status_code=403, detail="Account deactivated. Please contact support.")
+
     # Create tokens
     user_id = str(user["_id"])
     access_token = create_access_token(data={"sub": user_id})
