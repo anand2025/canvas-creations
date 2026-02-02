@@ -3,14 +3,14 @@
 :root {
   --background: #ffffff;
   --foreground: #1e1e1e;
-  
+
   /* Vibrant Palette */
   --vibrant-pink: #ff007f;
   --vibrant-orange: #ff5f00;
   --vibrant-teal: #00d2ff;
   --vibrant-purple: #9d00ff;
   --vibrant-yellow: #ffee00;
-  
+
   /* Gradients */
   --gradient-vibrant: linear-gradient(135deg, var(--vibrant-pink), var(--vibrant-orange));
   --gradient-cool: linear-gradient(135deg, var(--vibrant-teal), var(--vibrant-purple));
@@ -24,6 +24,11 @@
   --color-vibrant-teal: var(--vibrant-teal);
   --color-vibrant-purple: var(--vibrant-purple);
   --color-vibrant-yellow: var(--vibrant-yellow);
+  --color-card: var(--card-bg);
+  --color-secondary-bg: var(--secondary-bg);
+  --color-secondary-hover: var(--secondary-bg-hover);
+  --color-glass-surface: var(--glass-surface);
+  --color-glass-border: var(--glass-border);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -33,6 +38,46 @@
     --background: #0a0a0a;
     --foreground: #f5f5f5;
   }
+}
+
+/* Manual Theme Overrides */
+.dark {
+  --background: #0a0a0a;
+  --foreground: #f5f5f5;
+  --card-bg: #18181b;
+  /* zinc-900 */
+  --secondary-bg: #27272a;
+  /* zinc-800 */
+  --secondary-bg-hover: #3f3f46;
+  /* zinc-700 */
+  --border-color: rgba(255, 255, 255, 0.1);
+  --glass-surface: rgba(24, 24, 27, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --modal-overlay: rgba(0, 0, 0, 0.8);
+  --toast-bg: #18181b;
+  --toast-color: #ffffff;
+  --toast-border: rgba(255, 255, 255, 0.1);
+}
+
+.light {
+  --background: #ffffff;
+  --foreground: #000000;
+  --card-bg: #ffffff;
+  --secondary-bg: #f4f4f5;
+  /* zinc-100 */
+  --secondary-bg-hover: #e4e4e7;
+  /* zinc-200 */
+  --vibrant-yellow: #d4c300;
+  /* Darkened for white background */
+  --vibrant-teal: #00a0c2;
+  /* Darkened for white background contrast */
+  --border-color: rgba(0, 0, 0, 0.1);
+  --glass-surface: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --modal-overlay: rgba(255, 255, 255, 0.8);
+  --toast-bg: #ffffff;
+  --toast-color: #121212;
+  --toast-border: rgba(0, 0, 0, 0.1);
 }
 
 body {
@@ -61,4 +106,12 @@ body {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.light .glass-vibrant {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
 }

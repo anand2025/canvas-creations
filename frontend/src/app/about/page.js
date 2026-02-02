@@ -10,7 +10,7 @@ import studioVibe from '@/assets/images/studio-vibe.png';
 
 const AboutPage = () => {
     return (
-        <main className="bg-white dark:bg-black min-h-screen">
+        <main className="bg-background min-h-screen">
             {/* Hero Section with Tagline */}
             <section className="relative py-24 px-6 overflow-hidden">
                 <div className="absolute inset-0 z-0">
@@ -20,13 +20,13 @@ const AboutPage = () => {
                         fill 
                         className="object-cover opacity-20 blur-sm scale-110"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/40 to-white dark:from-black/80 dark:via-black/40 dark:to-black"></div>
+                    <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/40 to-background"></div>
                 </div>
 
                 <div className="container mx-auto relative z-10 text-center">
                     <h1 className="text-vibrant-pink font-black text-sm uppercase tracking-[0.3em] mb-8">Our Philosophy</h1>
-                    <p className="max-w-4xl mx-auto text-4xl md:text-6xl font-black leading-tight tracking-tight italic text-zinc-900 dark:text-zinc-50 mb-12">
-                        "We believe that every <span className="text-vibrant-teal">brushstroke</span> tells a story, every craft holds a <span className="text-vibrant-orange">dream</span>, and every creation sparks a new adventure."
+                    <p className="max-w-4xl mx-auto text-4xl md:text-6xl font-black leading-tight tracking-tight italic text-foreground mb-12 transition-colors duration-500">
+                        "We believe that every <span className="text-vibrant-teal font-black">brushstroke</span> tells a story, every craft holds a <span className="text-vibrant-orange font-black">dream</span>, and every creation sparks a new adventure."
                     </p>
                     <div className="w-24 h-1 bg-vibrant-pink mx-auto rounded-full"></div>
                 </div>
@@ -63,13 +63,13 @@ const AboutPage = () => {
                         </p>
                         
                         <div className="grid grid-cols-2 gap-6 pt-8">
-                            <div className="p-8 rounded-[30px] bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800">
+                            <div className="p-8 rounded-[30px] bg-secondary-bg border border-[var(--border-color)]">
                                 <span className="text-3xl font-black text-vibrant-pink block mb-2">500+</span>
-                                <span className="font-bold text-zinc-500 uppercase text-xs tracking-widest">Creations Made</span>
+                                <span className="font-bold text-foreground/40 uppercase text-xs tracking-widest">Creations Made</span>
                             </div>
-                            <div className="p-8 rounded-[30px] bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800">
+                            <div className="p-8 rounded-[30px] bg-secondary-bg border border-[var(--border-color)]">
                                 <span className="text-3xl font-black text-vibrant-teal block mb-2">Unique</span>
-                                <span className="font-bold text-zinc-500 uppercase text-xs tracking-widest">Artisanal Gifts</span>
+                                <span className="font-bold text-foreground/40 uppercase text-xs tracking-widest">Artisanal Gifts</span>
                             </div>
                         </div>
                     </div>
@@ -77,11 +77,11 @@ const AboutPage = () => {
             </section>
 
             {/* Gallery Section */}
-            <section className="py-24 px-6 bg-zinc-50 dark:bg-zinc-950">
+            <section className="py-24 px-6 bg-secondary-bg">
                 <div className="container mx-auto">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl md:text-5xl font-black mb-4">THE ART OF <span className="text-vibrant-purple italic">MAKING.</span></h2>
-                        <p className="text-zinc-500 font-medium">Step into our world of paper, paint, and possibilities.</p>
+                        <p className="text-foreground/50 font-medium">Step into our world of paper, paint, and possibilities.</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">

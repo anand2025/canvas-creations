@@ -40,7 +40,7 @@ function SuccessContent() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black">
+            <div className="min-h-screen flex items-center justify-center bg-background">
                 <div className="relative">
                     <div className="w-20 h-20 border-4 border-vibrant-teal/20 border-t-vibrant-teal rounded-full animate-spin"></div>
                     <div className="absolute inset-0 flex items-center justify-center">
@@ -52,7 +52,7 @@ function SuccessContent() {
     }
 
     return (
-        <div className="min-h-screen bg-white dark:bg-black py-20 px-4 md:px-8">
+        <div className="min-h-screen bg-background py-20 px-4 md:px-8">
             <div className="container mx-auto max-w-4xl">
                 {/* Success Animation */}
                 <div className="text-center mb-12">
@@ -74,7 +74,7 @@ function SuccessContent() {
                         Thank you for your purchase! Your order has been placed successfully.
                     </p>
                     {order && (
-                        <div className="inline-block bg-zinc-100 dark:bg-zinc-900 px-8 py-4 rounded-full">
+                        <div className="inline-block bg-secondary-bg px-8 py-4 rounded-full border border-foreground/10">
                             <span className="text-sm font-bold uppercase tracking-widest text-foreground/50">Order ID: </span>
                             <span className="text-lg font-black text-vibrant-teal">{order.id}</span>
                         </div>
@@ -85,7 +85,7 @@ function SuccessContent() {
                 {order && (
                     <div className="space-y-8">
                         {/* Shipping Information */}
-                        <div className="bg-zinc-50 dark:bg-zinc-900/50 rounded-[40px] p-8 md:p-12 border border-white/5">
+                        <div className="bg-secondary-bg rounded-[40px] p-8 md:p-12 border border-[var(--border-color)]">
                             <h2 className="text-3xl font-black uppercase tracking-tight mb-8 flex items-center gap-3">
                                 <span className="w-10 h-10 rounded-full bg-vibrant-orange flex items-center justify-center text-white text-sm">📦</span>
                                 Shipping Details
@@ -114,15 +114,15 @@ function SuccessContent() {
                         </div>
 
                         {/* Order Items */}
-                        <div className="bg-zinc-50 dark:bg-zinc-900/50 rounded-[40px] p-8 md:p-12 border border-white/5">
+                        <div className="bg-secondary-bg rounded-[40px] p-8 md:p-12 border border-[var(--border-color)]">
                             <h2 className="text-3xl font-black uppercase tracking-tight mb-8 flex items-center gap-3">
                                 <span className="w-10 h-10 rounded-full bg-vibrant-pink flex items-center justify-center text-white text-sm">🎨</span>
                                 Order Items
                             </h2>
                             <div className="space-y-4">
                                 {order.items.map((item, index) => (
-                                    <div key={index} className="flex items-center gap-6 p-4 bg-white dark:bg-black rounded-2xl">
-                                        <div className="w-20 h-20 bg-zinc-100 dark:bg-zinc-800 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <div key={index} className="flex items-center gap-6 p-4 bg-background border border-foreground/10 rounded-2xl">
+                                        <div className="w-20 h-20 bg-secondary-bg rounded-xl flex items-center justify-center flex-shrink-0">
                                             <span className="text-vibrant-pink font-black text-2xl opacity-20">CC</span>
                                         </div>
                                         <div className="flex-grow">
@@ -189,7 +189,7 @@ function SuccessContent() {
 
                 {/* Estimated Delivery */}
                 <div className="mt-12 text-center">
-                    <div className="inline-block bg-vibrant-yellow/10 px-8 py-4 rounded-full">
+                    <div className="inline-block bg-vibrant-yellow/10 border border-vibrant-yellow/20 px-8 py-4 rounded-full">
                         <span className="text-sm font-bold uppercase tracking-widest text-foreground/60">Estimated Delivery: </span>
                         <span className="text-lg font-black">5-7 Business Days</span>
                     </div>
@@ -202,7 +202,7 @@ function SuccessContent() {
 export default function CheckoutSuccessPage() {
     return (
         <Suspense fallback={
-            <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black">
+            <div className="min-h-screen flex items-center justify-center bg-background">
                 <div className="relative">
                     <div className="w-20 h-20 border-4 border-vibrant-teal/20 border-t-vibrant-teal rounded-full animate-spin"></div>
                     <div className="absolute inset-0 flex items-center justify-center">

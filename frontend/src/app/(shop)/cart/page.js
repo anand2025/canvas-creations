@@ -5,14 +5,23 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
+import { useWishlist } from '@/context/WishlistContext';
 
 export default function CartPage() {
     const { user, loading: authLoading } = useAuth();
     const { cart, loading, updateQuantity, removeFromCart, clearCart, itemCount } = useCart();
+    const { toggleWishlist, isInWishlist } = useWishlist();
+
+    const handleMoveToWishlist = async (paintingId) => {
+        if (!isInWishlist(paintingId)) {
+            await toggleWishlist(paintingId);
+        }
+        await removeFromCart(paintingId);
+    };
 
     if (authLoading || loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black">
+            <div className="min-h-screen flex items-center justify-center bg-background">
                 <div className="relative">
                     <div className="w-20 h-20 border-4 border-vibrant-teal/20 border-t-vibrant-teal rounded-full animate-spin"></div>
                     <div className="absolute inset-0 flex items-center justify-center">
@@ -26,7 +35,7 @@ export default function CartPage() {
     if (!user) {
         return (
             <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-6">
-                <div className="mb-8 p-8 rounded-full bg-zinc-50 dark:bg-zinc-900">
+                <div className="mb-8 p-8 rounded-full bg-secondary-bg">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
@@ -42,7 +51,7 @@ export default function CartPage() {
 
     if (itemCount === 0) {
         return (
-            <div className="min-h-screen bg-white dark:bg-black py-20 px-4">
+            <div className="min-h-screen bg-background py-20 px-4">
                 <div className="container mx-auto max-w-4xl text-center">
                     <div className="mb-12 inline-block">
                         <div className="relative">
@@ -69,7 +78,7 @@ export default function CartPage() {
     }
 
     return (
-        <div className="min-h-screen bg-white dark:bg-black py-20 px-4 md:px-8">
+        <div className="min-h-screen bg-background py-20 px-4 md:px-8">
             <div className="container mx-auto">
                 <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-4">
                     <div>
@@ -91,9 +100,9 @@ export default function CartPage() {
                     {/* Cart Items List */}
                     <div className="xl:col-span-2 space-y-6">
                         {cart.items.map((item) => (
-                            <div key={item.painting_id} className="group relative bg-zinc-50 dark:bg-zinc-900/50 rounded-[40px] p-6 md:p-8 flex flex-col md:flex-row items-center gap-8 border border-transparent hover:border-white/10 dark:hover:border-white/5 transition-all">
+                            <div key={item.painting_id} className="group relative bg-secondary-bg rounded-[40px] p-6 md:p-8 flex flex-col md:flex-row items-center gap-8 border border-transparent hover:border-[var(--border-color)] transition-all">
                                 {/* Product Image */}
-                                <div className="relative w-full md:w-48 aspect-square rounded-3xl overflow-hidden bg-white dark:bg-zinc-800 flex-shrink-0">
+                                <div className="relative w-full md:w-48 aspect-square rounded-3xl overflow-hidden bg-card flex-shrink-0">
                                     {item.painting_details.image_url ? (
                                         <Image
                                             src={item.painting_details.image_url}
@@ -113,33 +122,40 @@ export default function CartPage() {
                                             <h3 className="text-2xl font-black uppercase tracking-tight mb-1 group-hover:text-vibrant-pink transition-colors">
                                                 {item.painting_details.title}
                                             </h3>
-                                            <p className="text-vibrant-teal font-bold">₹{item.painting_details.price} per item</p>
+                                            <p className="text-vibrant-teal font-bold">₹{Math.round(item.painting_details.price)} per item</p>
                                         </div>
                                         <div className="text-2xl font-black text-foreground/80">
-                                            ₹{item.item_total}
+                                            ₹{Math.round(item.item_total)}
                                         </div>
                                     </div>
 
                                     {/* Actions */}
                                     <div className="flex items-center justify-center md:justify-start gap-8">
-                                        <div className="flex items-center bg-white dark:bg-black rounded-full p-2 border border-zinc-200 dark:border-zinc-800">
+                                        <div className="flex items-center bg-card rounded-full p-2 border border-[var(--border-color)]">
                                             <button 
                                                 onClick={() => updateQuantity(item.painting_id, Math.max(1, item.quantity - 1))}
-                                                className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors font-black text-xl"
+                                                className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-secondary-hover transition-colors font-black text-xl"
                                             >
                                                 -
                                             </button>
                                             <span className="w-12 text-center font-black text-lg">{item.quantity}</span>
                                             <button 
                                                 onClick={() => updateQuantity(item.painting_id, item.quantity + 1)}
-                                                className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors font-black text-xl"
+                                                className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-secondary-hover transition-colors font-black text-xl"
                                             >
                                                 +
                                             </button>
                                         </div>
                                         <button 
+                                            onClick={() => handleMoveToWishlist(item.painting_id)}
+                                            className="text-foreground/30 hover:text-vibrant-teal font-bold uppercase text-[10px] tracking-[0.2em] transition-colors"
+                                        >
+                                            Move to Wishlist
+                                        </button>
+                                        <div className="w-px h-3 bg-foreground/10"></div>
+                                        <button 
                                             onClick={() => removeFromCart(item.painting_id)}
-                                            className="text-foreground/30 hover:text-vibrant-pink font-bold uppercase text-xs tracking-[0.2em] transition-colors"
+                                            className="text-foreground/30 hover:text-vibrant-pink font-bold uppercase text-[10px] tracking-[0.2em] transition-colors"
                                         >
                                             Remove Item
                                         </button>
@@ -161,17 +177,20 @@ export default function CartPage() {
                             <div className="space-y-6 mb-10 relative">
                                 <div className="flex justify-between items-center text-lg">
                                     <span className="opacity-60 font-bold uppercase tracking-widest text-sm">Subtotal</span>
-                                    <span className="font-black">₹{cart.total_price}</span>
+                                    <span className="font-black">₹{Math.round(cart.total_price)}</span>
                                 </div>
-                                <div className="flex justify-between items-center text-lg">
-                                    <span className="opacity-60 font-bold uppercase tracking-widest text-sm">Shipping</span>
-                                    <span className="font-black text-vibrant-pink uppercase text-sm tracking-widest">Calculated at next step</span>
+                                <div className="flex justify-between items-start text-lg">
+                                    <div className="flex flex-col">
+                                        <span className="opacity-60 font-bold uppercase tracking-widest text-sm">Shipping</span>
+                                        <span className="text-[10px] font-bold text-vibrant-teal uppercase tracking-widest">FREE Delivery above ₹499</span>
+                                    </div>
+                                    <span className="text-vibrant-pink font-black uppercase text-[10px] tracking-widest pt-1">Calculated at next step</span>
                                 </div>
                                 <div className="h-px bg-current opacity-10"></div>
                                 <div className="flex justify-between items-end pt-4">
                                     <span className="font-black uppercase tracking-tighter text-2xl leading-none">Total</span>
                                     <div className="text-right">
-                                        <div className="text-vibrant-teal font-black text-5xl leading-none">₹{cart.total_price}</div>
+                                        <div className="text-vibrant-teal font-black text-5xl leading-none">₹{Math.round(cart.total_price)}</div>
                                         <p className="text-[10px] uppercase font-bold tracking-widest opacity-40 mt-2">All taxes included</p>
                                     </div>
                                 </div>

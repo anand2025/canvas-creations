@@ -70,7 +70,7 @@ export default function Home() {
   };
 
   return (
-    <main className="bg-white dark:bg-black min-h-screen">
+    <main className="bg-background min-h-screen">
       <Hero />
       
       {/* Featured Section */}
@@ -93,7 +93,7 @@ export default function Home() {
             {loading ? (
                 // Simple skeletons
                 [1, 2, 3].map(i => (
-                    <div key={i} className="h-96 bg-gray-100 dark:bg-zinc-800 rounded-3xl animate-pulse"></div>
+                    <div key={i} className="h-96 bg-secondary-bg rounded-3xl animate-pulse"></div>
                 ))
             ) : featuredProducts.length > 0 ? (
                 featuredProducts.map((product) => (
@@ -170,12 +170,12 @@ export default function Home() {
       </section>
       
       {/* Footer minimal info */}
-      <footer className="py-12 border-t border-zinc-100 dark:border-zinc-900 px-6">
+      <footer className="py-12 border-t border-[var(--border-color)] px-6">
         <div className="container mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-          <p className="text-zinc-500 font-medium">© 2026 CANVAS CREATIONS. ALL RIGHTS RESERVED.</p>
-          <div className="flex gap-8 text-zinc-500 font-bold uppercase text-xs tracking-widest">
-            <a href="#" className="hover:text-vibrant-pink">Instagram</a>
-            <a href="#" className="hover:text-vibrant-orange">Pinterest</a>
+          <p className="text-foreground/50 font-bold">© 2026 CANVAS CREATIONS. ALL RIGHTS RESERVED.</p>
+          <div className="flex gap-8 text-foreground/60 font-black uppercase text-xs tracking-widest">
+            <a href="#" className="hover:text-vibrant-pink transition-colors">Instagram</a>
+            <a href="#" className="hover:text-vibrant-orange transition-colors">Pinterest</a>
           </div>
         </div>
       </footer>

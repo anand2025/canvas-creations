@@ -36,7 +36,7 @@ export default function WishlistPage() {
 
     if (authLoading || loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black">
+            <div className="min-h-screen flex items-center justify-center bg-background">
                 <div className="relative">
                     <div className="w-20 h-20 border-4 border-vibrant-teal/20 border-t-vibrant-teal rounded-full animate-spin"></div>
                     <div className="absolute inset-0 flex items-center justify-center">
@@ -60,11 +60,11 @@ export default function WishlistPage() {
     }
 
     return (
-        <div className="min-h-screen bg-white dark:bg-black py-20 px-4 md:px-8">
+        <div className="min-h-screen bg-background py-20 px-4 md:px-8">
             <div className="container mx-auto">
                 <div className="mb-16">
                     <h1 className="text-5xl md:text-7xl font-black tracking-tighter uppercase mb-4">
-                        YOUR <span className="text-vibrant-pink">WISHLIST.</span>
+                        YOUR <span className="text-red-500">WISHLIST.</span>
                     </h1>
                     <p className="text-xl text-foreground/50 font-medium">Items you've fallen in love with.</p>
                 </div>
@@ -76,8 +76,8 @@ export default function WishlistPage() {
                         ))}
                     </div>
                 ) : (
-                    <div className="py-20 text-center border-2 border-dashed border-zinc-100 dark:border-zinc-900 rounded-[40px]">
-                        <div className="mb-6 inline-flex p-6 rounded-full bg-zinc-50 dark:bg-zinc-900 text-zinc-300">
+                    <div className="py-20 text-center border-2 border-dashed border-[var(--border-color)] rounded-[40px]">
+                        <div className="mb-6 inline-flex p-6 rounded-full bg-secondary-bg text-zinc-300">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                             </svg>

@@ -54,7 +54,7 @@ async def create_order_from_cart_logic(user_id: str, checkout_request: Dict[str,
             total_price += item_total
         
         # Calculate shipping cost (flat rate for now, can be enhanced)
-        shipping_cost = 100 if total_price < 2000 else 0  # Free shipping above ₹2000
+        shipping_cost = 50 if total_price < 499 else 0  # Free shipping above ₹499
         grand_total = total_price + shipping_cost
         
         # Create order document

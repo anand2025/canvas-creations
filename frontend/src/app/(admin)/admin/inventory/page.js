@@ -47,15 +47,15 @@ export default function AdminInventory() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-           <h1 className="text-3xl font-black text-gray-900 dark:text-white">Inventory</h1>
-           <p className="text-gray-500 dark:text-gray-400">Manage painting stock levels</p>
+           <h1 className="text-3xl font-black text-foreground">Inventory</h1>
+           <p className="text-foreground/50">Manage painting stock levels</p>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 overflow-hidden">
+      <div className="bg-card rounded-2xl shadow-sm border border-[var(--border-color)] overflow-hidden transition-colors duration-500">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
-            <thead className="bg-gray-50 dark:bg-zinc-950/50 border-b dark:border-zinc-800">
+            <thead className="bg-secondary-bg border-b border-[var(--border-color)]">
               <tr>
                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Product</th>
                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Category</th>
@@ -63,9 +63,9 @@ export default function AdminInventory() {
                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Update Stock</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-zinc-800">
+            <tbody className="divide-y border-[var(--border-color)]">
               {products.map((product) => (
-                <tr key={product.id} className="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors">
+                <tr key={product.id} className="hover:bg-secondary-hover transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center">
                         <div className="h-10 w-10 relative rounded overflow-hidden bg-gray-100 mr-3">
@@ -73,19 +73,22 @@ export default function AdminInventory() {
                                 <Image src={product.image_url} alt={product.title} fill className="object-cover" />
                             ) : null }
                         </div>
-                        <span className="font-medium text-gray-900 dark:text-white">{product.title}</span>
+                        <span className="font-bold text-foreground">{product.title}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-gray-500">{product.category}</td>
+                  <td className="px-6 py-4 text-foreground/50 font-medium">{product.category}</td>
                   <td className="px-6 py-4">
-                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all ${
                         product.stock > 5
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' 
+                        ? 'bg-green-100/80 text-green-700 border border-green-200/50' 
                         : product.stock > 0
-                        ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
-                        : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+                        ? 'bg-amber-100 text-amber-700 border border-amber-200/50'
+                        : 'bg-red-100 text-red-700 border border-red-200/50'
                     }`}>
-                        {product.stock}
+                        <span className={`w-1.5 h-1.5 rounded-full ${
+                             product.stock > 5 ? 'bg-green-500' : product.stock > 0 ? 'bg-amber-500' : 'bg-red-500'
+                        }`} />
+                        {product.stock} {product.stock === 0 ? 'Out of Stock' : product.stock <= 5 ? 'Low Stock' : 'In Stock'}
                     </span>
                   </td>
                   <td className="px-6 py-4">
@@ -95,7 +98,7 @@ export default function AdminInventory() {
                                 <input 
                                     type="number" 
                                     min="0"
-                                    className="w-20 px-2 py-1 rounded border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-sm"
+                                    className="w-20 px-2 py-1 rounded border border-[var(--border-color)] bg-card text-foreground text-sm focus:ring-1 focus:ring-vibrant-teal outline-none"
                                     value={newStock[product.id] !== undefined ? newStock[product.id] : product.stock}
                                     onChange={(e) => setNewStock({ ...newStock, [product.id]: e.target.value })}
                                 />

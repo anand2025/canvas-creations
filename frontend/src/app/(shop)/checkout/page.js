@@ -13,7 +13,7 @@ import AddressForm from '@/components/checkout/AddressForm';
 export default function CheckoutPage() {
     const router = useRouter();
     const { user, loading: authLoading } = useAuth();
-    const { cart, loading: cartLoading, itemCount } = useCart();
+    const { cart, loading: cartLoading, itemCount, refreshCart } = useCart();
     
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [selectedAddress, setSelectedAddress] = useState(null);
@@ -166,6 +166,8 @@ export default function CheckoutPage() {
             });
             
             toast.success("Order placed successfully!");
+            // Refresh cart state to empty it after checkout
+            refreshCart();
             router.push(`/checkout/success?order_id=${response.order_id}`);
             
         } catch (error) {
@@ -178,7 +180,7 @@ export default function CheckoutPage() {
 
     if (authLoading || cartLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black">
+            <div className="min-h-screen flex items-center justify-center bg-background">
                 <div className="relative">
                     <div className="w-20 h-20 border-4 border-vibrant-teal/20 border-t-vibrant-teal rounded-full animate-spin"></div>
                     <div className="absolute inset-0 flex items-center justify-center">
@@ -193,11 +195,11 @@ export default function CheckoutPage() {
         return null; // Will redirect via useEffect
     }
 
-    const shippingCost = cart.total_price < 2000 ? 100 : 0;
+    const shippingCost = cart.total_price < 499 ? 50 : 0;
     const grandTotal = cart.total_price + shippingCost;
 
     return (
-        <div className="min-h-screen bg-white dark:bg-black py-20 px-4 md:px-8">
+        <div className="min-h-screen bg-background py-20 px-4 md:px-8">
             <div className="container mx-auto max-w-7xl">
                 {/* Header */}
                 <div className="mb-16">
@@ -213,7 +215,7 @@ export default function CheckoutPage() {
                     <div className="lg:col-span-2">
                         <form onSubmit={handleSubmit} className="space-y-10">
                             {/* Shipping Information */}
-                            <div className="bg-zinc-50 dark:bg-zinc-900/50 rounded-[40px] p-8 md:p-12 border border-white/5 shadow-inner">
+                            <div className="bg-secondary-bg rounded-[40px] p-8 md:p-12 border border-[var(--border-color)] shadow-inner">
                                 <div className="flex items-center gap-4 mb-8">
                                     <div className="w-12 h-12 rounded-full bg-vibrant-teal flex items-center justify-center text-white font-black text-xl">
                                         1
@@ -246,7 +248,7 @@ export default function CheckoutPage() {
                             </div>
 
                             {/* Payment Method */}
-                            <div className="bg-zinc-50 dark:bg-zinc-900/50 rounded-[40px] p-8 md:p-12 border border-white/5">
+                            <div className="bg-secondary-bg rounded-[40px] p-8 md:p-12 border border-[var(--border-color)]">
                                 <div className="flex items-center gap-4 mb-8">
                                     <div className="w-12 h-12 rounded-full bg-vibrant-orange flex items-center justify-center text-white font-black text-xl">
                                         2
@@ -264,8 +266,8 @@ export default function CheckoutPage() {
                                             key={method.value}
                                             className={`flex items-center gap-4 p-6 rounded-2xl border-2 cursor-pointer transition-all ${
                                                 formData.payment_method === method.value
-                                                    ? 'border-vibrant-pink bg-vibrant-pink/5'
-                                                    : 'border-zinc-200 dark:border-zinc-800 hover:border-vibrant-pink/50'
+                                                    ? 'border-vibrant-pink bg-vibrant-pink/5 shadow-[0_0_15px_rgba(255,0,127,0.1)]'
+                                                    : 'border-foreground/10 hover:border-vibrant-pink/50'
                                             }`}
                                         >
                                             <input
@@ -316,7 +318,7 @@ export default function CheckoutPage() {
                                             <div className="font-bold text-sm truncate">{item.painting_details.title}</div>
                                             <div className="text-xs opacity-60">Qty: {item.quantity}</div>
                                         </div>
-                                        <div className="font-black text-sm">₹{item.item_total}</div>
+                                        <div className="font-black text-sm">₹{Math.round(item.item_total)}</div>
                                     </div>
                                 ))}
                             </div>
@@ -324,17 +326,20 @@ export default function CheckoutPage() {
                             <div className="space-y-6 mb-10 relative">
                                 <div className="flex justify-between items-center text-lg">
                                     <span className="opacity-60 font-bold uppercase tracking-widest text-sm">Subtotal</span>
-                                    <span className="font-black">₹{cart.total_price}</span>
+                                    <span className="font-black">₹{Math.round(cart.total_price)}</span>
                                 </div>
-                                <div className="flex justify-between items-center text-lg">
-                                    <span className="opacity-60 font-bold uppercase tracking-widest text-sm">Shipping</span>
-                                    <span className="font-black">{shippingCost === 0 ? <span className="text-vibrant-teal text-xs">FREE</span> : `₹${shippingCost}`}</span>
+                                <div className="flex justify-between items-start text-lg">
+                                    <div className="flex flex-col">
+                                        <span className="opacity-60 font-bold uppercase tracking-widest text-sm">Shipping</span>
+                                        <span className="text-[10px] font-bold text-vibrant-teal uppercase tracking-widest">Free above ₹499</span>
+                                    </div>
+                                    <span className="font-black pt-1">{shippingCost === 0 ? <span className="text-vibrant-teal text-xs">FREE</span> : `₹${shippingCost}`}</span>
                                 </div>
                                 <div className="h-px bg-current opacity-10"></div>
                                 <div className="flex justify-between items-end pt-4">
                                     <span className="font-black uppercase tracking-tighter text-2xl leading-none">Total</span>
                                     <div className="text-right">
-                                        <div className="text-vibrant-teal font-black text-5xl leading-none">₹{grandTotal}</div>
+                                        <div className="text-vibrant-teal font-black text-5xl leading-none">₹{Math.round(grandTotal)}</div>
                                         <p className="text-[10px] uppercase font-bold tracking-widest opacity-40 mt-2">All taxes included</p>
                                     </div>
                                 </div>

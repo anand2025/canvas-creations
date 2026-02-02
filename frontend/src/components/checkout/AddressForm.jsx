@@ -14,7 +14,7 @@ export default function AddressForm({ formData, errors, onInputChange }) {
                     name="full_name"
                     value={formData.full_name}
                     onChange={onInputChange}
-                    className={`w-full px-6 py-4 rounded-2xl bg-white dark:bg-black border-2 ${errors.full_name ? 'border-red-500' : 'border-zinc-200 dark:border-zinc-800'} focus:border-vibrant-pink focus:outline-none transition-colors font-medium`}
+                    className={`w-full px-6 py-4 rounded-2xl bg-secondary-bg border-2 ${errors.full_name ? 'border-red-500' : 'border-foreground/10'} focus:border-vibrant-pink focus:outline-none transition-all font-medium text-foreground placeholder:text-foreground/30`}
                     placeholder="Enter your full name"
                 />
                 {errors.full_name && <p className="mt-2 text-sm text-red-500 font-medium">{errors.full_name}</p>}
@@ -29,7 +29,7 @@ export default function AddressForm({ formData, errors, onInputChange }) {
                     name="phone"
                     value={formData.phone}
                     onChange={onInputChange}
-                    className={`w-full px-6 py-4 rounded-2xl bg-white dark:bg-black border-2 ${errors.phone ? 'border-red-500' : 'border-zinc-200 dark:border-zinc-800'} focus:border-vibrant-pink focus:outline-none transition-colors font-medium`}
+                    className={`w-full px-6 py-4 rounded-2xl bg-secondary-bg border-2 ${errors.phone ? 'border-red-500' : 'border-foreground/10'} focus:border-vibrant-pink focus:outline-none transition-all font-medium text-foreground placeholder:text-foreground/30`}
                     placeholder="10-digit mobile number"
                 />
                 {errors.phone && <p className="mt-2 text-sm text-red-500 font-medium">{errors.phone}</p>}
@@ -44,7 +44,7 @@ export default function AddressForm({ formData, errors, onInputChange }) {
                     name="postal_code"
                     value={formData.postal_code}
                     onChange={onInputChange}
-                    className={`w-full px-6 py-4 rounded-2xl bg-white dark:bg-black border-2 ${errors.postal_code ? 'border-red-500' : 'border-zinc-200 dark:border-zinc-800'} focus:border-vibrant-pink focus:outline-none transition-colors font-medium`}
+                    className={`w-full px-6 py-4 rounded-2xl bg-secondary-bg border-2 ${errors.postal_code ? 'border-red-500' : 'border-foreground/10'} focus:border-vibrant-pink focus:outline-none transition-all font-medium text-foreground placeholder:text-foreground/30`}
                     placeholder="6-digit PIN code"
                 />
                 {errors.postal_code && <p className="mt-2 text-sm text-red-500 font-medium">{errors.postal_code}</p>}
@@ -59,7 +59,7 @@ export default function AddressForm({ formData, errors, onInputChange }) {
                     name="address_line1"
                     value={formData.address_line1}
                     onChange={onInputChange}
-                    className={`w-full px-6 py-4 rounded-2xl bg-white dark:bg-black border-2 ${errors.address_line1 ? 'border-red-500' : 'border-zinc-200 dark:border-zinc-800'} focus:border-vibrant-pink focus:outline-none transition-colors font-medium`}
+                    className={`w-full px-6 py-4 rounded-2xl bg-secondary-bg border-2 ${errors.address_line1 ? 'border-red-500' : 'border-foreground/10'} focus:border-vibrant-pink focus:outline-none transition-all font-medium text-foreground placeholder:text-foreground/30`}
                     placeholder="House no., Building name"
                 />
                 {errors.address_line1 && <p className="mt-2 text-sm text-red-500 font-medium">{errors.address_line1}</p>}
@@ -74,7 +74,7 @@ export default function AddressForm({ formData, errors, onInputChange }) {
                     name="address_line2"
                     value={formData.address_line2}
                     onChange={onInputChange}
-                    className="w-full px-6 py-4 rounded-2xl bg-white dark:bg-black border-2 border-zinc-200 dark:border-zinc-800 focus:border-vibrant-pink focus:outline-none transition-colors font-medium"
+                    className="w-full px-6 py-4 rounded-2xl bg-secondary-bg border-2 border-foreground/10 focus:border-vibrant-pink focus:outline-none transition-all font-medium text-foreground placeholder:text-foreground/30"
                     placeholder="Road name, Area, Colony (optional)"
                 />
             </div>
@@ -88,7 +88,7 @@ export default function AddressForm({ formData, errors, onInputChange }) {
                     name="city"
                     value={formData.city}
                     onChange={onInputChange}
-                    className={`w-full px-6 py-4 rounded-2xl bg-white dark:bg-black border-2 ${errors.city ? 'border-red-500' : 'border-zinc-200 dark:border-zinc-800'} focus:border-vibrant-pink focus:outline-none transition-colors font-medium`}
+                    className={`w-full px-6 py-4 rounded-2xl bg-secondary-bg border-2 ${errors.city ? 'border-red-500' : 'border-foreground/10'} focus:border-vibrant-pink focus:outline-none transition-all font-medium text-foreground placeholder:text-foreground/30`}
                     placeholder="Enter city"
                 />
                 {errors.city && <p className="mt-2 text-sm text-red-500 font-medium">{errors.city}</p>}
@@ -103,7 +103,7 @@ export default function AddressForm({ formData, errors, onInputChange }) {
                     name="state"
                     value={formData.state}
                     onChange={onInputChange}
-                    className={`w-full px-6 py-4 rounded-2xl bg-white dark:bg-black border-2 ${errors.state ? 'border-red-500' : 'border-zinc-200 dark:border-zinc-800'} focus:border-vibrant-pink focus:outline-none transition-colors font-medium`}
+                    className={`w-full px-6 py-4 rounded-2xl bg-secondary-bg border-2 ${errors.state ? 'border-red-500' : 'border-foreground/10'} focus:border-vibrant-pink focus:outline-none transition-all font-medium text-foreground placeholder:text-foreground/30`}
                     placeholder="Enter state"
                 />
                 {errors.state && <p className="mt-2 text-sm text-red-500 font-medium">{errors.state}</p>}

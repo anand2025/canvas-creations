@@ -20,6 +20,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+import { ThemeProvider } from "@/context/ThemeContext";
+
 export const metadata = {
   title: "Canvas & Creations | Vibrant Handcrafted Art",
   description: "Explore our collection of bright and vibrant mini-paintings and handmade crafts.",
@@ -29,35 +31,37 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased selection:bg-vibrant-pink selection:text-white`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased selection:bg-vibrant-pink selection:text-white transition-colors duration-300`}
       >
-        <AuthProvider>
-          <CartProvider>
-            <WishlistProvider>
-              <Toaster 
-                position="bottom-right"
-                toastOptions={{
-                  style: {
-                    background: '#18181b',
-                    color: '#fff',
-                    borderRadius: '16px',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    padding: '16px',
-                    fontWeight: '600'
-                  },
-                  success: {
-                    iconTheme: {
-                      primary: '#FF007F',
-                      secondary: '#fff',
+        <ThemeProvider>
+          <AuthProvider>
+            <CartProvider>
+              <WishlistProvider>
+                <Toaster 
+                  position="bottom-right"
+                  toastOptions={{
+                    style: {
+                      background: 'var(--toast-bg)',
+                      color: 'var(--toast-color)',
+                      borderRadius: '16px',
+                      border: '1px solid var(--toast-border)',
+                      padding: '16px',
+                      fontWeight: '600'
                     },
-                  },
-                }}
-              />
-              <Navbar />
-              {children}
-            </WishlistProvider>
-          </CartProvider>
-        </AuthProvider>
+                    success: {
+                      iconTheme: {
+                        primary: '#FF007F',
+                        secondary: '#fff',
+                      },
+                    },
+                  }}
+                />
+                <Navbar />
+                {children}
+              </WishlistProvider>
+            </CartProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

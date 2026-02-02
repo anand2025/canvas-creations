@@ -62,14 +62,14 @@ const AdminLayout = ({ children }) => {
   ];
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-zinc-950 font-sans text-gray-900 dark:text-gray-100">
+    <div className="flex h-screen bg-background font-sans text-foreground transition-colors duration-500">
       {/* Sidebar */}
       <aside 
         className={`${
           isSidebarOpen ? 'w-64' : 'w-20'
-        } bg-white dark:bg-zinc-900 shadow-xl transition-all duration-300 ease-in-out z-20 flex flex-col fixed h-full md:relative`}
+        } bg-card shadow-xl transition-all duration-300 ease-in-out z-20 flex flex-col fixed h-full md:relative border-r border-[var(--border-color)]`}
       >
-        <div className="h-16 flex items-center justify-between px-4 border-b dark:border-zinc-800">
+        <div className="h-16 flex items-center justify-between px-4 border-b border-[var(--border-color)]">
           {isSidebarOpen ? (
             <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-vibrant-pink to-vibrant-orange truncate">
               ADMIN PANEL
@@ -79,7 +79,7 @@ const AdminLayout = ({ children }) => {
           )}
           <button 
             onClick={toggleSidebar} 
-            className="p-1 rounded-md text-gray-500 hover:bg-gray-100 dark:hover:bg-zinc-800 hidden md:block"
+            className="p-1 rounded-md text-foreground/50 hover:bg-secondary-hover hidden md:block"
           >
             {isSidebarOpen ? (
                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path></svg>
@@ -100,10 +100,10 @@ const AdminLayout = ({ children }) => {
                     className={`flex items-center px-4 py-3 rounded-lg transition-colors ${
                       isActive 
                         ? 'bg-vibrant-teal/10 text-vibrant-teal border-r-4 border-vibrant-teal' 
-                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 hover:text-gray-900 dark:hover:text-white'
+                        : 'text-foreground/60 hover:bg-secondary-hover hover:text-foreground'
                     }`}
                   >
-                    <span className={`${isActive ? 'text-vibrant-teal' : 'text-gray-500 dark:text-gray-400'}`}>
+                    <span className={`${isActive ? 'text-vibrant-teal' : 'text-foreground/40'}`}>
                       {item.icon}
                     </span>
                     {isSidebarOpen && <span className="ml-3 font-medium">{item.name}</span>}
@@ -114,10 +114,10 @@ const AdminLayout = ({ children }) => {
           </ul>
         </nav>
 
-        <div className="p-4 border-t dark:border-zinc-800">
+        <div className="p-4 border-t border-[var(--border-color)]">
           <button 
             onClick={handleLogout}
-            className={`flex items-center w-full px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-colors`}
+            className={`flex items-center w-full px-4 py-2 text-foreground/60 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-colors`}
           >
              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
             {isSidebarOpen && <span className="ml-3 font-medium">Logout</span>}
@@ -128,7 +128,7 @@ const AdminLayout = ({ children }) => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
         {/* Mobile Header */}
-        <header className="h-16 bg-white dark:bg-zinc-900 shadow-sm border-b dark:border-zinc-800 flex items-center justify-between px-4 md:hidden">
+        <header className="h-16 bg-card shadow-sm border-b border-[var(--border-color)] flex items-center justify-between px-4 md:hidden">
            <span className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-vibrant-pink to-vibrant-orange">
               CANVAS ADMIN
            </span>
@@ -137,7 +137,7 @@ const AdminLayout = ({ children }) => {
            </button>
         </header>
 
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 dark:bg-zinc-950 p-6">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-background p-6 transition-colors duration-500">
           {children}
         </main>
       </div>

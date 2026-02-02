@@ -35,15 +35,15 @@ export default function AdminReviews() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-           <h1 className="text-3xl font-black text-gray-900 dark:text-white">Reviews</h1>
-           <p className="text-gray-500 dark:text-gray-400">See what customers are saying</p>
+           <h1 className="text-3xl font-black text-foreground">Reviews</h1>
+           <p className="text-foreground/50">See what customers are saying</p>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 overflow-hidden">
+      <div className="bg-card rounded-2xl shadow-sm border border-[var(--border-color)] overflow-hidden transition-colors duration-500">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
-             <thead className="bg-gray-50 dark:bg-zinc-950/50 border-b dark:border-zinc-800">
+             <thead className="bg-secondary-bg border-b border-[var(--border-color)]">
               <tr>
                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Product ID</th>
                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">User</th>
@@ -52,22 +52,22 @@ export default function AdminReviews() {
                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Date</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-zinc-800">
+            <tbody className="divide-y border-[var(--border-color)]">
               {reviews.map((review) => (
-                <tr key={review.id} className="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors">
+                <tr key={review.id} className="hover:bg-secondary-hover transition-colors">
                   <td className="px-6 py-4 text-sm font-mono text-gray-500">
                       {review.painting_id ? review.painting_id.substring(0, 8) : 'N/A'}...
                   </td>
-                  <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                  <td className="px-6 py-4 font-bold text-foreground">
                       {review.user_id ? review.user_id.substring(0, 8) : 'Guest'}
                   </td>
                   <td className="px-6 py-4">
                       <div className="flex">{renderStars(review.rating)}</div>
                   </td>
-                  <td className="px-6 py-4 text-gray-600 dark:text-gray-300 max-w-xs truncate">
+                  <td className="px-6 py-4 text-foreground/70 font-medium max-w-xs truncate">
                       {review.comment}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
+                  <td className="px-6 py-4 text-sm text-foreground/50">
                       {review.date ? new Date(review.date).toLocaleDateString() : 'N/A'}
                   </td>
                 </tr>
