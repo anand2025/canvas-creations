@@ -41,11 +41,11 @@ const NewsletterAdminPage = () => {
     return (
         <div className="max-w-4xl mx-auto">
             <div className="mb-8">
-                <h1 className="text-3xl font-black mb-2">NEWSLETTER <span className="text-vibrant-pink italic">MANAGEMENT.</span></h1>
-                <p className="text-gray-500 font-medium">Compose and send updates to all your subscribers at once.</p>
+                <h1 className="text-3xl font-black mb-2 text-foreground uppercase tracking-tight">NEWSLETTER <span className="text-vibrant-pink italic">MANAGEMENT.</span></h1>
+                <p className="text-foreground/50 font-medium">Compose and send updates to all your subscribers at once.</p>
             </div>
 
-            <div className="bg-white dark:bg-zinc-900 rounded-[32px] p-8 md:p-12 shadow-xl border border-gray-100 dark:border-zinc-800">
+            <div className="bg-card rounded-[32px] p-8 md:p-12 shadow-xl border border-[var(--border-color)] transition-colors duration-500">
                 <form onSubmit={handleSendNewsletter} className="space-y-8">
                     {/* Subject Line */}
                     <div className="space-y-3">
@@ -57,7 +57,7 @@ const NewsletterAdminPage = () => {
                             value={subject}
                             onChange={(e) => setSubject(e.target.value)}
                             placeholder="e.g. New Collection Arrival! 🎨"
-                            className="w-full px-6 py-4 rounded-2xl bg-gray-50 dark:bg-zinc-800 border-none focus:ring-2 ring-vibrant-pink text-lg font-medium transition-all"
+                            className="w-full px-6 py-4 rounded-2xl bg-secondary-bg border-none focus:ring-2 ring-vibrant-pink text-lg font-medium transition-all text-foreground"
                             required
                         />
                     </div>
@@ -72,7 +72,7 @@ const NewsletterAdminPage = () => {
                             onChange={(e) => setBody(e.target.value)}
                             rows={12}
                             placeholder="Write your email content here... You can use HTML tags for formatting."
-                            className="w-full px-6 py-4 rounded-2xl bg-gray-50 dark:bg-zinc-800 border-none focus:ring-2 ring-vibrant-orange text-lg font-medium transition-all resize-none"
+                            className="w-full px-6 py-4 rounded-2xl bg-secondary-bg border-none focus:ring-2 ring-vibrant-orange text-lg font-medium transition-all resize-none text-foreground"
                             required
                         ></textarea>
                         <p className="text-xs text-gray-400 font-medium ml-1">
@@ -115,9 +115,9 @@ const NewsletterAdminPage = () => {
                     <span className="text-[10px] font-bold px-2 py-1 bg-gray-100 dark:bg-zinc-800 rounded-md text-gray-500">DESKTOP VIEW</span>
                 </div>
                 
-                <div className="bg-gray-50 dark:bg-zinc-950 rounded-[32px] border-2 border-dashed border-gray-200 dark:border-zinc-800 overflow-hidden transition-all">
+                <div className="bg-background rounded-[32px] border-2 border-dashed border-[var(--border-color)] overflow-hidden transition-all">
                     {/* Fake Browser/Email Header */}
-                    <div className="bg-white dark:bg-zinc-900 px-6 py-4 border-b border-gray-100 dark:border-zinc-800 flex flex-col gap-1">
+                    <div className="bg-card px-6 py-4 border-b border-[var(--border-color)] flex flex-col gap-1">
                         <div className="flex items-center justify-between">
                             <span className="text-xs font-bold text-gray-400">From: <span className="text-gray-900 dark:text-gray-100">CanvasCreations &lt;noreply@canvascreations.com&gt;</span></span>
                             <div className="flex gap-1.5">

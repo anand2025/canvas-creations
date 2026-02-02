@@ -7,7 +7,7 @@ import Link from 'next/link';
 
 const AuthLayout = ({ children, title, subtitle, image }) => {
     return (
-        <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-white dark:bg-black overflow-hidden">
+        <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-background overflow-hidden transition-colors duration-500">
             {/* Left: Artistic Side */}
             <div className="relative hidden lg:flex items-center justify-center p-12 overflow-hidden bg-zinc-950">
                 <div className="absolute inset-0 z-0">

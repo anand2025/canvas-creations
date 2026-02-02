@@ -42,7 +42,7 @@ export default function AdminOrders() {
       case 'shipped': return 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400';
       case 'delivered': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
       case 'cancelled': return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
-      default: return 'bg-gray-100 text-gray-800 dark:bg-zinc-800 dark:text-gray-400';
+      default: return 'bg-secondary-bg text-foreground/70';
     }
   };
 
@@ -52,15 +52,15 @@ export default function AdminOrders() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-           <h1 className="text-3xl font-black text-gray-900 dark:text-white">Orders</h1>
-           <p className="text-gray-500 dark:text-gray-400">Manage and track customer orders</p>
+           <h1 className="text-3xl font-black text-foreground">Orders</h1>
+           <p className="text-foreground/50">Manage and track customer orders</p>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 overflow-hidden">
+      <div className="bg-card rounded-2xl shadow-sm border border-[var(--border-color)] overflow-hidden transition-colors duration-500">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
-            <thead className="bg-gray-50 dark:bg-zinc-950/50 border-b dark:border-zinc-800">
+            <thead className="bg-secondary-bg border-b border-[var(--border-color)]">
               <tr>
                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Order ID</th>
                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Customer</th>
@@ -70,17 +70,17 @@ export default function AdminOrders() {
                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Items</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-zinc-800">
+            <tbody className="divide-y border-[var(--border-color)]">
               {orders.map((order) => (
-                <tr key={order.id} className="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-500">{order.id.substring(0, 8)}...</td>
-                  <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                <tr key={order.id} className="hover:bg-secondary-hover transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-foreground/40">{order.id.substring(0, 8)}...</td>
+                  <td className="px-6 py-4 font-bold text-foreground">
                       {order.user_id ? "User " + order.user_id.substring(0, 4) : "Guest"}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
+                  <td className="px-6 py-4 text-sm text-foreground/50">
                       {order.created_at ? new Date(order.created_at).toLocaleDateString() : 'N/A'}
                   </td>
-                  <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">₹{order.total_price}</td>
+                  <td className="px-6 py-4 font-black text-foreground">₹{order.total_price}</td>
                   <td className="px-6 py-4">
                     <select 
                         value={order.status}

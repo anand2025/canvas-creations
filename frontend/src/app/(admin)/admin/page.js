@@ -48,17 +48,17 @@ export default function AdminDashboard() {
   }, []);
 
   if (loading) return <div className="animate-pulse space-y-4">
-    <div className="h-32 bg-gray-200 dark:bg-zinc-800 rounded-2xl"></div>
+    <div className="h-32 bg-secondary-bg rounded-2xl"></div>
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-       {[1,2,3,4].map(i => <div key={i} className="h-32 bg-gray-200 dark:bg-zinc-800 rounded-2xl"></div>)}
+       {[1,2,3,4].map(i => <div key={i} className="h-32 bg-secondary-bg rounded-2xl"></div>)}
     </div>
   </div>;
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-black text-gray-900 dark:text-white">Dashboard</h1>
-        <p className="text-gray-500 dark:text-gray-400">Welcome back, Admin. Here's what's happening today.</p>
+        <h1 className="text-3xl font-black text-foreground">Dashboard</h1>
+        <p className="text-foreground/50">Welcome back, Admin. Here's what's happening today.</p>
       </div>
 
       {/* Stats Grid */}
@@ -91,7 +91,7 @@ export default function AdminDashboard() {
 
       {/* Quick Actions or Recent Activity could go here */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-         <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-zinc-800">
+         <div className="bg-card rounded-2xl p-6 shadow-sm border border-[var(--border-color)]">
             <h2 className="text-xl font-bold mb-4">Pending Orders</h2>
             {stats.pendingOrders > 0 ? (
                <div className="flex items-center text-amber-500 bg-amber-50 dark:bg-amber-900/10 p-4 rounded-xl">
@@ -99,7 +99,7 @@ export default function AdminDashboard() {
                  <span className="font-medium">You have {stats.pendingOrders} orders waiting for processing.</span>
                </div>
             ) : (
-                <div className="text-gray-500">No pending orders. Good job!</div>
+                <div className="text-foreground/50 font-medium">No pending orders. Good job!</div>
             )}
             <div className="mt-4">
                  <a href="/admin/orders" className="text-vibrant-teal font-bold hover:underline">View All Orders &rarr;</a>
@@ -112,13 +112,13 @@ export default function AdminDashboard() {
 
 function StatCard({ title, value, icon, color }) {
   return (
-    <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-zinc-800 flex items-center transition-transform hover:-translate-y-1">
+    <div className="bg-card rounded-2xl p-6 shadow-sm border border-[var(--border-color)] flex items-center transition-transform hover:-translate-y-1">
       <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${color} mr-4`}>
         {icon}
       </div>
       <div>
-        <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">{title}</p>
-        <p className="text-2xl font-black text-gray-900 dark:text-white">{value}</p>
+        <p className="text-foreground/50 text-sm font-bold uppercase tracking-wider">{title}</p>
+        <p className="text-2xl font-black text-foreground">{value}</p>
       </div>
     </div>
   );

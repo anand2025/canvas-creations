@@ -46,7 +46,7 @@ export default function ProfileStats() {
     },
     {
       label: 'Total Spent',
-      value: `₹${stats.total_spent.toLocaleString()}`,
+      value: `₹${Math.round(stats.total_spent).toLocaleString()}`,
       icon: '💰',
       color: 'var(--vibrant-teal)',
     },

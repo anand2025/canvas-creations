@@ -82,11 +82,11 @@ export default function EditProduct() {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-black text-gray-900 dark:text-white mb-2">Edit Painting</h1>
-        <p className="text-gray-500 dark:text-gray-400">Update the details of this masterpiece.</p>
+        <h1 className="text-3xl font-black text-foreground mb-2 uppercase tracking-tight">Edit Painting</h1>
+        <p className="text-foreground/50 font-medium tracking-tight">Update the details of this masterpiece.</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white dark:bg-zinc-900 rounded-2xl p-8 shadow-sm border border-gray-100 dark:border-zinc-800 space-y-6">
+      <form onSubmit={handleSubmit} className="bg-card rounded-2xl p-8 shadow-sm border border-[var(--border-color)] space-y-6 transition-colors duration-500">
         
         {/* Title & Artist */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -97,7 +97,7 @@ export default function EditProduct() {
               name="title" 
               value={formData.title} 
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-zinc-800 border-transparent focus:border-vibrant-teal focus:ring-0 text-gray-900 dark:text-white transition-all"
+              className="w-full px-4 py-3 rounded-xl bg-secondary-bg border-none focus:ring-1 focus:ring-vibrant-teal text-foreground transition-all placeholder:text-foreground/30 font-medium shadow-sm"
               required
             />
           </div>
@@ -108,7 +108,7 @@ export default function EditProduct() {
               name="artist" 
               value={formData.artist} 
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-zinc-800 border-transparent focus:border-vibrant-teal focus:ring-0 text-gray-900 dark:text-white transition-all"
+              className="w-full px-4 py-3 rounded-xl bg-secondary-bg border-none focus:ring-1 focus:ring-vibrant-teal text-foreground transition-all placeholder:text-foreground/30 font-medium shadow-sm"
               required
             />
           </div>
@@ -122,7 +122,7 @@ export default function EditProduct() {
             value={formData.description} 
             onChange={handleChange}
             rows="4"
-            className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-zinc-800 border-transparent focus:border-vibrant-teal focus:ring-0 text-gray-900 dark:text-white transition-all"
+            className="w-full px-4 py-3 rounded-xl bg-secondary-bg border-none focus:ring-1 focus:ring-vibrant-teal text-foreground transition-all placeholder:text-foreground/30 font-medium shadow-sm"
           ></textarea>
         </div>
 
@@ -138,7 +138,7 @@ export default function EditProduct() {
               onChange={handleChange}
               min="0"
               step="0.01"
-              className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-zinc-800 border-transparent focus:border-vibrant-teal focus:ring-0 text-gray-900 dark:text-white transition-all"
+              className="w-full px-4 py-3 rounded-xl bg-secondary-bg border-none focus:ring-1 focus:ring-vibrant-teal text-foreground transition-all placeholder:text-foreground/30 font-medium shadow-sm"
               required
             />
           </div>
@@ -153,7 +153,7 @@ export default function EditProduct() {
               onChange={handleChange}
               min="0"
               step="1"
-              className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-zinc-800 border-transparent focus:border-vibrant-teal focus:ring-0 text-gray-900 dark:text-white transition-all"
+              className="w-full px-4 py-3 rounded-xl bg-secondary-bg border-none focus:ring-1 focus:ring-vibrant-teal text-foreground transition-all placeholder:text-foreground/30 font-medium shadow-sm"
               required
             />
           </div>
@@ -176,7 +176,7 @@ export default function EditProduct() {
                     name="category"
                     value={formData.category}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-zinc-800 border-transparent focus:border-vibrant-teal focus:ring-0 text-gray-900 dark:text-white transition-all"
+                    className="w-full px-4 py-3 rounded-xl bg-secondary-bg border-none focus:ring-1 focus:ring-vibrant-teal text-foreground transition-all placeholder:text-foreground/30 font-medium shadow-sm"
                     placeholder="Enter new category"
                  />
              ) : (
@@ -184,7 +184,7 @@ export default function EditProduct() {
                    name="category" 
                    value={formData.category} 
                    onChange={handleChange}
-                   className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-zinc-800 border-transparent focus:border-vibrant-teal focus:ring-0 text-gray-900 dark:text-white transition-all appearance-none"
+                   className="w-full px-4 py-3 rounded-xl bg-secondary-bg border-none focus:ring-1 focus:ring-vibrant-teal text-foreground transition-all appearance-none font-medium shadow-sm"
                  >
                     <option value="Abstract">Abstract</option>
                     <option value="Landscape">Landscape</option>
@@ -231,7 +231,7 @@ export default function EditProduct() {
                       name="image_url" 
                       value={formData.image_url} 
                       onChange={handleChange}
-                      className="flex-1 px-4 py-2 bg-gray-50 dark:bg-zinc-800 border-transparent focus:border-vibrant-teal focus:ring-0 text-gray-900 dark:text-white transition-all rounded-lg"
+                      className="flex-1 px-4 py-2 bg-secondary-bg border-none focus:ring-1 focus:ring-vibrant-teal text-foreground transition-all rounded-lg placeholder:text-foreground/30 font-medium shadow-sm"
                       placeholder="Enter Image URL directly"
                     />
                 </div>

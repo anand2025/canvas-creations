@@ -38,15 +38,15 @@ export default function ShopPage() {
   }, [selectedCategory, sortBy]); // Re-run when category or sort changes
 
   return (
-    <div className="bg-white dark:bg-black min-h-screen py-20 px-6">
+    <div className="bg-background min-h-screen py-20 px-6">
       <div className="container mx-auto">
         <header className="mb-16">
           <h1 className="text-5xl md:text-7xl font-black mb-6 tracking-tighter">OUR <span className="text-vibrant-teal italic">COLLECTION.</span></h1>
-          <p className="text-xl text-foreground/60 max-w-2xl">Browse our unique collection of hand-painted mini canvases and artistic creations, where every piece tells a story.</p>
+          <p className="text-xl text-foreground/80 max-w-2xl">Browse our unique collection of hand-painted mini canvases and artistic creations, where every piece tells a story.</p>
         </header>
 
         {/* Filters and Sorting */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-8 mb-12 border-b border-zinc-100 dark:border-zinc-900 pb-8">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-8 mb-12 border-b border-[var(--border-color)] pb-8">
           <div className="flex flex-wrap gap-4">
             {categories.map((cat) => (
               <button 
@@ -55,7 +55,7 @@ export default function ShopPage() {
                 className={`px-6 py-2 rounded-full font-bold text-sm transition-all ${
                   selectedCategory === cat 
                     ? "bg-vibrant-pink text-white shadow-[0_10px_20px_rgba(255,0,127,0.3)]" 
-                    : "bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700"
+                    : "bg-secondary-bg hover:bg-secondary-hover"
                 }`}
               >
                 {cat}
@@ -68,7 +68,7 @@ export default function ShopPage() {
             <select 
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="flex-1 md:flex-none px-4 py-2 bg-zinc-100 dark:bg-zinc-800 rounded-full font-bold text-sm focus:outline-none focus:ring-2 ring-vibrant-teal"
+                className="flex-1 md:flex-none px-4 py-2 bg-secondary-bg rounded-full font-bold text-sm focus:outline-none focus:ring-2 ring-vibrant-teal"
             >
               <option value="newest">Newest First</option>
               <option value="price_asc">Price: Low to High</option>
@@ -103,7 +103,7 @@ export default function ShopPage() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-20 bg-zinc-50 dark:bg-zinc-900/50 rounded-[40px] border-2 border-dashed border-zinc-200 dark:border-zinc-800">
+              <div className="text-center py-20 bg-secondary-bg rounded-[40px] border-2 border-dashed border-[var(--border-color)]">
                 <div className="text-6xl mb-6 opacity-20">🎨</div>
                 <h3 className="text-2xl font-black mb-2 uppercase tracking-tighter">No products found</h3>
                 <p className="text-foreground/60">We're currently preparing new canvases. Check back soon!</p>

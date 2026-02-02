@@ -46,7 +46,7 @@ export default function AddressSelector({ onAddressSelect, selectedAddressId }) 
                         className={`p-6 rounded-3xl border-2 cursor-pointer transition-all relative overflow-hidden group ${
                             selectedAddressId === address.id
                                 ? 'border-vibrant-pink bg-vibrant-pink/5 scale-[1.02] shadow-lg'
-                                : 'border-zinc-200 dark:border-zinc-800 hover:border-vibrant-pink/50'
+                                : 'border-zinc-200 dark:border-zinc-800 bg-secondary-bg hover:border-vibrant-pink/50'
                         }`}
                     >
                         {selectedAddressId === address.id && (
@@ -58,8 +58,8 @@ export default function AddressSelector({ onAddressSelect, selectedAddressId }) 
                         )}
                         
                         <div className="flex items-center gap-2 mb-3">
-                           <span className="text-xs font-black uppercase tracking-widest px-3 py-1 bg-zinc-200 dark:bg-zinc-800 rounded-full opacity-60">
-                               {address.address_type}
+                           <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 bg-foreground/5 border border-foreground/10 text-foreground/60 rounded-full">
+                               {address.address_type || 'Address'}
                            </span>
                            {address.is_default && (
                                <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 bg-vibrant-teal text-white rounded-full">
@@ -81,14 +81,14 @@ export default function AddressSelector({ onAddressSelect, selectedAddressId }) 
 
                 <div
                     onClick={() => onAddressSelect(null)}
-                    className={`p-6 rounded-3xl border-2 border-dashed cursor-pointer transition-all flex flex-col items-center justify-center min-h-[160px] group ${
+                    className={`p-6 rounded-3xl border-2 border-dashed bg-secondary-bg cursor-pointer transition-all flex flex-col items-center justify-center min-h-[160px] group ${
                         selectedAddressId === null
                             ? 'border-vibrant-teal bg-vibrant-teal/5 scale-[1.02]'
                             : 'border-zinc-300 dark:border-zinc-700 hover:border-vibrant-teal/50'
                     }`}
                 >
                     <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-3 transition-colors ${
-                        selectedAddressId === null ? 'bg-vibrant-teal text-white' : 'bg-zinc-100 dark:bg-zinc-900 group-hover:bg-vibrant-teal/20'
+                        selectedAddressId === null ? 'bg-vibrant-teal text-white' : 'bg-background shadow-sm border border-[var(--border-color)] group-hover:bg-vibrant-teal/20'
                     }`}>
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />

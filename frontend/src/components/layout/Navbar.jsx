@@ -9,6 +9,8 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 
+import ThemeToggle from '@/components/common/ThemeToggle';
+
 const Navbar = () => {
     const { user, logout } = useAuth();
     const { itemCount } = useCart();
@@ -18,7 +20,7 @@ const Navbar = () => {
     const isActive = (path) => pathname === path;
 
     return (
-        <nav className="sticky top-0 z-50 w-full glass-vibrant border-b border-white/10 px-6 py-4">
+        <nav className="sticky top-0 z-50 w-full glass-vibrant border-b border-[var(--border-color)] px-6 py-4 transition-all duration-300">
             <div className="container mx-auto flex items-center justify-between">
                 <Link href="/" className="text-2xl font-black tracking-tighter text-vibrant-pink hover:scale-105 transition-transform">
                     CANVAS<span className="text-vibrant-teal">CREATIONS</span>
@@ -51,6 +53,7 @@ const Navbar = () => {
                 </div>
 
                 <div className="flex items-center space-x-2 md:space-x-4">
+                    <ThemeToggle />
                     <Link href="/cart" className="relative group p-2 rounded-full hover:bg-vibrant-teal/10 transition-all">
                         <svg 
                             xmlns="http://www.w3.org/2000/svg" 
@@ -71,15 +74,15 @@ const Navbar = () => {
                         <div className="flex items-center space-x-2 md:space-x-4">
                             <Link 
                                 href="/wishlist" 
-                                className={`p-2 rounded-full transition-all group ${isActive('/wishlist') ? 'text-vibrant-pink' : 'hover:bg-vibrant-pink/10 text-vibrant-pink'}`} 
+                                className={`p-2 rounded-full transition-all group ${isActive('/wishlist') ? 'text-red-500' : 'hover:bg-red-500/10 text-red-500'}`} 
                                 title="Wishlist"
                             >
                                 <svg 
                                     xmlns="http://www.w3.org/2000/svg" 
                                     className="h-6 w-6 group-hover:scale-110 transition-transform" 
-                                    fill={isActive('/wishlist') ? 'currentColor' : 'none'} 
+                                    fill={isActive('/wishlist') ? '#ef4444' : 'none'} 
                                     viewBox="0 0 24 24" 
-                                    stroke="currentColor"
+                                    stroke={isActive('/wishlist') ? '#ef4444' : 'currentColor'}
                                 >
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                 </svg>
@@ -112,7 +115,7 @@ const Navbar = () => {
                             <div className="md:hidden relative">
                                 <button 
                                     onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                    className="p-2 rounded-full hover:bg-white/10 transition-all text-foreground"
+                                    className="p-2 rounded-full hover:bg-foreground/10 transition-all text-foreground"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
@@ -120,7 +123,7 @@ const Navbar = () => {
                                 </button>
 
                                 {isMenuOpen && (
-                                    <div className="absolute right-0 mt-2 w-48 glass-vibrant border border-white/10 rounded-2xl shadow-xl py-2 z-[60] animate-in fade-in slide-in-from-top-2">
+                                    <div className="absolute right-0 mt-2 w-48 glass-vibrant border border-[var(--border-color)] rounded-2xl shadow-xl py-2 z-[60] animate-in fade-in slide-in-from-top-2">
                                         <button
                                             onClick={() => {
                                                 logout();
@@ -142,6 +145,7 @@ const Navbar = () => {
                 </div>
             </div>
         </nav>
+
     );
 };
 
