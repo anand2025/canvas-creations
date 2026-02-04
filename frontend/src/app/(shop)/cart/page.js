@@ -68,7 +68,7 @@ export default function CartPage() {
                     <h1 className="text-5xl md:text-7xl font-black tracking-tighter uppercase mb-6">
                         YOUR CART IS <span className="text-vibrant-pink">EMPTY.</span>
                     </h1>
-                    <p className="text-xl text-foreground/50 mb-10 max-w-2xl mx-auto">It looks like you haven't added any masterpieces to your collection yet. Start exploring and find something that speaks to you.</p>
+                    <p className="text-xl text-foreground/50 mb-10 max-w-2xl mx-auto">It looks like you haven&apos;t added any masterpieces to your collection yet. Start exploring and find something that speaks to you.</p>
                     <Link href="/shop" className="px-12 py-5 rounded-full bg-vibrant-teal text-white font-black uppercase tracking-[0.2em] hover:shadow-[0_20px_40px_rgba(0,210,255,0.3)] transition-all inline-block">
                         Browse Collection
                     </Link>

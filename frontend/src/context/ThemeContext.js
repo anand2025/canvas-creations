@@ -7,13 +7,21 @@ export const ThemeProvider = ({ children }) => {
     const [theme, setTheme] = useState('dark'); // Default to dark as per existing state
 
     useEffect(() => {
-        const savedTheme = localStorage.getItem('theme');
-        const themeToApply = savedTheme || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-        
-        setTheme(themeToApply);
-        document.documentElement.classList.remove('light', 'dark');
-        document.documentElement.classList.add(themeToApply);
-    }, []);
+        const applyTheme = () => {
+            const savedTheme = localStorage.getItem('theme');
+            const themeToApply = savedTheme || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+            
+            if (themeToApply !== theme) {
+                setTheme(themeToApply);
+            }
+            document.documentElement.classList.remove('light', 'dark');
+            document.documentElement.classList.add(themeToApply);
+        };
+
+        // Use setTimeout to avoid synchronous setState in effect warning
+        const timer = setTimeout(applyTheme, 0);
+        return () => clearTimeout(timer);
+    }, [theme]);
 
     const toggleTheme = () => {
         const newTheme = theme === 'dark' ? 'light' : 'dark';

@@ -73,7 +73,7 @@ export default function OrderHistory() {
         <div className={styles.emptyState}>
           <div className={styles.emptyIcon}>📦</div>
           <h3>No orders found</h3>
-          <p>You haven't placed any orders yet</p>
+          <p>You haven&apos;t placed any orders yet</p>
         </div>
       ) : (
         <div className={styles.ordersGrid}>

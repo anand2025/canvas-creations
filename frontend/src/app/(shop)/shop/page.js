@@ -106,7 +106,7 @@ export default function ShopPage() {
               <div className="text-center py-20 bg-secondary-bg rounded-[40px] border-2 border-dashed border-[var(--border-color)]">
                 <div className="text-6xl mb-6 opacity-20">🎨</div>
                 <h3 className="text-2xl font-black mb-2 uppercase tracking-tighter">No products found</h3>
-                <p className="text-foreground/60">We're currently preparing new canvases. Check back soon!</p>
+                <p className="text-foreground/60">We&apos;re currently preparing new canvases. Check back soon!</p>
               </div>
             )}
           </>

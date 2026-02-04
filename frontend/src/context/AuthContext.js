@@ -13,13 +13,23 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Hydrate state from localStorage
-        const access = localStorage.getItem('access_token');
-        const storedUser = localStorage.getItem('user');
-        if (access && storedUser) {
-            setUser(JSON.parse(storedUser));
-        }
-        setLoading(false);
+        const hydrate = () => {
+            const access = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+            const storedUser = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+            
+            if (access && storedUser) {
+                try {
+                    const parsedUser = JSON.parse(storedUser);
+                    setUser(parsedUser);
+                } catch (error) {
+                    console.error("Failed to parse stored user", error);
+                }
+            }
+            setLoading(false);
+        };
+
+        const timer = setTimeout(hydrate, 0);
+        return () => clearTimeout(timer);
     }, []);
 
     const login = (userData) => {

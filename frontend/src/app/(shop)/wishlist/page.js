@@ -66,7 +66,7 @@ export default function WishlistPage() {
                     <h1 className="text-5xl md:text-7xl font-black tracking-tighter uppercase mb-4">
                         YOUR <span className="text-red-500">WISHLIST.</span>
                     </h1>
-                    <p className="text-xl text-foreground/50 font-medium">Items you've fallen in love with.</p>
+                    <p className="text-xl text-foreground/50 font-medium">Items you&apos;ve fallen in love with.</p>
                 </div>
 
                 {wishlistItems.length > 0 ? (

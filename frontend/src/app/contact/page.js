@@ -26,7 +26,7 @@ const ContactPage = () => {
                         GET IN <span className="text-vibrant-pink italic">TOUCH.</span>
                     </h1>
                     <p className="max-w-2xl mx-auto text-xl text-foreground/70 font-medium">
-                        Have a question about a painting or want a custom craft? We're here to bring more color to your world.
+                        Have a question about a painting or want a custom craft? We&apos;re here to bring more color to your world.
                     </p>
                 </div>
             </section>
@@ -76,7 +76,7 @@ const ContactPage = () => {
                 <div className="container mx-auto max-w-4xl text-center">
                     <h2 className="text-5xl font-black mb-8 tracking-tighter">Gifting Made <span className="text-vibrant-purple italic">Easy.</span></h2>
                     <p className="text-xl text-foreground/70 leading-relaxed font-medium mb-12">
-                        Paintings work as a fabulous gift option. Marking an occasion or just celebrating someone, you can't go wrong with a hand-picked set of mini-canvases! Leave a lasting impression with our tastefully packaged gift sets. Contact us for bulk or customized orders for weddings, housewarmings, and everything in between.
+                        Paintings work as a fabulous gift option. Marking an occasion or just celebrating someone, you can&apos;t go wrong with a hand-picked set of mini-canvases! Leave a lasting impression with our tastefully packaged gift sets. Contact us for bulk or customized orders for weddings, housewarmings, and everything in between.
                     </p>
                     <div className="flex flex-col items-center">
                         <div className="text-vibrant-pink animate-pulse mb-8">

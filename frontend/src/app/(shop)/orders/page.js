@@ -106,7 +106,7 @@ export default function OrdersPage() {
                         NO ORDERS <span className="text-vibrant-pink">YET.</span>
                     </h1>
                     <p className="text-xl text-foreground/50 mb-10 max-w-2xl mx-auto">
-                        You haven't placed any orders yet. Start shopping and discover amazing artworks!
+                        You haven&apos;t placed any orders yet. Start shopping and discover amazing artworks!
                     </p>
                     <Link href="/shop" className="px-12 py-5 rounded-full bg-vibrant-teal text-white font-black uppercase tracking-[0.2em] hover:shadow-[0_20px_40px_rgba(0,210,255,0.3)] transition-all inline-block">
                         Browse Collection

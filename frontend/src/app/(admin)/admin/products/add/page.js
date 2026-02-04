@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { adminApi } from '@/services/adminApi';
 import { uploadImage } from '@/services/api';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function AddProduct() {
   const router = useRouter();
@@ -221,7 +222,7 @@ export default function AddProduct() {
 
                 {formData.image_url && (
                     <div className="mt-4 relative h-48 w-full rounded-xl overflow-hidden bg-gray-100 dark:bg-zinc-800 border-2 border-dashed border-gray-200 dark:border-zinc-700">
-                        <img src={formData.image_url} alt="Preview" className="w-full h-full object-contain" />
+                        <Image src={formData.image_url} alt="Preview" fill className="object-contain" />
                     </div>
                 )}
             </div>

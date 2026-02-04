@@ -43,7 +43,7 @@ export default function LoginPage() {
       <div className="space-y-8">
         <div>
           <h1 className="text-4xl font-black tracking-tight mb-2">LOGIN.</h1>
-          <p className="text-foreground/50 font-medium">Don't have an account? <Link href="/register" className="text-vibrant-pink hover:underline">Create your account</Link></p>
+          <p className="text-foreground/50 font-medium">Don&apos;t have an account? <Link href="/register" className="text-vibrant-pink hover:underline">Create your account</Link></p>
         </div>
 
         {error && (

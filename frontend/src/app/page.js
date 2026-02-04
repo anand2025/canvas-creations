@@ -78,7 +78,7 @@ export default function Home() {
         <div className="container mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-4">
             <div>
-              <h2 className="text-vibrant-teal font-black text-sm uppercase tracking-widest mb-2">Editor's Choice</h2>
+              <h2 className="text-vibrant-teal font-black text-sm uppercase tracking-widest mb-2">Editor&apos;s Choice</h2>
               <h3 className="text-4xl md:text-5xl font-black">FEATURED <span className="text-vibrant-orange italic">PIECES.</span></h3>
             </div>
             <a href="/shop" className="group flex items-center gap-2 text-lg font-bold hover:text-vibrant-pink transition-colors">
