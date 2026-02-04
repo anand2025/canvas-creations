@@ -76,7 +76,7 @@ const NewsletterAdminPage = () => {
                             required
                         ></textarea>
                         <p className="text-xs text-gray-400 font-medium ml-1">
-                            Tip: You can use HTML tags like &lt;b&gt;, &lt;i&gt;, &lt;a href="..."&gt;, or &lt;div&gt; to style your email.
+                            Tip: You can use HTML tags like &lt;b&gt;, &lt;i&gt;, &lt;a href=&quot;...&quot;&gt;, or &lt;div&gt; to style your email.
                         </p>
                     </div>
 

@@ -7,11 +7,7 @@ export default function AddressSelector({ onAddressSelect, selectedAddressId }) 
     const [addresses, setAddresses] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        fetchAddresses();
-    }, []);
-
-    const fetchAddresses = async () => {
+    const fetchAddresses = React.useCallback(async () => {
         try {
             const data = await apiRequest('/addresses');
             setAddresses(data);
@@ -26,7 +22,11 @@ export default function AddressSelector({ onAddressSelect, selectedAddressId }) 
         } finally {
             setLoading(false);
         }
-    };
+    }, [selectedAddressId, onAddressSelect]);
+
+    useEffect(() => {
+        fetchAddresses();
+    }, [fetchAddresses]);
 
     if (loading) {
         return (

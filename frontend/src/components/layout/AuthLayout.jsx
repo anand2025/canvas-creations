@@ -4,6 +4,7 @@
  */
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const AuthLayout = ({ children, title, subtitle, image }) => {
     return (
@@ -11,9 +12,10 @@ const AuthLayout = ({ children, title, subtitle, image }) => {
             {/* Left: Artistic Side */}
             <div className="relative hidden lg:flex items-center justify-center p-12 overflow-hidden bg-zinc-950">
                 <div className="absolute inset-0 z-0">
-                    <img 
+                    <Image 
                         src={image || "https://images.unsplash.com/photo-1549490349-8643362247b5?w=1200&auto=format&fit=crop&q=80"} 
-                        className="w-full h-full object-cover opacity-60 scale-105"
+                        fill
+                        className="object-cover opacity-60 scale-105"
                         alt="Artistic background"
                     />
                     <div className="absolute inset-0 bg-gradient-to-tr from-vibrant-pink/40 via-vibrant-purple/40 to-transparent mix-blend-overlay"></div>

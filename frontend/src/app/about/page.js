@@ -26,7 +26,7 @@ const AboutPage = () => {
                 <div className="container mx-auto relative z-10 text-center">
                     <h1 className="text-vibrant-pink font-black text-sm uppercase tracking-[0.3em] mb-8">Our Philosophy</h1>
                     <p className="max-w-4xl mx-auto text-4xl md:text-6xl font-black leading-tight tracking-tight italic text-foreground mb-12 transition-colors duration-500">
-                        "We believe that every <span className="text-vibrant-teal font-black">brushstroke</span> tells a story, every craft holds a <span className="text-vibrant-orange font-black">dream</span>, and every creation sparks a new adventure."
+                        &quot;We believe that every <span className="text-vibrant-teal font-black">brushstroke</span> tells a story, every craft holds a <span className="text-vibrant-orange font-black">dream</span>, and every creation sparks a new adventure.&quot;
                     </p>
                     <div className="w-24 h-1 bg-vibrant-pink mx-auto rounded-full"></div>
                 </div>
@@ -59,7 +59,7 @@ const AboutPage = () => {
                             Our carefully curated collection of paintings, handmade crafts, and unique gift items is designed to add a touch of artistry and a splash of joy to your everyday moments. What started as a small passion has blossomed into a vibrant business dedicated to sharing the magic of creation with you.
                         </p>
                         <p className="text-xl text-foreground/70 leading-relaxed font-medium">
-                            Whether it's a miniature canvas for your desk or a paper craft gift for a loved one, we pour our heart into every detail, ensuring that each piece you take home is truly one-of-a-kind.
+                            Whether it&apos;s a miniature canvas for your desk or a paper craft gift for a loved one, we pour our heart into every detail, ensuring that each piece you take home is truly one-of-a-kind.
                         </p>
                         
                         <div className="grid grid-cols-2 gap-6 pt-8">

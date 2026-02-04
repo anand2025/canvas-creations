@@ -19,10 +19,11 @@ const AdminLayout = ({ children }) => {
       router.push('/login');
     } else if (role !== 'admin') {
       router.push('/access-denied');
-    } else {
-      setIsLoading(false);
+    } else if (isLoading) {
+      const timer = setTimeout(() => setIsLoading(false), 0);
+      return () => clearTimeout(timer);
     }
-  }, [router]);
+  }, [router, isLoading]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
