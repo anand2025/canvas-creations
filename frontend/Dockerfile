@@ -13,7 +13,7 @@ RUN npm install
 COPY . .
 
 # Build the application
-RUN npm run build
+RUN mkdir -p public && npm run build
 
 # Stage 2: Runner
 FROM node:20-alpine AS runner
