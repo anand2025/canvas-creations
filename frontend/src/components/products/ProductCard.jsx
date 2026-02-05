@@ -88,14 +88,16 @@ const ProductCard = ({ product }) => {
                 
                 <button 
                     onClick={handleAction}
-                    disabled={cartLoading}
-                    className={`w-full py-3 rounded-2xl ${isInCart ? 'bg-vibrant-teal text-white hover:bg-vibrant-teal/80' : 'bg-foreground text-background hover:bg-vibrant-orange hover:text-white'} font-bold transition-all transform active:scale-95 flex items-center justify-center gap-2 mt-auto ${cartLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                    disabled={cartLoading || product.stock === 0}
+                    className={`w-full py-3 rounded-2xl ${product.stock === 0 ? 'bg-zinc-500 text-white opacity-50 cursor-not-allowed' : (isInCart ? 'bg-vibrant-teal text-white hover:bg-vibrant-teal/80' : 'bg-foreground text-background hover:bg-vibrant-orange hover:text-white')} font-bold transition-all transform active:scale-95 flex items-center justify-center gap-2 mt-auto ${cartLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
                 >
                     {cartLoading ? (
                         <div className="w-5 h-5 border-2 border-background border-t-transparent rounded-full animate-spin"></div>
                     ) : (
                         <>
-                            {isInCart ? (
+                            {product.stock === 0 ? (
+                                <span>Out of Stock</span>
+                            ) : isInCart ? (
                                 <>
                                     <span>Go To Cart</span>
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

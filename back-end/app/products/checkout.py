@@ -41,6 +41,14 @@ async def create_order_from_cart_logic(user_id: str, checkout_request: Dict[str,
                     detail=f"Painting with ID {item['painting_id']} not found"
                 )
             
+            # Check for sufficient stock
+            available_stock = painting.get("stock", 0)
+            if available_stock < item["quantity"]:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Insufficient stock for '{painting.get('title')}'. Only {available_stock} left."
+                )
+            
             item_price = painting.get("price", 0)
             item_quantity = item["quantity"]
             item_total = item_price * item_quantity
@@ -77,6 +85,13 @@ async def create_order_from_cart_logic(user_id: str, checkout_request: Dict[str,
         # Insert order
         result = await db["orders"].insert_one(order_doc)
         order_id = str(result.inserted_id)
+        
+        # Decrement stock for each item
+        for item in order_items:
+            await db["paintings"].update_one(
+                {"_id": ObjectId(item["painting_id"])},
+                {"$inc": {"stock": -item["quantity"]}}
+            )
         
         # Clear user's cart after successful order
         await db["cart"].update_one(

@@ -14,6 +14,11 @@
   /* Gradients */
   --gradient-vibrant: linear-gradient(135deg, var(--vibrant-pink), var(--vibrant-orange));
   --gradient-cool: linear-gradient(135deg, var(--vibrant-teal), var(--vibrant-purple));
+
+  /* Theme-aware Defaults */
+  --input-bg: var(--secondary-bg);
+  --input-border: var(--border-color);
+  --input-text: var(--foreground);
 }
 
 @theme inline {
@@ -57,6 +62,14 @@
   --toast-bg: #18181b;
   --toast-color: #ffffff;
   --toast-border: rgba(255, 255, 255, 0.1);
+
+  /* Input & Surface refinements */
+  --input-bg: #18181b;
+  /* zinc-900 */
+  --input-border: rgba(255, 255, 255, 0.08);
+  --input-text: #f5f5f5;
+  --secondary-surface: #27272a;
+  /* zinc-800 */
 }
 
 .light {
@@ -71,13 +84,20 @@
   /* Darkened for white background */
   --vibrant-teal: #00a0c2;
   /* Darkened for white background contrast */
-  --border-color: rgba(0, 0, 0, 0.1);
+  --border-color: rgba(0, 0, 0, 0.08);
   --glass-surface: rgba(255, 255, 255, 0.85);
   --glass-border: rgba(0, 0, 0, 0.08);
   --modal-overlay: rgba(255, 255, 255, 0.8);
   --toast-bg: #ffffff;
   --toast-color: #121212;
-  --toast-border: rgba(0, 0, 0, 0.1);
+  --toast-border: rgba(0, 0, 0, 0.08);
+
+  /* Input & Surface refinements */
+  --input-bg: #ffffff;
+  --input-border: rgba(0, 0, 0, 0.1);
+  --input-text: #1a1a1a;
+  --secondary-surface: #f4f4f5;
+  /* zinc-100 */
 }
 
 body {
@@ -109,9 +129,9 @@ body {
 }
 
 .light .glass-vibrant {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
 }

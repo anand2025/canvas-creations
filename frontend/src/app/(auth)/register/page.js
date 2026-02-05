@@ -79,7 +79,7 @@ export default function RegisterPage() {
               value={formData.name}
               onChange={handleChange}
               placeholder="Enter your name"
-              className="w-full px-6 py-4 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border-none focus:ring-2 ring-vibrant-teal outline-none font-medium transition-all shadow-sm text-black dark:text-white"
+              className="w-full px-6 py-4 rounded-2xl bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--input-border)] focus:ring-2 ring-vibrant-teal/50 focus:border-vibrant-teal outline-none font-medium transition-all shadow-sm"
             />
           </div>
 
@@ -92,7 +92,7 @@ export default function RegisterPage() {
               value={formData.email}
               onChange={handleChange}
               placeholder="Enter your email"
-              className="w-full px-6 py-4 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border-none focus:ring-2 ring-vibrant-purple outline-none font-medium transition-all shadow-sm text-black dark:text-white"
+              className="w-full px-6 py-4 rounded-2xl bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--input-border)] focus:ring-2 ring-vibrant-purple/50 focus:border-vibrant-purple outline-none font-medium transition-all shadow-sm"
             />
           </div>
 
@@ -105,7 +105,7 @@ export default function RegisterPage() {
               value={formData.password}
               onChange={handleChange}
               placeholder="••••••••"
-              className="w-full px-6 py-4 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border-none focus:ring-2 ring-vibrant-orange outline-none font-medium transition-all shadow-sm text-black dark:text-white"
+              className="w-full px-6 py-4 rounded-2xl bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--input-border)] focus:ring-2 ring-vibrant-orange/50 focus:border-vibrant-orange outline-none font-medium transition-all shadow-sm"
             />
             <p className="text-[10px] text-foreground/40 px-1 font-medium italic mt-1">
               Must be at least 8 chars with uppercase, lowercase, number, and special character.
