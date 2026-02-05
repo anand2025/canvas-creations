@@ -58,10 +58,39 @@ async def get_all_users(current_admin: dict = Depends(get_current_admin)):
 async def get_all_orders(current_admin: dict = Depends(get_current_admin)):
     try:
         orders = []
-        cursor = db["orders"].find()
+        cursor = db["orders"].find().sort("created_at", -1)
         async for order in cursor:
             order["id"] = str(order["_id"])
             order.pop("_id")
+            
+            # Ensure safe defaults for older data
+            if "shipping_cost" not in order:
+                order["shipping_cost"] = 0.0
+            if "grand_total" not in order:
+                order["grand_total"] = order.get("total_price", 0) + order["shipping_cost"]
+            if "payment_status" not in order:
+                order["payment_status"] = "pending"
+            if "created_at" not in order:
+                order["created_at"] = None
+            if "user_id" not in order:
+                order["user_id"] = "guest"
+            if "customer_email" not in order:
+                order["customer_email"] = "N/A"
+            if "customer_name" not in order:
+                order["customer_name"] = "Guest"
+            if "payment_method" not in order:
+                order["payment_method"] = "N/A"
+            if "shipping_address" not in order:
+                order["shipping_address"] = {
+                    "full_name": order.get("customer_name", "Guest"),
+                    "phone": "N/A",
+                    "address_line1": "N/A",
+                    "city": "N/A",
+                    "state": "N/A",
+                    "postal_code": "N/A",
+                    "country": "India"
+                }
+                
             orders.append(order)
         return orders
     except Exception as e:

@@ -61,7 +61,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
-              className="w-full px-6 py-4 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border-none focus:ring-2 ring-vibrant-pink outline-none font-medium transition-all shadow-sm text-black dark:text-white"
+              className="w-full px-6 py-4 rounded-2xl bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--input-border)] focus:ring-2 ring-vibrant-pink/50 focus:border-vibrant-pink outline-none font-medium transition-all shadow-sm"
             />
           </div>
 
@@ -76,7 +76,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full px-6 py-4 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border-none focus:ring-2 ring-vibrant-teal outline-none font-medium transition-all shadow-sm text-black dark:text-white"
+              className="w-full px-6 py-4 rounded-2xl bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--input-border)] focus:ring-2 ring-vibrant-teal/50 focus:border-vibrant-teal outline-none font-medium transition-all shadow-sm"
             />
           </div>
 
@@ -89,9 +89,9 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="relative">
+        <div className="relative py-4">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-zinc-100 dark:border-zinc-900"></div>
+            <div className="w-full border-t border-[var(--input-border)]"></div>
           </div>
         </div>
       </div>

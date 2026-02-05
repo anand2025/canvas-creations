@@ -119,7 +119,7 @@ const ProductDetailPage = ({ params }) => {
                     {/* Image Section */}
                     <div className="relative group">
                         <div className="absolute -inset-1 bg-gradient-to-r from-vibrant-pink to-vibrant-orange rounded-[40px] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-                        <div className="relative aspect-[4/5] md:aspect-square overflow-hidden rounded-[32px] bg-zinc-100 dark:bg-zinc-900 border border-[var(--border-color)] shadow-2xl">
+                        <div className="relative aspect-[4/5] md:aspect-square overflow-hidden rounded-[32px] bg-[var(--secondary-surface)] border border-[var(--border-color)] shadow-2xl">
                             {product.image_url && (product.image_url.startsWith('http') || product.image_url.startsWith('/')) ? (
                                 <Image 
                                     src={product.image_url} 
@@ -182,14 +182,14 @@ const ProductDetailPage = ({ params }) => {
                                 <div className="flex items-center border-2 border-[var(--border-color)] rounded-2xl p-1 bg-secondary-bg">
                                     <button 
                                         onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
-                                        className="w-10 h-10 flex items-center justify-center hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-xl transition-colors font-bold"
+                                        className="w-10 h-10 flex items-center justify-center hover:bg-[var(--secondary-bg-hover)] rounded-xl transition-colors font-bold"
                                     >
                                         -
                                     </button>
                                     <span className="w-12 text-center font-bold">{quantity}</span>
                                     <button 
                                         onClick={() => setQuantity(prev => Math.min(product.stock, prev + 1))}
-                                        className="w-10 h-10 flex items-center justify-center hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-xl transition-colors font-bold"
+                                        className="w-10 h-10 flex items-center justify-center hover:bg-[var(--secondary-bg-hover)] rounded-xl transition-colors font-bold"
                                     >
                                         +
                                     </button>
@@ -200,21 +200,21 @@ const ProductDetailPage = ({ params }) => {
                                 <button 
                                     onClick={handleAddToCart}
                                     disabled={isActionLoading || product.stock === 0}
-                                    className={`flex-1 py-5 rounded-2xl ${isInCart ? 'bg-vibrant-teal' : 'bg-foreground'} text-background font-black text-lg uppercase tracking-tighter hover:bg-vibrant-pink hover:text-white transition-all transform active:scale-[0.98] shadow-xl hover:shadow-vibrant-pink/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-foreground disabled:hover:text-background`}
+                                    className={`flex-1 py-5 rounded-2xl ${product.stock === 0 ? 'bg-zinc-500' : (isInCart ? 'bg-vibrant-teal' : 'bg-foreground')} text-background font-black text-lg uppercase tracking-tighter hover:bg-vibrant-pink hover:text-white transition-all transform active:scale-[0.98] shadow-xl hover:shadow-vibrant-pink/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-foreground disabled:hover:text-background`}
                                 >
-                                    {isActionLoading ? 'Processing...' : (isInCart ? 'Go to Cart' : 'Add to Cart')}
+                                    {isActionLoading ? 'Processing...' : (product.stock === 0 ? 'Out of Stock' : (isInCart ? 'Go to Cart' : 'Add to Cart'))}
                                 </button>
                                 <button 
                                     onClick={handleBuyItNow}
                                     disabled={isActionLoading || product.stock === 0}
                                     className="flex-1 py-5 rounded-2xl bg-vibrant-orange text-white font-black text-lg uppercase tracking-tighter hover:shadow-[0_15px_30px_rgba(255,95,0,0.4)] transition-all transform active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
                                 >
-                                    {isActionLoading ? 'Processing...' : 'Buy It Now'}
+                                    {isActionLoading ? 'Processing...' : (product.stock === 0 ? 'Sold Out' : 'Buy It Now')}
                                 </button>
                                 <button 
                                     onClick={handleWishlistToggle}
                                     disabled={wishlistLoading}
-                                    className={`p-5 rounded-2xl border-2 transition-all transform active:scale-[0.98] ${isWishlisted ? 'bg-white border-red-500 text-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]' : 'border-zinc-100 dark:border-zinc-800 hover:border-red-500 text-foreground'}`}
+                                    className={`p-5 rounded-2xl border-2 transition-all transform active:scale-[0.98] ${isWishlisted ? 'bg-white border-red-500 text-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]' : 'border-[var(--border-color)] hover:border-red-500 text-foreground'}`}
                                 >
                                     <svg 
                                         xmlns="http://www.w3.org/2000/svg" 
@@ -230,7 +230,7 @@ const ProductDetailPage = ({ params }) => {
                         </div>
 
                         {/* Extra Info */}
-                        <div className="mt-12 pt-8 border-t border-zinc-100 dark:border-zinc-900 flex flex-wrap gap-8">
+                        <div className="mt-12 pt-8 border-t border-[var(--border-color)] flex flex-wrap gap-8">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-full bg-vibrant-teal/10 flex items-center justify-center text-vibrant-teal">
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

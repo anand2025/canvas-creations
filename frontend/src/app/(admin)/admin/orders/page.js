@@ -75,12 +75,12 @@ export default function AdminOrders() {
                 <tr key={order.id} className="hover:bg-secondary-hover transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-foreground/40">{order.id.substring(0, 8)}...</td>
                   <td className="px-6 py-4 font-bold text-foreground">
-                      {order.user_id ? "User " + order.user_id.substring(0, 4) : "Guest"}
+                      {order.customer_name || "Guest"}
                   </td>
                   <td className="px-6 py-4 text-sm text-foreground/50">
                       {order.created_at ? new Date(order.created_at).toLocaleDateString() : 'N/A'}
                   </td>
-                  <td className="px-6 py-4 font-black text-foreground">₹{order.total_price}</td>
+                  <td className="px-6 py-4 font-black text-foreground">₹{order.grand_total || order.total_price}</td>
                   <td className="px-6 py-4">
                     <select 
                         value={order.status}
