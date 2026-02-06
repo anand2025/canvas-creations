@@ -19,7 +19,10 @@ export const adminApi = {
   }),
 
   // Orders
-  getOrders: () => apiRequest('/admin/orders'),
+  getOrders: (params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    return apiRequest(`/admin/orders?${query}`);
+  },
   updateOrderStatus: (id, status) => apiRequest(`/admin/orders/${id}/status?status=${status}`, {
     method: 'PUT',
   }),
@@ -38,4 +41,5 @@ export const adminApi = {
 
   // Reviews
   getReviews: () => apiRequest('/admin/reviews'),
+  getReviewsSummary: () => apiRequest('/admin/reviews/summary'),
 };

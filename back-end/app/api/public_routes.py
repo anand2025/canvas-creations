@@ -32,8 +32,8 @@ from app.users.addresses import (
 )
 from app.products.paintings import create_painting_logic, get_all_paintings_logic, get_painting_logic
 from app.products.orders import create_order_logic
-from app.products.checkout import create_order_from_cart_logic, get_user_orders_logic, get_order_by_id_logic
-from app.products.reviews import create_review_logic
+from app.products.checkout import create_order_from_cart_logic, get_user_orders_logic, get_order_by_id_logic, cancel_user_order_logic
+from app.products.reviews import create_review_logic, get_product_reviews_logic, check_user_can_review_logic
 from app.products.cart import add_to_cart_logic, remove_from_cart_logic, update_cart_quantity_logic, get_cart_logic, clear_cart_logic
 from app.payments.payments import create_payment_logic
 from app.products.categories import create_category_logic, get_categories_logic
@@ -144,10 +144,26 @@ async def get_user_orders(current_user: dict = Depends(get_current_active_user))
 async def get_order(order_id: str, current_user: dict = Depends(get_current_active_user)):
     return await get_order_by_id_logic(order_id, current_user["id"])
 
+@router.put("/orders/{order_id}/cancel", description="Cancel a pending order.")
+async def cancel_order(order_id: str, current_user: dict = Depends(get_current_active_user)):
+    return await cancel_user_order_logic(order_id, current_user["id"])
+
 # -------------------- REVIEWS --------------------
 @router.post("/reviews", response_model=ReviewOut, description="Submit a review for a product. Requires active user authentication.")
 async def create_review(review: ReviewCreate, current_user: dict = Depends(get_current_active_user)):
+    # Ensure the user_id and user_name match the authenticated user
+    review.user_id = current_user["id"]
+    review.user_name = current_user["name"]
     return await create_review_logic(review)
+
+@router.get("/paintings/{id}/reviews", response_model=list[ReviewOut], description="Get all reviews for a specific painting.")
+async def get_product_reviews(id: str):
+    return await get_product_reviews_logic(id)
+
+@router.get("/paintings/{id}/can-review", description="Check if the current user can review this product.")
+async def check_user_can_review(id: str, current_user: dict = Depends(get_current_active_user)):
+    can_review = await check_user_can_review_logic(current_user["id"], id)
+    return {"can_review": can_review}
 
 # -------------------- CART --------------------
 @router.post("/cart", description="Add an item to the user's shopping cart.")

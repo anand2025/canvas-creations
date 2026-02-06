@@ -11,6 +11,8 @@ class PaintingBase(BaseModel):
     stock: int
     artist: str
     is_bestseller: Optional[bool] = False
+    rating: Optional[float] = 0.0
+    num_reviews: Optional[int] = 0
 
 class PaintingCreate(PaintingBase):
     pass

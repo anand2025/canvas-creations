@@ -9,6 +9,8 @@ import { useAuth } from '@/context/AuthContext';
 import { useWishlist } from '@/context/WishlistContext';
 import { useCart } from '@/context/CartContext';
 import { toast } from 'react-hot-toast';
+import ReviewSection from '@/components/reviews/ReviewSection';
+import StarRating from '@/components/reviews/StarRating';
 
 const ProductDetailPage = ({ params }) => {
     // Unwrap params in Next.js 15+
@@ -155,6 +157,14 @@ const ProductDetailPage = ({ params }) => {
                                     Hand-Painted
                                 </div>
                             </div>
+                            
+                            {/* Rating Summary */}
+                            <div className="flex items-center gap-2 mt-4">
+                                <StarRating rating={product.rating || 0} readOnly size="sm" />
+                                <span className="text-sm font-bold opacity-60">
+                                    ({product.num_reviews || 0} {product.num_reviews === 1 ? 'Review' : 'Reviews'})
+                                </span>
+                            </div>
                         </div>
 
                         <div className="space-y-6 mb-10">
@@ -251,6 +261,9 @@ const ProductDetailPage = ({ params }) => {
                         </div>
                     </div>
                 </div>
+
+                {/* Reviews Section */}
+                <ReviewSection paintingId={id} />
             </div>
         </div>
     );
