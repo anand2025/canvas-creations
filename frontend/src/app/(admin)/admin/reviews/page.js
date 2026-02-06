@@ -96,7 +96,7 @@ export default function AdminReviews() {
                           <StarRating rating={review.rating} readOnly size="sm" />
                       </td>
                       <td className="px-8 py-5 text-foreground/70 font-medium max-w-xs truncate italic">
-                          "{review.comment}"
+                          &quot;{review.comment}&quot;
                       </td>
                       <td className="px-8 py-5 text-xs font-bold text-foreground/40 uppercase tracking-widest">
                           {review.created_at ? new Date(review.created_at).toLocaleDateString() : 'N/A'}

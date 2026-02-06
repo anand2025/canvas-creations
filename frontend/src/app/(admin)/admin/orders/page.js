@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { adminApi } from '@/services/adminApi';
 import OrderDetailsModal from '@/components/admin/OrderDetailsModal';
 
@@ -19,9 +19,9 @@ export default function AdminOrders() {
 
   useEffect(() => {
     fetchOrders();
-  }, [page, status, timeRange]);
+  }, [fetchOrders]);
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
       setLoading(true);
       const params = {
@@ -42,7 +42,7 @@ export default function AdminOrders() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, status, timeRange]);
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {

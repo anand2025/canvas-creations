@@ -27,7 +27,7 @@ const ReviewList = ({ reviews }) => {
             </span>
           </div>
           <p className="text-foreground/80 leading-relaxed italic">
-            "{review.comment}"
+            &quot;{review.comment}&quot;
           </p>
         </div>
       ))}
