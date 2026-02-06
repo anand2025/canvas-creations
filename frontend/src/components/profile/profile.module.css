@@ -1,8 +1,8 @@
-/* Profile Container */
+﻿/* Profile Container */
 .profileContainer {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 4rem 2rem;
+  padding: 1.5rem 2rem;
   min-height: 100vh;
   position: relative;
   overflow: hidden;
@@ -41,13 +41,13 @@
 
 .profileHeader {
   text-align: center;
-  margin-bottom: 4rem;
+  margin-bottom: 1.5rem;
   position: relative;
   z-index: 1;
 }
 
 .profileHeader h1 {
-  font-size: 4rem;
+  font-size: 3rem;
   font-weight: 900;
   letter-spacing: -0.05em;
   background: linear-gradient(135deg, var(--vibrant-pink), var(--vibrant-orange));
@@ -61,7 +61,7 @@
 .profileHeader p {
   color: var(--foreground);
   opacity: 0.7;
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 500;
 }
 
@@ -69,8 +69,8 @@
 .statsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
-  margin-bottom: 4rem;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
   position: relative;
   z-index: 1;
 }
@@ -131,8 +131,8 @@
 /* Profile Content Layout */
 .profileContent {
   display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 3rem;
+  grid-template-columns: 280px 1fr;
+  gap: 1.5rem;
   align-items: start;
   position: relative;
   z-index: 1;
@@ -194,15 +194,19 @@
   transition: transform 0.3s ease;
 }
 
+.tabLabel {
+  white-space: nowrap;
+}
+
 /* Main Content */
 .mainContent {
   background: var(--glass-surface);
   backdrop-filter: blur(30px);
   border-radius: 40px;
-  padding: 3.5rem;
+  padding: 2rem;
   border: 1px solid var(--glass-border);
   box-shadow: 0 15px 60px rgba(0, 0, 0, 0.1);
-  min-height: 700px;
+  min-height: auto;
 }
 
 /* Section Styles */
@@ -226,8 +230,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 3rem;
-  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -635,9 +639,9 @@
 
 .orderDetails {
   background: var(--secondary-bg);
-  padding: 1.5rem 2rem;
+  padding: 1.25rem 1.75rem;
   border-radius: 20px;
-  margin: 1.5rem 0;
+  margin: 1.25rem 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -812,7 +816,7 @@
   border: 1px solid var(--glass-border);
   border-radius: 32px;
   width: 100%;
-  max-width: 800px;
+  max-width: 700px;
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
@@ -853,7 +857,7 @@
 }
 
 .modalHeader {
-  padding: 2.5rem 3rem 1.5rem;
+  padding: 1.5rem 2rem 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -861,7 +865,7 @@
 }
 
 .modalHeader h3 {
-  font-size: 2.5rem;
+  font-size: 1.8rem;
   font-weight: 900;
   background: var(--gradient-vibrant);
   -webkit-background-clip: text;
@@ -893,8 +897,158 @@
   transform: rotate(90deg);
 }
 
+/* Modal Internal Styling Refinements */
+.orderInfo {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  background: var(--secondary-bg);
+  padding: 1.25rem;
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
+  margin-bottom: 1.5rem;
+}
+
+.infoItem label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--foreground);
+  opacity: 0.4;
+  margin-bottom: 0.25rem;
+}
+
+.infoItem p {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.orderItemsList {
+  margin-bottom: 1.5rem;
+}
+
+.orderItemsList h4 {
+  font-size: 0.8rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--vibrant-teal);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.orderItemsList h4::before {
+  content: '';
+  display: block;
+  width: 8px;
+  height: 8px;
+  background: var(--vibrant-teal);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--vibrant-teal);
+}
+
+.itemsTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--secondary-bg);
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.itemsTable th {
+  padding: 1rem 1.5rem;
+  text-align: left;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  background: var(--glass-surface);
+  color: var(--foreground);
+  opacity: 0.6;
+}
+
+.itemsTable td {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border-color);
+  font-weight: 600;
+}
+
+.orderSummary {
+  background: var(--secondary-bg);
+  padding: 1.25rem;
+  border-radius: 20px;
+  border: 2px dashed var(--border-color);
+  margin-bottom: 1.5rem;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  opacity: 0.7;
+}
+
+.summaryRow.total {
+  opacity: 1;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--vibrant-teal);
+}
+
+.shippingAddress {
+  background: var(--glass-surface);
+  padding: 1.25rem;
+  border-radius: 24px;
+  border: 1px solid var(--vibrant-purple);
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.05) 0%, transparent 100%);
+}
+
+.shippingAddress h4 {
+  font-size: 0.8rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--vibrant-purple);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.shippingAddress h4::before {
+  content: '';
+  display: block;
+  width: 8px;
+  height: 8px;
+  background: var(--vibrant-purple);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--vibrant-purple);
+}
+
+.shippingAddress p {
+  line-height: 1.6;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+  .orderInfo {
+    grid-template-columns: 1fr;
+  }
+}
+
 .modalBody {
-  padding: 2rem 3rem 3rem;
+  padding: 1.25rem 2rem 2rem;
 }
 
 .fullWidth {
@@ -958,4 +1112,9 @@
   .mainContent {
     padding: 2rem;
   }
+}
+
+
+.tabLabel {
+  white-space: nowrap;
 }

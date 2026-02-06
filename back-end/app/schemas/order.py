@@ -76,3 +76,10 @@ class OrderResponse(BaseModel):
     status: str
     message: str
     order_details: OrderOut
+
+class PaginatedOrdersResponse(BaseModel):
+    orders: List[OrderOut]
+    total_count: int
+    page: int
+    limit: int
+    total_pages: int

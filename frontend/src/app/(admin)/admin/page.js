@@ -35,7 +35,7 @@ export default function AdminDashboard() {
           orders: stats.total_orders,
           users: stats.total_users,
           revenue: stats.total_revenue,
-          pendingOrders: 0 // We'll skip this heavy check for now or implement properly later
+          pendingOrders: stats.total_pending_orders
         });
       } catch (error) {
         console.error("Failed to fetch dashboard stats", error);

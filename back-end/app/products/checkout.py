@@ -167,3 +167,51 @@ async def get_order_by_id_logic(order_id: str, user_id: str):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch order: {str(e)}")
+async def cancel_user_order_logic(order_id: str, user_id: str):
+    """
+    Cancel a user's order and restore stock
+    
+    Args:
+        order_id: The order's ID
+        user_id: The user's ID
+        
+    Returns:
+        Success message
+        
+    Raises:
+        HTTPException: If order not found, unauthorized, or not in pending status
+    """
+    try:
+        order = await db["orders"].find_one({"_id": ObjectId(order_id)})
+        
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found")
+            
+        if order.get("user_id") != user_id:
+            raise HTTPException(status_code=403, detail="Unauthorized to cancel this order")
+            
+        if order.get("status") != "pending":
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Order cannot be cancelled because its status is '{order.get('status')}'"
+            )
+            
+        # Update order status to cancelled
+        await db["orders"].update_one(
+            {"_id": ObjectId(order_id)},
+            {"$set": {"status": "cancelled", "updated_at": datetime.utcnow()}}
+        )
+        
+        # Restore stock for each item
+        for item in order["items"]:
+            await db["paintings"].update_one(
+                {"_id": ObjectId(item["painting_id"])},
+                {"$inc": {"stock": item["quantity"]}}
+            )
+            
+        return {"status": "success", "message": "Order cancelled successfully and stock restored."}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

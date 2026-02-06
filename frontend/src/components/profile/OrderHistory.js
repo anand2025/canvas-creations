@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { apiRequest } from '@/services/api';
+import ConfirmModal from '@/components/common/ConfirmModal';
 import styles from './profile.module.css';
 
-export default function OrderHistory() {
+export default function OrderHistory({ onSelectOrder }) {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
-  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [orderToCancel, setOrderToCancel] = useState(null);
 
   useEffect(() => {
     fetchOrders();
@@ -40,6 +42,25 @@ export default function OrderHistory() {
     ? orders 
     : orders.filter(order => order.status.toLowerCase() === filter);
 
+  const handleCancelOrder = async (orderId) => {
+    setOrderToCancel(orderId);
+    setShowConfirmModal(true);
+  };
+
+  const confirmCancellation = async () => {
+    if (!orderToCancel) return;
+    
+    try {
+      await apiRequest(`/orders/${orderToCancel}/cancel`, { method: 'PUT' });
+      fetchOrders(); // Refresh list
+    } catch (error) {
+      console.error('Error cancelling order:', error);
+      alert(error.message || 'Failed to cancel order');
+    } finally {
+      setOrderToCancel(null);
+    }
+  };
+
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
@@ -50,9 +71,10 @@ export default function OrderHistory() {
   }
 
   return (
-    <div className={styles.section}>
-      <div className={styles.sectionHeader}>
-        <h2>Order History</h2>
+    <>
+      <div className={styles.section}>
+      <div className={styles.sectionHeader} style={{ marginBottom: '1rem' }}>
+        <h2 style={{ fontSize: '1.5rem' }}>Order History</h2>
         <div className={styles.filterGroup}>
           <select 
             value={filter} 
@@ -78,27 +100,23 @@ export default function OrderHistory() {
       ) : (
         <div className={styles.ordersGrid}>
           {filteredOrders.map((order) => (
-            <div key={order.id} className={styles.orderCard}>
-              <div className={styles.orderHeader}>
+            <div key={order.id} className={styles.orderCard} style={{ padding: '1.25rem' }}>
+              <div className={styles.orderHeader} style={{ marginBottom: '0.75rem' }}>
                 <div>
                   <div className={styles.orderId}>Order #{order.id.slice(-8)}</div>
                   <div className={styles.orderDate}>
-                    {new Date(order.created_at).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
+                    {new Date(order.created_at).toLocaleDateString()}
                   </div>
                 </div>
                 <div 
                   className={styles.statusBadge}
-                  style={{ backgroundColor: getStatusColor(order.status) }}
+                  style={{ backgroundColor: getStatusColor(order.status), padding: '0.4rem 0.8rem', fontSize: '0.7rem' }}
                 >
                   {order.status}
                 </div>
               </div>
 
-              <div className={styles.orderDetails}>
+              <div className={styles.orderDetails} style={{ padding: '0.75rem 1.25rem', margin: '0.75rem 0' }}>
                 <div className={styles.orderItems}>
                   <strong>{order.items.length}</strong> item(s)
                 </div>
@@ -107,82 +125,46 @@ export default function OrderHistory() {
                 </div>
               </div>
 
-              <div className={styles.orderActions}>
+              <div className={styles.orderActions} style={{ gap: '0.75rem', display: 'flex' }}>
                 <button 
                   className={styles.viewButton}
-                  onClick={() => setSelectedOrder(order)}
+                  onClick={() => onSelectOrder(order)}
                 >
                   View Details
                 </button>
+                {order.status.toLowerCase() === 'pending' && (
+                  <button 
+                    className={styles.cancelButton}
+                    style={{ 
+                      padding: '0.6rem 1.25rem', 
+                      borderRadius: '12px', 
+                      fontSize: '0.85rem',
+                      color: 'var(--vibrant-pink)',
+                      borderColor: 'var(--vibrant-pink)'
+                    }}
+                    onClick={() => handleCancelOrder(order.id)}
+                  >
+                    Cancel Order
+                  </button>
+                )}
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* Order Details Modal */}
-      {selectedOrder && (
-        <div className={styles.modal} onClick={() => setSelectedOrder(null)}>
-          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <h3>Order Details</h3>
-              <button 
-                className={styles.closeButton}
-                onClick={() => setSelectedOrder(null)}
-              >
-                ✕
-              </button>
-            </div>
+      </div>
 
-            <div className={styles.modalBody}>
-              <div className={styles.orderInfo}>
-                <p><strong>Order ID:</strong> {selectedOrder.id}</p>
-                <p><strong>Date:</strong> {new Date(selectedOrder.created_at).toLocaleDateString()}</p>
-                <p><strong>Status:</strong> <span style={{ color: getStatusColor(selectedOrder.status) }}>{selectedOrder.status}</span></p>
-                <p><strong>Payment Method:</strong> {selectedOrder.payment_method.toUpperCase()}</p>
-              </div>
 
-              <div className={styles.orderItemsList}>
-                <h4>Items</h4>
-                {selectedOrder.items.map((item, index) => (
-                  <div key={index} className={styles.orderItem}>
-                    <div>Painting ID: {item.painting_id}</div>
-                    <div>Quantity: {item.quantity}</div>
-                    <div>Price: ₹{item.price.toLocaleString()}</div>
-                  </div>
-                ))}
-              </div>
-
-              <div className={styles.orderSummary}>
-                <div className={styles.summaryRow}>
-                  <span>Subtotal:</span>
-                  <span>₹{selectedOrder.total_price.toLocaleString()}</span>
-                </div>
-                <div className={styles.summaryRow}>
-                  <span>Shipping:</span>
-                  <span>₹{selectedOrder.shipping_cost.toLocaleString()}</span>
-                </div>
-                <div className={`${styles.summaryRow} ${styles.total}`}>
-                  <span>Total:</span>
-                  <span>₹{selectedOrder.grand_total.toLocaleString()}</span>
-                </div>
-              </div>
-
-              <div className={styles.shippingAddress}>
-                <h4>Shipping Address</h4>
-                <p>{selectedOrder.shipping_address.full_name}</p>
-                <p>{selectedOrder.shipping_address.address_line1}</p>
-                {selectedOrder.shipping_address.address_line2 && (
-                  <p>{selectedOrder.shipping_address.address_line2}</p>
-                )}
-                <p>{selectedOrder.shipping_address.city}, {selectedOrder.shipping_address.state} {selectedOrder.shipping_address.postal_code}</p>
-                <p>{selectedOrder.shipping_address.country}</p>
-                <p>Phone: {selectedOrder.shipping_address.phone}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+      <ConfirmModal 
+        isOpen={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={confirmCancellation}
+        title="Cancel Order?"
+        message="Are you sure you want to cancel this order? This will restore the items back to our stock."
+        confirmText="Yes, Cancel Order"
+        cancelText="No, Keep It"
+      />
+    </>
   );
 }

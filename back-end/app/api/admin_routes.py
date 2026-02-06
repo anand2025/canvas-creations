@@ -4,13 +4,14 @@ from app.auth.auth import get_current_admin
 from app.models.db import db
 from app.schemas.user import UserOut
 from app.schemas.paintings import PaintingCreate, PaintingOut
-from app.schemas.order import OrderOut
+from app.schemas.order import OrderOut, PaginatedOrdersResponse
 from app.schemas.payment import PaymentOut
 from app.schemas.review import ReviewOut
 from app.schemas.newsletter import BulkEmailRequest
 from app.utilities.email import send_email
+from app.utils import serialize_doc
 from bson import ObjectId
-from datetime import datetime
+from datetime import datetime, timedelta
 
 router = APIRouter()
 
@@ -31,12 +32,14 @@ async def get_dashboard_stats(current_admin: dict = Depends(get_current_admin)):
         total_orders = await db["orders"].count_documents({})
         total_users = await db["users"].count_documents({})
         total_paintings = await db["paintings"].count_documents({})
+        total_pending_orders = await db["orders"].count_documents({"status": "pending"})
 
         return {
             "total_revenue": total_revenue,
             "total_orders": total_orders,
             "total_users": total_users,
-            "total_paintings": total_paintings
+            "total_paintings": total_paintings,
+            "total_pending_orders": total_pending_orders
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -54,14 +57,38 @@ async def get_all_users(current_admin: dict = Depends(get_current_admin)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/orders", response_model=list[OrderOut], description="Get a list of all orders. Admin only.")
-async def get_all_orders(current_admin: dict = Depends(get_current_admin)):
+@router.get("/orders", response_model=PaginatedOrdersResponse, description="Get a list of all orders. Admin only.")
+async def get_all_orders(
+    page: int = 1, 
+    limit: int = 10, 
+    status: str = None, 
+    time_range: str = "all",
+    current_admin: dict = Depends(get_current_admin)
+):
     try:
+        query = {}
+        if status:
+            query["status"] = status
+        
+        if time_range and time_range != "all":
+            now = datetime.utcnow()
+            if time_range == "today":
+                start_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
+            elif time_range == "7days":
+                start_date = now - timedelta(days=7)
+            elif time_range == "30days":
+                start_date = now - timedelta(days=30)
+            
+            query["created_at"] = {"$gte": start_date}
+
+        total_count = await db["orders"].count_documents(query)
+        total_pages = (total_count + limit - 1) // limit
+
         orders = []
-        cursor = db["orders"].find().sort("created_at", -1)
+        cursor = db["orders"].find(query).sort("created_at", -1).skip((page - 1) * limit).limit(limit)
         async for order in cursor:
-            order["id"] = str(order["_id"])
-            order.pop("_id")
+            # ... process order as before ...
+            order = serialize_doc(order)
             
             # Ensure safe defaults for older data
             if "shipping_cost" not in order:
@@ -92,7 +119,14 @@ async def get_all_orders(current_admin: dict = Depends(get_current_admin)):
                 }
                 
             orders.append(order)
-        return orders
+            
+        return {
+            "orders": orders,
+            "total_count": total_count,
+            "page": page,
+            "limit": limit,
+            "total_pages": total_pages
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -186,12 +220,38 @@ async def get_all_reviews(current_admin: dict = Depends(get_current_admin)):
         return reviews
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/reviews/summary", description="Get painting-wise rating summaries. Admin only.")
+async def get_reviews_summary(current_admin: dict = Depends(get_current_admin)):
+    try:
+        pipeline = [
+            {"$group": {
+                "_id": "$painting_id",
+                "avgRating": {"$avg": "$rating"},
+                "count": {"$sum": 1}
+            }}
+        ]
+        summaries = await db["reviews"].aggregate(pipeline).to_list(None)
+        
+        # Link with painting titles
+        result = []
+        for s in summaries:
+            painting = await db["paintings"].find_one({"_id": ObjectId(s["_id"])})
+            result.append({
+                "painting_id": s["_id"],
+                "title": painting["title"] if painting else "Unknown Product",
+                "avg_rating": round(s["avgRating"], 1),
+                "review_count": s["count"]
+            })
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
     
 @router.get("/inventory", response_model=list[PaintingOut], description="View current painting inventory stock. Admin only.")
 async def view_inventory(current_admin: dict = Depends(get_current_admin)):
     try:
         paintings = await db["paintings"].find().to_list(100)
-        return paintings
+        return [serialize_doc(p) for p in paintings]
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching inventory: {e}")
 
@@ -210,7 +270,7 @@ async def update_inventory(painting_id: str, stock: int, current_admin: dict = D
             {"$set": {"stock": stock}},
             return_document=True
         )
-        return updated_painting
+        return serialize_doc(updated_painting)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error updating inventory: {e}")
 
@@ -233,7 +293,7 @@ async def adjust_inventory(painting_id: str, quantity: int, current_admin: dict 
             {"$set": {"stock": new_stock}},
             return_document=True
         )
-        return updated_painting
+        return serialize_doc(updated_painting)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error adjusting inventory: {e}")
 
@@ -256,7 +316,7 @@ async def update_order_status(order_id: str, status: str, current_admin: dict = 
             {"$set": {"status": status}},
             return_document=True
         )
-        return updated_order
+        return serialize_doc(updated_order)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error updating order status: {e}")
 
