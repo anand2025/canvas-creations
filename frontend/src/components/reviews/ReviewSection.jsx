@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import ReviewForm from './ReviewForm';
 import ReviewList from './ReviewList';
 import { apiRequest } from '@/services/api';
@@ -12,7 +12,7 @@ const ReviewSection = ({ paintingId }) => {
   const [checkingEligibility, setCheckingEligibility] = useState(false);
   const { user } = useAuth();
 
-  const fetchReviews = async () => {
+  const fetchReviews = useCallback(async () => {
     try {
       setLoading(true);
       const data = await apiRequest(`/paintings/${paintingId}/reviews`);
@@ -22,9 +22,9 @@ const ReviewSection = ({ paintingId }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [paintingId]);
 
-  const checkEligibility = async () => {
+  const checkEligibility = useCallback(async () => {
     if (!user) return;
     try {
       setCheckingEligibility(true);
@@ -35,19 +35,19 @@ const ReviewSection = ({ paintingId }) => {
     } finally {
       setCheckingEligibility(false);
     }
-  };
+  }, [paintingId, user]);
 
   useEffect(() => {
     if (paintingId) {
       fetchReviews();
     }
-  }, [paintingId]);
+  }, [paintingId, fetchReviews]);
 
   useEffect(() => {
     if (paintingId && user) {
       checkEligibility();
     }
-  }, [paintingId, user]);
+  }, [paintingId, user, checkEligibility]);
 
   const handleReviewSubmit = (newReview) => {
     setReviews([newReview, ...reviews]);
