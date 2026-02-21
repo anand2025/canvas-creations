@@ -29,6 +29,10 @@ export const adminApi = {
 
   // Users
   getUsers: () => apiRequest('/admin/users'),
+  addSeller: (data) => apiRequest('/admin/sellers', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
 
   // Inventory
   getInventory: () => apiRequest('/admin/paintings'), // Reusing getPaintings for now as it returns stock

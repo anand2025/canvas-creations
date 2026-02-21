@@ -13,6 +13,8 @@ async def create_user_logic(user):
         user_dict = user.dict()
         user_dict["password"] = get_password_hash(user.password)
         user_dict["created_at"] = datetime.utcnow()
+        user_dict["is_verified"] = False  # Default to unverified
+        user_dict["is_disabled"] = False  # Default to active
         res = await db["users"].insert_one(user_dict)
         new_user = await db["users"].find_one({"_id": res.inserted_id})
         return serialize_doc(new_user)

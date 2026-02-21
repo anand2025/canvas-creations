@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { apiRequest } from '@/services/api';
 import ConfirmModal from '@/components/common/ConfirmModal';
 import styles from './profile.module.css';
+import OrderCard from '@/components/ui/OrderCard';
 
 export default function OrderHistory({ onSelectOrder }) {
   const [orders, setOrders] = useState([]);
@@ -27,16 +28,6 @@ export default function OrderHistory({ onSelectOrder }) {
     }
   };
 
-  const getStatusColor = (status) => {
-    const colors = {
-      pending: 'var(--vibrant-orange)',
-      processing: 'var(--vibrant-teal)',
-      shipped: 'var(--vibrant-purple)',
-      delivered: 'var(--vibrant-teal)',
-      cancelled: 'var(--vibrant-pink)',
-    };
-    return colors[status.toLowerCase()] || 'var(--foreground)';
-  };
 
   const filteredOrders = filter === 'all' 
     ? orders 
@@ -100,55 +91,14 @@ export default function OrderHistory({ onSelectOrder }) {
       ) : (
         <div className={styles.ordersGrid}>
           {filteredOrders.map((order) => (
-            <div key={order.id} className={styles.orderCard} style={{ padding: '1.25rem' }}>
-              <div className={styles.orderHeader} style={{ marginBottom: '0.75rem' }}>
-                <div>
-                  <div className={styles.orderId}>Order #{order.id.slice(-8)}</div>
-                  <div className={styles.orderDate}>
-                    {new Date(order.created_at).toLocaleDateString()}
-                  </div>
-                </div>
-                <div 
-                  className={styles.statusBadge}
-                  style={{ backgroundColor: getStatusColor(order.status), padding: '0.4rem 0.8rem', fontSize: '0.7rem' }}
-                >
-                  {order.status}
-                </div>
-              </div>
-
-              <div className={styles.orderDetails} style={{ padding: '0.75rem 1.25rem', margin: '0.75rem 0' }}>
-                <div className={styles.orderItems}>
-                  <strong>{order.items.length}</strong> item(s)
-                </div>
-                <div className={styles.orderTotal}>
-                  Total: <strong>₹{order.grand_total.toLocaleString()}</strong>
-                </div>
-              </div>
-
-              <div className={styles.orderActions} style={{ gap: '0.75rem', display: 'flex' }}>
-                <button 
-                  className={styles.viewButton}
-                  onClick={() => onSelectOrder(order)}
-                >
-                  View Details
-                </button>
-                {order.status.toLowerCase() === 'pending' && (
-                  <button 
-                    className={styles.cancelButton}
-                    style={{ 
-                      padding: '0.6rem 1.25rem', 
-                      borderRadius: '12px', 
-                      fontSize: '0.85rem',
-                      color: 'var(--vibrant-pink)',
-                      borderColor: 'var(--vibrant-pink)'
-                    }}
-                    onClick={() => handleCancelOrder(order.id)}
-                  >
-                    Cancel Order
-                  </button>
-                )}
-              </div>
-            </div>
+            <OrderCard 
+              key={order.id} 
+              order={order} 
+              variant="customer"
+              onViewDetails={onSelectOrder}
+              onCancel={handleCancelOrder}
+              showCancel={order.status.toLowerCase() === 'pending'}
+            />
           ))}
         </div>
       )}

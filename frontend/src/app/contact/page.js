@@ -65,7 +65,7 @@ const ContactPage = () => {
                                 </svg>
                             </div>
                             <h3 className="text-sm font-black uppercase tracking-widest text-foreground/40 mb-2">Email</h3>
-                            <p className="text-2xl font-black text-foreground">canvascreations@gmail.com</p>
+                            <p className="text-2xl font-black text-foreground">canvas.creations2026@gmail.com</p>
                         </div>
                     </div>
                 </div>

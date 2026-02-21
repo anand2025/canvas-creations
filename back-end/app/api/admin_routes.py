@@ -1,17 +1,19 @@
 from fastapi import APIRouter, HTTPException, Depends, status, BackgroundTasks
 from fastapi.security import OAuth2PasswordRequestForm
-from app.auth.auth import get_current_admin
+from app.auth.auth import get_current_admin, get_password_hash
 from app.models.db import db
-from app.schemas.user import UserOut
+from app.schemas.user import UserOut, UserCreate, UserRole
 from app.schemas.paintings import PaintingCreate, PaintingOut
 from app.schemas.order import OrderOut, PaginatedOrdersResponse
 from app.schemas.payment import PaymentOut
 from app.schemas.review import ReviewOut
 from app.schemas.newsletter import BulkEmailRequest
-from app.utilities.email import send_email
-from app.utils import serialize_doc
+from app.utilities.email import send_email, send_seller_welcome_email
+from app.utils import serialize_doc, serialize_order, get_date_filter
 from bson import ObjectId
 from datetime import datetime, timedelta
+import secrets
+import string
 
 router = APIRouter()
 
@@ -57,6 +59,35 @@ async def get_all_users(current_admin: dict = Depends(get_current_admin)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.post("/sellers", response_model=UserOut, description="Create a new seller account. Admin only.")
+async def add_seller(user: UserCreate, background_tasks: BackgroundTasks, current_admin: dict = Depends(get_current_admin)):
+    try:
+        # Check if user already exists
+        existing = await db["users"].find_one({"email": user.email})
+        if existing:
+            raise HTTPException(status_code=400, detail="Email already registered")
+
+        # Generate a random temporary password
+        plain_password = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(12))
+        user_dict = user.dict()
+        user_dict["password"] = get_password_hash(plain_password)
+        user_dict["role"] = UserRole.SELLER
+        user_dict["created_at"] = datetime.utcnow()
+        user_dict["is_verified"] = True
+        user_dict["is_disabled"] = False
+        
+        res = await db["users"].insert_one(user_dict)
+        new_user = await db["users"].find_one({"_id": res.inserted_id})
+        
+        # Send welcome email with the dummy password via helper function
+        background_tasks.add_task(send_seller_welcome_email, user.name, user.email, plain_password)
+        
+        return serialize_doc(new_user)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.get("/orders", response_model=PaginatedOrdersResponse, description="Get a list of all orders. Admin only.")
 async def get_all_orders(
     page: int = 1, 
@@ -70,16 +101,9 @@ async def get_all_orders(
         if status:
             query["status"] = status
         
-        if time_range and time_range != "all":
-            now = datetime.utcnow()
-            if time_range == "today":
-                start_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
-            elif time_range == "7days":
-                start_date = now - timedelta(days=7)
-            elif time_range == "30days":
-                start_date = now - timedelta(days=30)
-            
-            query["created_at"] = {"$gte": start_date}
+        date_filter = get_date_filter(time_range)
+        if date_filter:
+            query["created_at"] = date_filter
 
         total_count = await db["orders"].count_documents(query)
         total_pages = (total_count + limit - 1) // limit
@@ -87,38 +111,7 @@ async def get_all_orders(
         orders = []
         cursor = db["orders"].find(query).sort("created_at", -1).skip((page - 1) * limit).limit(limit)
         async for order in cursor:
-            # ... process order as before ...
-            order = serialize_doc(order)
-            
-            # Ensure safe defaults for older data
-            if "shipping_cost" not in order:
-                order["shipping_cost"] = 0.0
-            if "grand_total" not in order:
-                order["grand_total"] = order.get("total_price", 0) + order["shipping_cost"]
-            if "payment_status" not in order:
-                order["payment_status"] = "pending"
-            if "created_at" not in order:
-                order["created_at"] = None
-            if "user_id" not in order:
-                order["user_id"] = "guest"
-            if "customer_email" not in order:
-                order["customer_email"] = "N/A"
-            if "customer_name" not in order:
-                order["customer_name"] = "Guest"
-            if "payment_method" not in order:
-                order["payment_method"] = "N/A"
-            if "shipping_address" not in order:
-                order["shipping_address"] = {
-                    "full_name": order.get("customer_name", "Guest"),
-                    "phone": "N/A",
-                    "address_line1": "N/A",
-                    "city": "N/A",
-                    "state": "N/A",
-                    "postal_code": "N/A",
-                    "country": "India"
-                }
-                
-            orders.append(order)
+            orders.append(serialize_order(order))
             
         return {
             "orders": orders,
@@ -316,7 +309,7 @@ async def update_order_status(order_id: str, status: str, current_admin: dict = 
             {"$set": {"status": status}},
             return_document=True
         )
-        return serialize_doc(updated_order)
+        return serialize_order(updated_order)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error updating order status: {e}")
 

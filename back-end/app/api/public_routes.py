@@ -220,3 +220,12 @@ async def subscribe_newsletter(newsletter: NewsletterCreate, background_tasks: B
     # Trigger welcome email in background
     background_tasks.add_task(send_welcome_email, newsletter.email)
     return subscription
+
+# -------------------- STATISTICS --------------------
+@router.get("/stats", description="Get public statistics like total product count.")
+async def get_public_stats():
+    try:
+        count = await db["paintings"].count_documents({})
+        return {"total_products": count}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

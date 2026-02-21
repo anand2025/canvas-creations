@@ -10,6 +10,7 @@ class PaintingBase(BaseModel):
     category: str
     stock: int
     artist: str
+    seller_id: Optional[str] = None
     is_bestseller: Optional[bool] = False
     rating: Optional[float] = 0.0
     num_reviews: Optional[int] = 0
