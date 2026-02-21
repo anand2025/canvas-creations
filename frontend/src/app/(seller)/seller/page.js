@@ -68,7 +68,7 @@ const SellerDashboard = () => {
     <div className="space-y-8 animate-in fade-in duration-500">
       <div>
         <h1 className="text-3xl font-bold text-foreground mb-2">Seller Dashboard</h1>
-        <p className="text-foreground/60">Welcome back! Here's what's happening with your products.</p>
+        <p className="text-foreground/60">Welcome back! Here&apos;s what&apos;s happening with your products.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

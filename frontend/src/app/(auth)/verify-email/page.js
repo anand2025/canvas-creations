@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useRef, Suspense } from 'react';
+import React, { useEffect, useState, useRef, Suspense, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import AuthLayout from "@/components/layout/AuthLayout";
 import { api } from '@/services/api';
@@ -14,17 +14,7 @@ function VerifyEmailContent() {
   const [message, setMessage] = useState('');
   const verificationStarted = useRef(false);
 
-  useEffect(() => {
-    if (token && !verificationStarted.current) {
-        verificationStarted.current = true;
-        handleVerification();
-    } else if (!token) {
-        setStatus('error');
-        setMessage('No verification token found. Please check your link.');
-    }
-  }, [token]);
-
-  const handleVerification = async () => {
+  const handleVerification = useCallback(async () => {
     try {
       const response = await api.post('/auth/verify-email', { token });
       setStatus('success');
@@ -39,7 +29,21 @@ function VerifyEmailContent() {
       setMessage(err.message || 'Verification failed. The link might be expired or invalid.');
       toast.error("Verification failed");
     }
-  };
+  }, [token, router]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (token && !verificationStarted.current) {
+          verificationStarted.current = true;
+          handleVerification();
+      } else if (!token && !verificationStarted.current) {
+          verificationStarted.current = true;
+          setStatus('error');
+          setMessage('No verification token found. Please check your link.');
+      }
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [token, handleVerification]);
 
   return (
     <AuthLayout 
