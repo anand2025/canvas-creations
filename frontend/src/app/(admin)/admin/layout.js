@@ -2,11 +2,12 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { clearTokens } from '@/services/api';
+import { useAuth } from '@/context/AuthContext';
 
 const AdminLayout = ({ children }) => {
   const pathname = usePathname();
   const router = useRouter();
+  const { logout } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -30,8 +31,7 @@ const AdminLayout = ({ children }) => {
   };
 
   const handleLogout = () => {
-    clearTokens();
-    router.push('/login');
+    logout();
   };
 
   if (isLoading) {

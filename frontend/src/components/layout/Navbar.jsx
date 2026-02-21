@@ -50,6 +50,11 @@ const Navbar = () => {
                             Admin
                         </Link>
                     )}
+                    {user?.role === 'seller' && (
+                        <Link href="/seller" className="text-vibrant-teal font-bold hover:scale-105 transition-transform">
+                            Seller Panel
+                        </Link>
+                    )}
                 </div>
 
                 <div className="flex items-center space-x-2 md:space-x-4">

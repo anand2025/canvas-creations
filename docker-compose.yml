@@ -12,7 +12,9 @@ services:
       - "8000:8000"
     environment:
       - MONGO_URI=mongodb://mongodb:27017/canvas_creations
-      - JWT_SECRET=your_jwt_secret_here
+      - JWT_SECRET_KEY=your_jwt_secret_here
+    env_file:
+      - ./back-end/.env
     depends_on:
       - mongodb
 

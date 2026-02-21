@@ -1,52 +1,24 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { adminApi } from '@/services/adminApi';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { useProducts } from '@/hooks/useProducts';
 
 export default function AdminProducts() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
+  const {
+    products,
+    loading,
+    deleteProduct,
+    toggleBestseller
+  } = useProducts(adminApi.getPaintings);
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const fetchProducts = async () => {
-    try {
-      const data = await adminApi.getPaintings();
-      setProducts(data);
-    } catch (error) {
-      console.error("Failed to fetch products", error);
-    } finally {
-      setLoading(false);
-    }
+  const handleDelete = (id) => {
+    deleteProduct(id, adminApi.deletePainting);
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this painting?")) return;
-    try {
-      await adminApi.deletePainting(id);
-      setProducts(products.filter(p => p.id !== id));
-      // You might want to use a toast notification here
-    } catch (error) {
-      console.error("Failed to delete product", error);
-      alert("Failed to delete product");
-    }
-  };
-
-  const handleToggleBestseller = async (id, currentStatus) => {
-    try {
-        await adminApi.toggleBestseller(id, currentStatus);
-        setProducts(products.map(p => 
-            p.id === id ? { ...p, is_bestseller: currentStatus } : p
-        ));
-    } catch (error) {
-        console.error("Failed to toggle bestseller", error);
-        alert("Failed to update bestseller status");
-    }
+  const handleToggleBestseller = (id, currentStatus) => {
+    toggleBestseller(id, currentStatus, adminApi.toggleBestseller);
   };
 
   if (loading) return <div className="p-8 text-center text-gray-500">Loading Products...</div>;
@@ -145,7 +117,7 @@ export default function AdminProducts() {
               ))}
               {products.length === 0 && (
                 <tr>
-                    <td colSpan="5" className="px-6 py-12 text-center text-gray-500">
+                    <td colSpan="6" className="px-6 py-12 text-center text-gray-500">
                         No products found. Start by adding one!
                     </td>
                 </tr>

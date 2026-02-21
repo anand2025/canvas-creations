@@ -4,6 +4,7 @@
  * This context manages the authentication state of the user across the application.
  */
 import { createContext, useContext, useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { clearTokens } from '@/services/api';
 
 const AuthContext = createContext();
@@ -11,6 +12,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const router = useRouter();
 
     useEffect(() => {
         const hydrate = () => {
@@ -42,7 +44,9 @@ export const AuthProvider = ({ children }) => {
     const logout = () => {
         setUser(null);
         localStorage.removeItem('user');
+        localStorage.removeItem('user_role');
         clearTokens();
+        router.push('/');
     };
 
     return (

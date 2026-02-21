@@ -8,7 +8,22 @@ import heroPainting from '@/assets/images/hero-painting.png';
 import craftsDisplay from '@/assets/images/crafts-display.png';
 import studioVibe from '@/assets/images/studio-vibe.png';
 
-const AboutPage = () => {
+const AboutPage = async () => {
+    let totalProducts = "500+";
+    
+    try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+        const response = await fetch(`${apiUrl}/stats`, { 
+            next: { revalidate: 3600 } // Cache for 1 hour for optimization
+        });
+        if (response.ok) {
+            const data = await response.json();
+            totalProducts = data.total_products || "500+";
+        }
+    } catch (error) {
+        console.error("Failed to fetch public stats", error);
+    }
+
     return (
         <main className="bg-background min-h-screen">
             {/* Hero Section with Tagline */}
@@ -64,7 +79,7 @@ const AboutPage = () => {
                         
                         <div className="grid grid-cols-2 gap-6 pt-8">
                             <div className="p-8 rounded-[30px] bg-secondary-bg border border-[var(--border-color)]">
-                                <span className="text-3xl font-black text-vibrant-pink block mb-2">500+</span>
+                                <span className="text-3xl font-black text-vibrant-pink block mb-2">{totalProducts}+</span>
                                 <span className="font-bold text-foreground/40 uppercase text-xs tracking-widest">Creations Made</span>
                             </div>
                             <div className="p-8 rounded-[30px] bg-secondary-bg border border-[var(--border-color)]">

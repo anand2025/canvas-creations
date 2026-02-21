@@ -33,11 +33,11 @@ export default function RegisterPage() {
         role: "customer" // Default role
       });
       setSuccess(true);
-      toast.success("Account created! Redirecting to login...", {
-        duration: 3000,
-        icon: '🎨',
+      toast.success("Registration successful! Please check your email.", {
+        duration: 5000,
+        icon: '✉️',
       });
-      setTimeout(() => router.push('/login'), 2000);
+      // No automatic redirect, user needs to wait for email
     } catch (err) {
       setError(err.message || "Registration failed. Check your details.");
     } finally {
@@ -64,8 +64,20 @@ export default function RegisterPage() {
         )}
 
         {success && (
-          <div className="p-4 bg-green-50 border border-green-200 text-green-600 rounded-xl text-sm font-medium">
-            Account created successfully! Redirecting to login...
+          <div className="p-8 bg-vibrant-teal/5 border-2 border-dashed border-vibrant-teal/30 rounded-[32px] text-center space-y-4 animate-in zoom-in duration-500">
+            <div className="w-16 h-16 bg-vibrant-teal/20 rounded-full flex items-center justify-center mx-auto mb-4">
+               <svg className="w-8 h-8 text-vibrant-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+            </div>
+            <h3 className="text-xl font-black uppercase text-vibrant-teal">Verification Sent!</h3>
+            <p className="text-foreground/60 font-bold text-sm leading-relaxed">
+              We&apos;ve sent a magic link to your email. <br/>
+              Please verify your account to start your creative journey.
+            </p>
+            <div className="pt-2">
+              <Link href="/login" className="text-xs font-black uppercase tracking-widest text-foreground/40 hover:text-vibrant-teal underline transition-colors">
+                Back to Login
+              </Link>
+            </div>
           </div>
         )}
 

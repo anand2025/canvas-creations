@@ -3,7 +3,7 @@
  * This file handles all HTTP requests to the backend API.
  */
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 const getTokens = () => {
     if (typeof window === 'undefined') return null;
@@ -72,6 +72,22 @@ export const apiRequest = async (endpoint, options = {}) => {
         console.error(`[API ERROR]`, error);
         throw error;
     }
+};
+
+// Convenient wrapper for apiRequest
+export const api = {
+    get: (endpoint, options = {}) => apiRequest(endpoint, { ...options, method: 'GET' }),
+    post: (endpoint, data, options = {}) => apiRequest(endpoint, { 
+        ...options, 
+        method: 'POST', 
+        body: JSON.stringify(data) 
+    }),
+    put: (endpoint, data, options = {}) => apiRequest(endpoint, { 
+        ...options, 
+        method: 'PUT', 
+        body: JSON.stringify(data) 
+    }),
+    delete: (endpoint, options = {}) => apiRequest(endpoint, { ...options, method: 'DELETE' }),
 };
 
 export const loginUser = async (email, password) => {
