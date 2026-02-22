@@ -30,9 +30,12 @@ const Navbar = () => {
 
     // Sync input with global search param
     useEffect(() => {
-        const currentSearch = searchParams.get('search') || "";
-        if (currentSearch !== searchQuery) {
-            setSearchQuery(currentSearch);
+        const currentSearchParam = searchParams.get('search') || "";
+        if (currentSearchParam !== searchQuery) {
+            setSearchQuery(currentSearchParam);
+            if (currentSearchParam) {
+                setIsSearchExpanded(true);
+            }
         }
     }, [searchParams]);
 
@@ -40,20 +43,29 @@ const Navbar = () => {
     useEffect(() => {
         if (debouncedSearch !== undefined) {
             const params = new URLSearchParams(searchParams.toString());
+            const currentParamSearch = params.get('search') || "";
+            
+            if (debouncedSearch === currentParamSearch) return;
+
             if (debouncedSearch) {
                 params.set('search', debouncedSearch);
             } else {
                 params.delete('search');
             }
             
-            // Redirect to shop if searching from another page
-            if (debouncedSearch && pathname !== '/shop') {
-                router.push(`/shop?${params.toString()}`);
-            } else if (pathname === '/shop' || debouncedSearch) {
-                router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+            const newSearchString = params.toString();
+            const currentPathWithSearch = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : '');
+            const newPathWithSearch = pathname + (newSearchString ? `?${newSearchString}` : '');
+
+            if (newPathWithSearch !== currentPathWithSearch) {
+                if (debouncedSearch && pathname !== '/shop') {
+                    router.push(`/shop?${newSearchString}`);
+                } else if (pathname === '/shop' || debouncedSearch) {
+                    router.replace(`${pathname}?${newSearchString}`, { scroll: false });
+                }
             }
         }
-    }, [debouncedSearch]);
+    }, [debouncedSearch, pathname, router, searchParams]);
 
     useEffect(() => {
         if (isSearchExpanded && searchInputRef.current) {
