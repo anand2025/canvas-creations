@@ -9,6 +9,8 @@ from typing import List, Optional
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000").rstrip("/")
+
 async def send_email(
     to_email: str,
     subject: str,
@@ -65,7 +67,7 @@ async def send_welcome_email(email: str):
         <div style="text-align: center; margin-top: 30px; padding: 20px; background-color: #f9f9f9; border-radius: 8px;">
             <p style="margin: 0; font-weight: bold; color: #333;">ENJOY OUR ART</p>
             <p style="margin: 10px 0; font-size: 24px; color: #FFC107; font-weight: 800 italic;">CanvasCreations</p>
-            <a href="http://localhost:3000/shop" style="display: inline-block; padding: 12px 24px; background-color: #FF007F; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Explore Gallery</a>
+            <a href="{FRONTEND_URL}/shop" style="display: inline-block; padding: 12px 24px; background-color: #FF007F; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Explore Gallery</a>
         </div>
         <p style="font-size: 12px; color: #777; margin-top: 30px; text-align: center;">
             &copy; 2026 CanvasCreations. All rights reserved.
@@ -87,7 +89,7 @@ async def send_seller_welcome_email(name: str, email: str, password: str):
         </div>
         <p>Please log in and <strong>change your password</strong> immediately for security.</p>
         <div style="text-align: center; margin-top: 30px;">
-            <a href="http://localhost:3000/login" style="display: inline-block; padding: 12px 24px; background-color: #FF007F; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Login now</a>
+            <a href="{FRONTEND_URL}/login" style="display: inline-block; padding: 12px 24px; background-color: #FF007F; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Login now</a>
         </div>
     </div>
     """
@@ -95,7 +97,7 @@ async def send_seller_welcome_email(name: str, email: str, password: str):
 
 async def send_password_reset_email(email: str, token: str):
     subject = "Reset Your Password - CanvasCreations 🎨"
-    reset_link = f"http://localhost:3000/reset-password?token={token}"
+    reset_link = f"{FRONTEND_URL}/reset-password?token={token}"
     html_content = f"""
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
         <h2 style="color: #FF007F; text-align: center;">Password Reset Request</h2>
@@ -115,7 +117,7 @@ async def send_password_reset_email(email: str, token: str):
 
 async def send_verification_email(email: str, token: str):
     subject = "Verify Your Email - CanvasCreations 🎨"
-    verify_link = f"http://localhost:3000/verify-email?token={token}"
+    verify_link = f"{FRONTEND_URL}/verify-email?token={token}"
     html_content = f"""
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
         <h2 style="color: #FF007F; text-align: center;">Verify Your Email</h2>
