@@ -4,10 +4,11 @@ import React, { useEffect, useState } from 'react';
 import ProductCard from "@/components/products/ProductCard";
 import { apiRequest } from '@/services/api';
 import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
 const categories = ["All", "Paintings", "Handmade Crafts", "Gift Items", "Combos"];
 
-export default function ShopPage() {
+function ShopContent() {
   const searchParams = useSearchParams();
   const searchUrlParam = searchParams.get('search') || "";
 
@@ -128,4 +129,17 @@ export default function ShopPage() {
       </div>
     </div>
   );
+}
+
+export default function ShopPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex flex-col items-center justify-center py-20 min-h-screen">
+                <div className="w-16 h-16 border-4 border-vibrant-teal/20 border-t-vibrant-teal rounded-full animate-spin mb-4"></div>
+                <p className="text-vibrant-teal font-bold animate-pulse uppercase tracking-widest text-sm">Initializing Shop...</p>
+            </div>
+        }>
+            <ShopContent />
+        </Suspense>
+    );
 }

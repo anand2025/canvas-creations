@@ -21,6 +21,7 @@ const geistMono = Geist_Mono({
 });
 
 import { ThemeProvider } from "@/context/ThemeContext";
+import { Suspense } from "react";
 
 export const metadata = {
   title: "Canvas & Creations | Vibrant Handcrafted Art",
@@ -56,7 +57,9 @@ export default function RootLayout({ children }) {
                     },
                   }}
                 />
-                <Navbar />
+                <Suspense fallback={<div className="h-20 bg-background/50 animate-pulse" />}>
+                  <Navbar />
+                </Suspense>
                 {children}
               </WishlistProvider>
             </CartProvider>
