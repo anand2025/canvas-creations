@@ -16,15 +16,17 @@ from app.auth.auth import (
 )
 from app.models.db import db
 from app.utilities.email import send_password_reset_email, send_verification_email
+from app.utilities.rate_limiter import limiter
+from fastapi import Request, BackgroundTasks
 from datetime import datetime
-from fastapi import BackgroundTasks
 import jwt
 from bson import ObjectId
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 @router.post("/register", response_model=UserOut, description="Register a new user account.")
-async def register(user: UserCreate, background_tasks: BackgroundTasks):
+@limiter.limit("5/minute")
+async def register(request: Request, user: UserCreate, background_tasks: BackgroundTasks):
     # Check if user exists
     existing_user = await db["users"].find_one({"email": user.email})
     if existing_user:
@@ -71,7 +73,8 @@ async def verify_email(token: str = Body(..., embed=True)):
     return {"message": "Email verified successfully. You can now log in."}
 
 @router.post("/login", description="Authenticate user and return access/refresh tokens.")
-async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+@limiter.limit("10/minute")
+async def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends()):
     # Find user
     user = await db["users"].find_one({"email": form_data.username})
     if not user or not verify_password(form_data.password, user["password"]):
@@ -122,7 +125,8 @@ async def refresh(refresh_token: str = Body(..., embed=True)):
     return {"access_token": new_access_token, "token_type": "bearer"}
 
 @router.post("/forgot-password", description="Request a password reset link.")
-async def forgot_password(background_tasks: BackgroundTasks, email: str = Body(..., embed=True)):
+@limiter.limit("3/minute")
+async def forgot_password(request: Request, background_tasks: BackgroundTasks, email: str = Body(..., embed=True)):
     user = await db["users"].find_one({"email": email})
     if not user:
         # For security reasons, don't reveal if the email exists or not

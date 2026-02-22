@@ -10,8 +10,14 @@ from app.api.public_routes import router as public_router
 from app.api.auth_routes import router as auth_router
 from app.api.admin_routes import router as admin_router
 from app.api.seller_routes import router as seller_router
+from app.utilities.rate_limiter import init_rate_limiting
+from slowapi.middleware import SlowAPIMiddleware
 
 app = FastAPI()
+
+# Initialize rate limiting
+init_rate_limiting(app)
+app.add_middleware(SlowAPIMiddleware)
 
 # Add CORS middleware
 app.add_middleware(

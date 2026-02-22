@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, HTTPException, Depends, status, Request
+from app.utilities.rate_limiter import limiter
 from app.auth.auth import get_current_seller
 from app.models.db import db
 from app.schemas.paintings import PaintingCreate, PaintingOut
@@ -58,7 +59,8 @@ async def get_seller_paintings(current_seller: dict = Depends(get_current_seller
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/paintings", response_model=PaintingOut, description="Create a new painting as a seller.")
-async def create_seller_painting(painting: PaintingCreate, current_seller: dict = Depends(get_current_seller)):
+@limiter.limit("10/minute")
+async def create_seller_painting(request: Request, painting: PaintingCreate, current_seller: dict = Depends(get_current_seller)):
     try:
         data = painting.dict()
         data["seller_id"] = str(current_seller["id"])

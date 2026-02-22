@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException, Depends, status, BackgroundTasks
+from fastapi import APIRouter, HTTPException, Depends, status, BackgroundTasks, Request
+from app.utilities.rate_limiter import limiter
 from fastapi.security import OAuth2PasswordRequestForm
 from app.auth.auth import get_current_admin, get_password_hash
 from app.models.db import db
@@ -60,7 +61,8 @@ async def get_all_users(current_admin: dict = Depends(get_current_admin)):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/sellers", response_model=UserOut, description="Create a new seller account. Admin only.")
-async def add_seller(user: UserCreate, background_tasks: BackgroundTasks, current_admin: dict = Depends(get_current_admin)):
+@limiter.limit("5/minute")
+async def add_seller(request: Request, user: UserCreate, background_tasks: BackgroundTasks, current_admin: dict = Depends(get_current_admin)):
     try:
         # Check if user already exists
         existing = await db["users"].find_one({"email": user.email})
@@ -315,7 +317,9 @@ async def update_order_status(order_id: str, status: str, current_admin: dict = 
 
 # -------------------- NEWSLETTER --------------------
 @router.post("/newsletter/send", description="Send a bulk email to all newsletter subscribers. Admin only.")
+@limiter.limit("1/minute")
 async def send_bulk_newsletter(
+    request: Request,
     email_req: BulkEmailRequest, 
     background_tasks: BackgroundTasks,
     current_admin: dict = Depends(get_current_admin)
