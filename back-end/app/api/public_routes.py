@@ -100,8 +100,8 @@ async def create_painting(painting: PaintingCreate, current_user: dict = Depends
     return await create_painting_logic(painting)
 
 @router.get("/paintings", response_model=list[PaintingOut], description="Retrieve a list of all paintings.")
-async def get_paintings(category: str = None, sort_by: str = None):
-    return await get_all_paintings_logic(category, sort_by)
+async def get_paintings(category: str = None, sort_by: str = None, search: str = None):
+    return await get_all_paintings_logic(category, sort_by, search)
 
 @router.get("/paintings/bestsellers", response_model=list[PaintingOut], description="Retrieve a list of bestseller paintings.")
 async def get_bestsellers():

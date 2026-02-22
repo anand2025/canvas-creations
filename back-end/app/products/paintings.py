@@ -14,12 +14,19 @@ async def create_painting_logic(painting):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-async def get_all_paintings_logic(category: str = None, sort_by: str = None):
+async def get_all_paintings_logic(category: str = None, sort_by: str = None, search: str = None):
     try:
         paintings = []
         query = {}
         if category and category != "All":
             query["category"] = category
+            
+        if search:
+            # Case-insensitive regex search on title and description
+            query["$or"] = [
+                {"title": {"$regex": search, "$options": "i"}},
+                {"description": {"$regex": search, "$options": "i"}}
+            ]
             
         cursor = db["paintings"].find(query)
         

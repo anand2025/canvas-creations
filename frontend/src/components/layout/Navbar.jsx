@@ -3,11 +3,12 @@
  * Navbar Component
  * This component renders the top navigation bar with a vibrant, artistic touch.
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
+import { useDebounce } from '@/hooks/useDebounce';
 
 import ThemeToggle from '@/components/common/ThemeToggle';
 
@@ -15,9 +16,50 @@ const Navbar = () => {
     const { user, logout } = useAuth();
     const { itemCount } = useCart();
     const pathname = usePathname();
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+    const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || "");
+    const searchInputRef = useRef(null);
+
+    const debouncedSearch = useDebounce(searchQuery, 400);
 
     const isActive = (path) => pathname === path;
+
+    // Sync input with global search param
+    useEffect(() => {
+        const currentSearch = searchParams.get('search') || "";
+        if (currentSearch !== searchQuery) {
+            setSearchQuery(currentSearch);
+        }
+    }, [searchParams]);
+
+    // Update URL when debounced search changes
+    useEffect(() => {
+        if (debouncedSearch !== undefined) {
+            const params = new URLSearchParams(searchParams.toString());
+            if (debouncedSearch) {
+                params.set('search', debouncedSearch);
+            } else {
+                params.delete('search');
+            }
+            
+            // Redirect to shop if searching from another page
+            if (debouncedSearch && pathname !== '/shop') {
+                router.push(`/shop?${params.toString()}`);
+            } else if (pathname === '/shop' || debouncedSearch) {
+                router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+            }
+        }
+    }, [debouncedSearch]);
+
+    useEffect(() => {
+        if (isSearchExpanded && searchInputRef.current) {
+            searchInputRef.current.focus();
+        }
+    }, [isSearchExpanded]);
 
     return (
         <nav className="sticky top-0 z-50 w-full glass-vibrant border-b border-[var(--border-color)] px-6 py-4 transition-all duration-300">
@@ -58,6 +100,39 @@ const Navbar = () => {
                 </div>
 
                 <div className="flex items-center space-x-2 md:space-x-4">
+                    {/* Search Bar - Authenticated Users Only */}
+                    {user && (
+                        <div className={`relative flex items-center transition-all duration-500 overflow-hidden ${isSearchExpanded ? 'w-48 md:w-64' : 'w-10'}`}>
+                            <button 
+                                onClick={() => setIsSearchExpanded(!isSearchExpanded)}
+                                className={`p-2 rounded-full transition-all group ${isSearchExpanded ? 'text-vibrant-teal' : 'hover:bg-vibrant-teal/10 text-foreground hover:text-vibrant-teal'}`}
+                                title="Search"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </button>
+                            <input 
+                                ref={searchInputRef}
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Search..."
+                                className={`bg-transparent outline-none text-sm font-bold transition-all duration-500 ${isSearchExpanded ? 'w-full ml-2 opacity-100' : 'w-0 opacity-0'}`}
+                            />
+                            {isSearchExpanded && searchQuery && (
+                                <button 
+                                    onClick={() => setSearchQuery("")}
+                                    className="absolute right-0 p-1 hover:bg-foreground/5 rounded-full transition-colors"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-foreground/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            )}
+                        </div>
+                    )}
+
                     <ThemeToggle />
                     <Link href="/cart" className="relative group p-2 rounded-full hover:bg-vibrant-teal/10 transition-all">
                         <svg 
@@ -76,7 +151,7 @@ const Navbar = () => {
                         )}
                     </Link>
                     {user ? (
-                        <div className="flex items-center space-x-2 md:space-x-4">
+                        <div className="flex items-center space-x-1 md:space-x-4">
                             <Link 
                                 href="/wishlist" 
                                 className={`p-2 rounded-full transition-all group ${isActive('/wishlist') ? 'text-red-500' : 'hover:bg-red-500/10 text-red-500'}`} 
