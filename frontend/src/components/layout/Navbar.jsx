@@ -22,22 +22,22 @@ const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isSearchExpanded, setIsSearchExpanded] = useState(false);
     const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || "");
+    const [prevSearchParam, setPrevSearchParam] = useState(searchParams.get('search') || "");
     const searchInputRef = useRef(null);
 
     const debouncedSearch = useDebounce(searchQuery, 400);
 
     const isActive = (path) => pathname === path;
 
-    // Sync input with global search param
-    useEffect(() => {
-        const currentSearchParam = searchParams.get('search') || "";
-        if (currentSearchParam !== searchQuery) {
-            setSearchQuery(currentSearchParam);
-            if (currentSearchParam) {
-                setIsSearchExpanded(true);
-            }
+    // Sync input with global search param (Recommended React pattern for syncing state with props/external sources)
+    const currentSearchFromURL = searchParams.get('search') || "";
+    if (currentSearchFromURL !== prevSearchParam) {
+        setPrevSearchParam(currentSearchFromURL);
+        setSearchQuery(currentSearchFromURL);
+        if (currentSearchFromURL) {
+            setIsSearchExpanded(true);
         }
-    }, [searchParams]);
+    }
 
     // Update URL when debounced search changes
     useEffect(() => {
