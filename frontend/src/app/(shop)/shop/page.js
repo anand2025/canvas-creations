@@ -3,10 +3,14 @@
 import React, { useEffect, useState } from 'react';
 import ProductCard from "@/components/products/ProductCard";
 import { apiRequest } from '@/services/api';
+import { useSearchParams } from 'next/navigation';
 
 const categories = ["All", "Paintings", "Handmade Crafts", "Gift Items", "Combos"];
 
 export default function ShopPage() {
+  const searchParams = useSearchParams();
+  const searchUrlParam = searchParams.get('search') || "";
+
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -21,6 +25,7 @@ export default function ShopPage() {
         const params = new URLSearchParams();
         if (selectedCategory !== "All") params.append("category", selectedCategory);
         if (sortBy) params.append("sort_by", sortBy);
+        if (searchUrlParam) params.append("search", searchUrlParam);
         
         const endpoint = `/paintings?${params.toString()}`;
             
@@ -35,7 +40,7 @@ export default function ShopPage() {
     };
 
     getProducts();
-  }, [selectedCategory, sortBy]); // Re-run when category or sort changes
+  }, [selectedCategory, sortBy, searchUrlParam]); // Re-run when category, sort or search URL param changes
 
   return (
     <div className="bg-background min-h-screen py-20 px-6">
