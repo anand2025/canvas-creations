@@ -41,3 +41,8 @@ app.include_router(auth_router)
 app.include_router(admin_router, prefix="/admin", tags=["Admin"])
 app.include_router(seller_router, prefix="/seller", tags=["Seller"])
 app.include_router(upload_router, prefix="/api", tags=["Upload"])
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)

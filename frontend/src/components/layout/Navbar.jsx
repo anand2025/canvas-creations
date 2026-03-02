@@ -91,7 +91,7 @@ const Navbar = () => {
                         href="/about" 
                         className={`transition-colors ${isActive('/about') ? 'text-vibrant-purple font-bold' : 'hover:text-vibrant-purple'}`}
                     >
-                        About
+                        Our story
                     </Link>
                     <Link 
                         href="/contact" 
