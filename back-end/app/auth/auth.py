@@ -1,7 +1,7 @@
 # backend/app/auth/auth.py
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-import bcrypt
+from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from typing import Optional, List
 import hashlib
@@ -10,6 +10,7 @@ import jwt
 from app.models.db import db
 from bson import ObjectId
 from app.schemas.user import UserRole
+pwd_context = CryptContext(schemes=["sha256_crypt"], deprecated="auto")
 
 SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 if not SECRET_KEY:
@@ -22,23 +23,11 @@ REFRESH_TOKEN_EXPIRE_DAYS = 7
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
-def get_pre_hash(password: str) -> bytes:
-    """Pre-hash password with SHA256 to handle bcrypt's 72-byte limit."""
-    return hashlib.sha256(password.encode('utf-8')).hexdigest().encode('utf-8')
-
 def verify_password(plain_password, hashed_password):
-    try:
-        if isinstance(hashed_password, str):
-            hashed_password = hashed_password.encode('utf-8')
-        return bcrypt.checkpw(get_pre_hash(plain_password), hashed_password)
-    except Exception:
-        return False
+    return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password):
-    # Salt is generated automatically by hashpw
-    salt = bcrypt.gensalt()
-    hashed = bcrypt.hashpw(get_pre_hash(password), salt)
-    return hashed.decode('utf-8')
+    return pwd_context.hash(password)
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()

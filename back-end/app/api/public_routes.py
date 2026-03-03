@@ -39,6 +39,7 @@ from app.payments.payments import create_payment_logic
 from app.products.categories import create_category_logic, get_categories_logic
 from app.products.wishlist import update_wishlist_logic, get_wishlist_logic, get_wishlist_items_logic
 from app.users.newsletter import subscribe_newsletter_logic
+from app.utils import convert_dates
 from app.utilities.email import send_welcome_email
 
 router = APIRouter()
@@ -46,7 +47,8 @@ router = APIRouter()
 # -------------------- USERS --------------------
 @router.post("/users", response_model=UserOut, description="Register a new user.")
 async def create_user(user: UserCreate):
-    return await create_user_logic(user)
+    user_dict = convert_dates(user.dict())
+    return await create_user_logic(user_dict)
 
 # -------------------- PROFILE --------------------
 @router.get("/profile", response_model=UserOut, description="Get current user profile.")
@@ -55,7 +57,8 @@ async def get_profile(current_user: dict = Depends(get_current_active_user)):
 
 @router.put("/profile", response_model=UserOut, description="Update user profile.")
 async def update_profile(user_update: UserUpdate, current_user: dict = Depends(get_current_active_user)):
-    return await update_user_profile_logic(current_user["id"], user_update)
+    update_data = convert_dates(user_update.dict(exclude_unset=True))
+    return await update_user_profile_logic(current_user["id"], update_data)
 
 @router.put("/profile/password", description="Change user password.")
 async def change_password(password_change: PasswordChange, current_user: dict = Depends(get_current_active_user)):
@@ -72,7 +75,9 @@ async def deactivate_profile(current_user: dict = Depends(get_current_active_use
 # -------------------- ADDRESSES --------------------
 @router.post("/addresses", response_model=AddressOut, description="Create a new address.")
 async def create_address(address: AddressCreate, current_user: dict = Depends(get_current_active_user)):
-    return await create_address_logic(current_user["id"], address)
+    # Convert dates for MongoDB compatibility
+    address_dict = convert_dates(address.dict())
+    return await create_address_logic(current_user["id"], address_dict)
 
 @router.get("/addresses", response_model=list[AddressOut], description="Get all user addresses.")
 async def get_addresses(current_user: dict = Depends(get_current_active_user)):
@@ -84,7 +89,9 @@ async def get_address(address_id: str, current_user: dict = Depends(get_current_
 
 @router.put("/addresses/{address_id}", response_model=AddressOut, description="Update an address.")
 async def update_address(address_id: str, address_update: AddressUpdate, current_user: dict = Depends(get_current_active_user)):
-    return await update_address_logic(address_id, current_user["id"], address_update)
+    # Convert dates for MongoDB compatibility
+    address_update_dict = convert_dates(address_update.dict(exclude_unset=True))
+    return await update_address_logic(address_id, current_user["id"], address_update_dict)
 
 @router.delete("/addresses/{address_id}", description="Delete an address.")
 async def delete_address(address_id: str, current_user: dict = Depends(get_current_active_user)):

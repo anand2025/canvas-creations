@@ -21,6 +21,7 @@ from fastapi import Request, BackgroundTasks
 from datetime import datetime
 import jwt
 from bson import ObjectId
+from app.utils import convert_dates
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -38,6 +39,9 @@ async def register(request: Request, user: UserCreate, background_tasks: Backgro
     user_dict["created_at"] = datetime.utcnow()
     user_dict["is_disabled"] = False
     user_dict["is_verified"] = False # Require email verification
+    
+    # Convert dates for MongoDB compatibility (e.g., date_of_birth)
+    user_dict = convert_dates(user_dict)
     
     # Insert
     res = await db["users"].insert_one(user_dict)

@@ -1,4 +1,18 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
+
+def convert_dates(data):
+    """
+    Recursively convert datetime.date objects to datetime.datetime
+    so they can be encoded by the MongoDB driver.
+    """
+    if isinstance(data, dict):
+        return {k: convert_dates(v) for k, v in data.items()}
+    elif isinstance(data, list):
+        return [convert_dates(i) for i in data]
+    elif isinstance(data, date) and not isinstance(data, datetime):
+        # Convert date to datetime at midnight
+        return datetime.combine(data, datetime.min.time())
+    return data
 
 def serialize_doc(doc):
     if not doc:
