@@ -21,18 +21,20 @@ app.add_middleware(SlowAPIMiddleware)
 
 # Add CORS middleware with robust parsing
 raw_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000,http://localhost:3001,http://127.0.0.1:3001")
-# Strip whitespace and trailing slashes to prevent common configuration errors
 cors_origins = [o.strip().rstrip("/") for o in raw_origins.split(",") if o.strip()]
 
 # If "*" is in origins, handle it based on credentials requirement
 allow_all = "*" in cors_origins
+
+# Log allowed origins for debugging in Render logs
+print(f"DEBUG: Allowed CORS Origins: {cors_origins if not allow_all else '*'}")
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins if not allow_all else ["*"],
     allow_credentials=not allow_all,
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=["*"]
 )
 
 from fastapi.staticfiles import StaticFiles

@@ -25,5 +25,13 @@ def init_rate_limiting(app):
     """
     Register the rate limiter and custom handler with the FastAPI application.
     """
+    # Important: Ensure rate limiting ignores preflight (OPTIONS) requests
+    # which are handled by CORSMiddleware.
+    @app.middleware("http")
+    async def skip_rate_limit_for_options(request: Request, call_next):
+        if request.method == "OPTIONS":
+            return await call_next(request)
+        return await call_next(request)
+
     app.state.limiter = limiter
     app.add_exception_handler(RateLimitExceeded, custom_rate_limit_exceeded_handler)
