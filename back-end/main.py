@@ -19,13 +19,18 @@ app = FastAPI()
 init_rate_limiting(app)
 app.add_middleware(SlowAPIMiddleware)
 
-# Add CORS middleware
-cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000,http://localhost:3001,http://127.0.0.1:3001").split(",")
+# Add CORS middleware with robust parsing
+raw_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000,http://localhost:3001,http://127.0.0.1:3001")
+cors_origins = [o.strip() for o in raw_origins.split(",") if o.strip()]
+
+# If "*" is in origins, handle it based on credentials requirement
+# Starlette/FastAPI doesn't allow allow_credentials=True with allow_origins=["*"]
+allow_all = "*" in cors_origins
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=cors_origins,
-    allow_credentials=True,
+    allow_origins=cors_origins if not allow_all else ["*"],
+    allow_credentials=not allow_all,
     allow_methods=["*"],
     allow_headers=["*"],
 )
