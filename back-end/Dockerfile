@@ -14,8 +14,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY . .
 
-# Expose port
+# Expose port (Internal container port)
 EXPOSE 8000
 
 # Command to run the application
+# Environment variables like MONGO_URI, JWT_SECRET_KEY, etc. 
+# should be passed at runtime (e.g., via docker-compose or CI/CD)
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

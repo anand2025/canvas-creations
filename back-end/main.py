@@ -21,10 +21,10 @@ app.add_middleware(SlowAPIMiddleware)
 
 # Add CORS middleware with robust parsing
 raw_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000,http://localhost:3001,http://127.0.0.1:3001")
-cors_origins = [o.strip() for o in raw_origins.split(",") if o.strip()]
+# Strip whitespace and trailing slashes to prevent common configuration errors
+cors_origins = [o.strip().rstrip("/") for o in raw_origins.split(",") if o.strip()]
 
 # If "*" is in origins, handle it based on credentials requirement
-# Starlette/FastAPI doesn't allow allow_credentials=True with allow_origins=["*"]
 allow_all = "*" in cors_origins
 
 app.add_middleware(
@@ -37,6 +37,11 @@ app.add_middleware(
 
 from fastapi.staticfiles import StaticFiles
 from app.api.upload_routes import router as upload_router
+
+# Simple health check to verify API connectivity
+@app.get("/health")
+async def health_check():
+    return {"status": "ok", "message": "Backend is reachable"}
 
 app.mount("/static", StaticFiles(directory="uploads"), name="static")
 
