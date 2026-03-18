@@ -9,6 +9,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { Toaster } from 'react-hot-toast';
+import AiAssistant from "@/components/ui/AiAssistant";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -61,6 +62,7 @@ export default function RootLayout({ children }) {
                   <Navbar />
                 </Suspense>
                 {children}
+                <AiAssistant />
               </WishlistProvider>
             </CartProvider>
           </AuthProvider>

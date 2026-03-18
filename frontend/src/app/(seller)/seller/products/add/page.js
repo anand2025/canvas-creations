@@ -34,9 +34,9 @@ export default function SellerAddProduct() {
 
   return (
     <ProductForm 
-      title="Add New Painting"
+      title="Add New Product"
       subtitle="Exhibit your masterpiece in the gallery."
-      submitLabel="Create Painting"
+      submitLabel="Create Product"
       onSubmit={handleSubmit}
       onCancel={() => router.push('/seller/products')}
       isLoading={loading}

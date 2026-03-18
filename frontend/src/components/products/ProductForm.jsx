@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { uploadImage } from '@/services/api';
+import { uploadImage, api } from '@/services/api';
 
 const ProductForm = ({ 
     initialData = null, 
@@ -24,6 +24,7 @@ const ProductForm = ({
   });
   
   const [uploading, setUploading] = useState(false);
+  const [generatingAi, setGeneratingAi] = useState(false);
   const [customCategory, setCustomCategory] = useState(false);
 
   useEffect(() => {
@@ -49,6 +50,28 @@ const ProductForm = ({
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(formData);
+  };
+
+  const handleAiGenerate = async () => {
+    if (!formData.title) {
+        alert("Please enter a title first so AI knows what to write about!");
+        return;
+    }
+    
+    setGeneratingAi(true);
+    try {
+        const res = await api.post('/api/ai/generate-description', {
+            title: formData.title,
+            category: formData.category,
+            tags: [] // Can be extended later
+        });
+        setFormData(prev => ({ ...prev, description: res.description }));
+    } catch (err) {
+        console.error("AI Generation failed:", err);
+        alert("Failed to generate description. Please check your API key.");
+    } finally {
+        setGeneratingAi(false);
+    }
   };
 
   return (
@@ -90,7 +113,27 @@ const ProductForm = ({
 
         {/* Description */}
         <div className="space-y-2">
-          <label className="text-sm font-bold text-gray-700 dark:text-gray-300">Description</label>
+          <div className="flex justify-between items-center">
+            <label className="text-sm font-bold text-gray-700 dark:text-gray-300">Description</label>
+            <button 
+                type="button" 
+                onClick={handleAiGenerate}
+                disabled={generatingAi}
+                className={`text-xs font-bold px-3 py-1 rounded-full border border-vibrant-teal text-vibrant-teal hover:bg-vibrant-teal hover:text-white transition-all flex items-center gap-1 ${generatingAi ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+                {generatingAi ? (
+                    <>
+                        <svg className="animate-spin h-3 w-3 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Generating...
+                    </>
+                ) : (
+                    <>✨ Generate with AI</>
+                )}
+            </button>
+          </div>
           <textarea 
             name="description" 
             value={formData.description} 
