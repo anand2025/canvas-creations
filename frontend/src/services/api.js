@@ -149,3 +149,11 @@ export const uploadImage = async (file) => {
 
     return await response.json();
 };
+
+export const getCategories = async () => {
+    return await api.get('/categories');
+};
+
+export const createCategory = async (categoryData) => {
+    return await api.post('/categories', categoryData);
+};

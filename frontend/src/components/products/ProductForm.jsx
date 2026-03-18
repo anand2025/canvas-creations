@@ -1,7 +1,9 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { uploadImage, api } from '@/services/api';
+import { uploadImage, api, getCategories, createCategory } from '@/services/api';
+
+const defaultCategories = ["Paintings", "Handmade Crafts", "Gift Items", "Combos"];
 
 const ProductForm = ({ 
     initialData = null, 
@@ -19,13 +21,29 @@ const ProductForm = ({
     stock: '',
     artist: '',
     image_url: '',
-    category: 'Abstract',
+    category: 'Paintings',
     dimensions: '12x12'
   });
   
   const [uploading, setUploading] = useState(false);
   const [generatingAi, setGeneratingAi] = useState(false);
   const [customCategory, setCustomCategory] = useState(false);
+  const [availableCategories, setAvailableCategories] = useState(defaultCategories);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await getCategories();
+        if (data && data.length > 0) {
+          const newCats = data.map(c => c.name);
+          setAvailableCategories(Array.from(new Set([...defaultCategories, ...newCats])));
+        }
+      } catch (err) {
+        console.error("Failed to fetch custom categories:", err);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     if (initialData) {
@@ -36,7 +54,7 @@ const ProductForm = ({
         stock: initialData.stock || '',
         artist: initialData.artist || '',
         image_url: initialData.image_url || '',
-        category: initialData.category || 'Abstract',
+        category: initialData.category || 'Paintings',
         dimensions: initialData.dimensions || '12x12'
       });
     }
@@ -47,8 +65,15 @@ const ProductForm = ({
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (customCategory && formData.category) {
+        try {
+            await createCategory({ name: formData.category, description: 'Dynamically added' });
+        } catch (err) {
+            console.log("Category might already exist or failed to create", err);
+        }
+    }
     onSubmit(formData);
   };
 
@@ -207,12 +232,9 @@ const ProductForm = ({
                      onChange={handleChange}
                      className="w-full px-4 py-3 rounded-xl bg-secondary-bg border-none focus:ring-1 focus:ring-vibrant-teal text-foreground transition-all appearance-none font-medium"
                    >
-                      <option value="Abstract">Abstract</option>
-                      <option value="Landscape">Landscape</option>
-                      <option value="Portrait">Portrait</option>
-                      <option value="Modern">Modern</option>
-                      <option value="Nature">Nature</option>
-                      <option value="Pop Art">Pop Art</option>
+                     {availableCategories.map(cat => (
+                         <option key={cat} value={cat}>{cat}</option>
+                     ))}
                    </select>
                )}
           </div>
