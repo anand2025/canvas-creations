@@ -34,9 +34,9 @@ export default function AddProduct() {
 
   return (
     <ProductForm 
-      title="Add New Painting"
+      title="Add New Product"
       subtitle="Expose a new masterpiece to the world."
-      submitLabel="Create Painting"
+      submitLabel="Create Product"
       onSubmit={handleSubmit}
       onCancel={() => router.push('/admin/products')}
       isLoading={loading}

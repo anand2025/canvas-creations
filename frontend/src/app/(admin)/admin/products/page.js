@@ -35,7 +35,7 @@ export default function AdminProducts() {
           className="bg-vibrant-teal hover:bg-teal-600 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-teal-500/30 flex items-center justify-center md:justify-start"
         >
           <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
-          Add New Painting
+          Add New Product
         </Link>
       </div>
 

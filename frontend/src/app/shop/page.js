@@ -17,6 +17,7 @@ function ShopContent() {
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortBy, setSortBy] = useState("newest"); // Default sort
+  const [visibleCount, setVisibleCount] = useState(6);
 
   useEffect(() => {
     const getProducts = async () => {
@@ -32,6 +33,7 @@ function ShopContent() {
             
         const data = await apiRequest(endpoint);
         setProducts(data);
+        setVisibleCount(6);
       } catch (err) {
         console.error("Failed to fetch products:", err);
         setError("Could not load products. Please try again later.");
@@ -104,7 +106,7 @@ function ShopContent() {
           <>
             {products.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-12">
-                {products.map((product) => (
+                {products.slice(0, visibleCount).map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
               </div>
@@ -119,9 +121,12 @@ function ShopContent() {
         )}
         
         {/* Load More */}
-        {products.length > 0 && (
+        {products.length > visibleCount && (
           <div className="mt-20 text-center">
-            <button className="px-12 py-4 rounded-full border-2 border-foreground font-black hover:bg-foreground hover:text-background transition-all">
+            <button 
+              onClick={() => setVisibleCount(prev => prev + 6)}
+              className="px-12 py-4 rounded-full border-2 border-foreground font-black hover:bg-foreground hover:text-background transition-all"
+            >
               Load More Products
             </button>
           </div>

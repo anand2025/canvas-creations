@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
+from fastapi import APIRouter, UploadFile, File, HTTPException, Depends, Request
 import shutil
 import os
 from pathlib import Path
@@ -16,6 +16,7 @@ MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 
 @router.post("/upload", tags=["Upload"])
 async def upload_image(
+    request: Request,
     file: UploadFile = File(...), 
     current_user: dict = Depends(get_current_active_user)
 ):
@@ -44,7 +45,12 @@ async def upload_image(
                     raise HTTPException(status_code=400, detail="File too large (max 5MB)")
                 buffer.write(chunk)
             
-        return {"url": f"http://127.0.0.1:8000/static/{unique_filename}"}
+        # Use hosted API URL from .env if available, otherwise fallback to request URL
+        base_url = os.getenv("API_URL") or os.getenv("NEXT_PUBLIC_API_URL") or str(request.base_url)
+        if not base_url.endswith("/"):
+            base_url += "/"
+            
+        return {"url": f"{base_url}static/{unique_filename}"}
     except HTTPException:
         raise
     except Exception as e:

@@ -31,7 +31,7 @@ const SellerProductsPage = () => {
           href="/seller/products/add"
           className="bg-vibrant-teal text-white px-6 py-3 rounded-xl font-bold hover:bg-vibrant-teal/90 transition-all shadow-lg shadow-teal-500/20"
         >
-          Add New Painting
+          Add New Product
         </Link>
       </div>
 
