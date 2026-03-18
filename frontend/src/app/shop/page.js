@@ -19,7 +19,6 @@ function ShopContent() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortBy, setSortBy] = useState("newest"); // Default sort
   const [visibleCount, setVisibleCount] = useState(6);
-
   useEffect(() => {
     const fetchCategories = async () => {
       try {
