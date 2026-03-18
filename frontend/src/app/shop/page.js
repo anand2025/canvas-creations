@@ -2,22 +2,38 @@
 
 import React, { useEffect, useState } from 'react';
 import ProductCard from "@/components/products/ProductCard";
-import { apiRequest } from '@/services/api';
+import { apiRequest, getCategories } from '@/services/api';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
-const categories = ["All", "Paintings", "Handmade Crafts", "Gift Items", "Combos"];
+const defaultCategories = ["All", "Paintings", "Handmade Crafts", "Gift Items", "Combos"];
 
 function ShopContent() {
   const searchParams = useSearchParams();
   const searchUrlParam = searchParams.get('search') || "";
 
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState(defaultCategories);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortBy, setSortBy] = useState("newest"); // Default sort
   const [visibleCount, setVisibleCount] = useState(6);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await getCategories();
+        if (data && data.length > 0) {
+          const newCats = data.map(c => c.name);
+          setCategories(Array.from(new Set([...defaultCategories, ...newCats])));
+        }
+      } catch (err) {
+        console.error("Failed to fetch custom categories:", err);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const getProducts = async () => {

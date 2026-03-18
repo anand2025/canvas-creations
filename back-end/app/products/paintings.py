@@ -19,7 +19,9 @@ async def get_all_paintings_logic(category: str = None, sort_by: str = None, sea
         paintings = []
         query = {}
         if category and category != "All":
-            query["category"] = category
+            # Handle case-insensitivity and singular/plural (e.g. "painting" matches "Paintings")
+            base_category = category[:-1] if category.lower().endswith('s') else category
+            query["category"] = {"$regex": f"^{base_category}s?$", "$options": "i"}
             
         if search:
             # Case-insensitive regex search on title and description
