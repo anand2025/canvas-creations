@@ -13,15 +13,32 @@ const AboutPage = async () => {
     
     try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
-        const response = await fetch(`${apiUrl}/stats`, { 
-            next: { revalidate: 3600 } // Cache for 1 hour for optimization
-        });
-        if (response.ok) {
-            const data = await response.json();
-            totalProducts = data.total_products || "500+";
+        
+        // Use AbortController for timeout to prevent build hangs if backend is unreachable
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+        try {
+            const response = await fetch(`${apiUrl}/stats`, { 
+                next: { revalidate: 3600 }, // Cache for 1 hour for optimization
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+            
+            if (response.ok) {
+                const data = await response.json();
+                totalProducts = data.total_products || "500+";
+            }
+        } catch (err) {
+            clearTimeout(timeoutId);
+            if (err.name === 'AbortError') {
+                console.warn("Fetch for stats timed out after 5s");
+            } else {
+                console.error("Failed to fetch public stats:", err.message);
+            }
         }
     } catch (error) {
-        console.error("Failed to fetch public stats", error);
+        console.error("Unexpected error during stats fetch", error);
     }
 
     return (

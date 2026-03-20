@@ -38,8 +38,17 @@ export const apiRequest = async (endpoint, options = {}) => {
 
     const url = `${API_URL}${endpoint}`;
     
+    // Default 10 second timeout for all API requests
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+
     try {
-        let response = await fetch(url, { ...options, headers });
+        let response = await fetch(url, { 
+            ...options, 
+            headers,
+            signal: controller.signal 
+        });
+        clearTimeout(timeoutId);
 
         if (response.status === 401 && tokens?.refresh) {
             // Attempt to refresh
