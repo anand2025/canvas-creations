@@ -41,6 +41,8 @@ from app.products.wishlist import update_wishlist_logic, get_wishlist_logic, get
 from app.users.newsletter import subscribe_newsletter_logic
 from app.utils import convert_dates
 from app.utilities.email import send_welcome_email
+from app.payments.razorpay_service import create_razorpay_order, verify_razorpay_payment
+from fastapi import Request
 
 router = APIRouter()
 
@@ -197,6 +199,14 @@ async def clear_cart(current_user: dict = Depends(get_current_active_user)):
 @router.post("/payments", response_model=PaymentOut, description="Process a payment for an order. Requires active user authentication.")
 async def create_payment(payment: PaymentCreate, current_user: dict = Depends(get_current_active_user)):
     return await create_payment_logic(payment)
+
+@router.post("/payments/create-razorpay-order", description="Create a Razorpay order.")
+async def create_order_razorpay(order_id: str, current_user: dict = Depends(get_current_active_user)):
+    return await create_razorpay_order(order_id)
+
+@router.post("/payments/verify-razorpay-payment", description="Verify Razorpay payment.")
+async def verify_payment_razorpay(payment_data: dict, current_user: dict = Depends(get_current_active_user)):
+    return await verify_razorpay_payment(payment_data)
 
 # -------------------- CATEGORIES --------------------
 @router.post("/categories", response_model=CategoryOut, description="Create a new painting category. Requires active user authentication.")

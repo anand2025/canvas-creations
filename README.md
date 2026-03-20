@@ -17,7 +17,7 @@ This project demonstrates **real-world backend and full-stack engineering practi
 - Browse products by category
 - Search and filter products
 - Shopping cart functionality
-- Secure checkout flow
+- Secure checkout flow with **Razorpay Integration** (UPI, Cards, Netbanking)
 - Order tracking
 - Responsive design (mobile & desktop)
 - **Global AI Assistant**: An interactive AI helper available across the platform to guide users and enhance the shopping experience.
@@ -39,7 +39,8 @@ This project demonstrates **real-world backend and full-stack engineering practi
 - **MongoDB**
 - **Motor (Async MongoDB driver)**
 - **Python**
-- **Google Gemini API** (for AI integrations)
+- **Google Gemini API** (for AI features)
+- **Razorpay SDK** (for secure payments in India)
 - RESTful API design
 
 ### Frontend
@@ -98,3 +99,20 @@ npm run dev
 
 📍 **Open:**
 - Frontend: http://localhost:3000
+
+---
+
+## 💳 Payment Gateway Setup (Razorpay)
+
+This project uses **Razorpay** for secure payments. To enable it:
+
+1.  **Get API Keys**: Create a free account at [Razorpay](https://razorpay.com) and generate **Test Keys** from Settings.
+2.  **Backend Config**: Add your keys to `back-end/.env`:
+    ```env
+    RAZORPAY_KEY_ID=rzp_test_your_id
+    RAZORPAY_KEY_SECRET=your_secret
+    ```
+3.  **Frontend Config**: Add your public key to `frontend/.env.local`:
+    ```env
+    NEXT_PUBLIC_RAZORPAY_KEY_ID=rzp_test_your_id
+    ```
