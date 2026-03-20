@@ -34,6 +34,18 @@ export default function CheckoutPage() {
     const [errors, setErrors] = useState({});
 
     useEffect(() => {
+        // Load Razorpay Script
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.async = true;
+        document.body.appendChild(script);
+
+        return () => {
+            document.body.removeChild(script);
+        }
+    }, []);
+
+    useEffect(() => {
         // Redirect if not logged in
         if (!authLoading && !user) {
             toast.error("Please login to checkout");
@@ -165,10 +177,81 @@ export default function CheckoutPage() {
                 body: JSON.stringify(checkoutData)
             });
             
+            const order_id = response.order_id;
+
+            // Handle digital payments (Razorpay)
+            if (formData.payment_method === 'card' || formData.payment_method === 'upi') {
+                try {
+                    toast.loading("Initializing secure payment...");
+                    const rzpOrder = await apiRequest(`/payments/create-razorpay-order?order_id=${order_id}`, {
+                        method: 'POST'
+                    });
+                    
+                    const options = {
+                        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_...', // Should be in env
+                        amount: rzpOrder.amount,
+                        currency: rzpOrder.currency,
+                        name: "Canvas Creations",
+                        description: "Painting Purchase",
+                        order_id: rzpOrder.id,
+                        handler: async function (response) {
+                            try {
+                                toast.loading("Verifying payment...");
+                                const verifyRes = await apiRequest('/payments/verify-razorpay-payment', {
+                                    method: 'POST',
+                                    body: JSON.stringify({
+                                        razorpay_order_id: response.razorpay_order_id,
+                                        razorpay_payment_id: response.razorpay_payment_id,
+                                        razorpay_signature: response.razorpay_signature,
+                                        order_id: order_id
+                                    })
+                                });
+
+                                if (verifyRes.status === 'success') {
+                                    toast.success("Payment successful!");
+                                    refreshCart();
+                                    router.push(`/checkout/success?order_id=${order_id}`);
+                                } else {
+                                    throw new Error("Payment verification failed");
+                                }
+                            } catch (err) {
+                                console.error("Verification error:", err);
+                                toast.error("Payment verification failed. Please contact support.");
+                            }
+                        },
+                        prefill: {
+                            name: user.name,
+                            email: user.email,
+                            contact: formData.phone
+                        },
+                        theme: {
+                            color: "#FF007F" // Vibrant Pink
+                        },
+                        modal: {
+                            ondismiss: function() {
+                                setIsSubmitting(false);
+                                toast.dismiss();
+                                toast.error("Payment cancelled");
+                            }
+                        }
+                    };
+
+                    const rzp1 = new window.Razorpay(options);
+                    rzp1.open();
+                    toast.dismiss();
+                    return; // Wait for handler
+                } catch (rzpErr) {
+                    console.error("Razorpay error:", rzpErr);
+                    toast.error("Payment initialization failed. Please try again or use COD.");
+                    setIsSubmitting(false);
+                    return;
+                }
+            }
+            
             toast.success("Order placed successfully!");
             // Refresh cart state to empty it after checkout
             refreshCart();
-            router.push(`/checkout/success?order_id=${response.order_id}`);
+            router.push(`/checkout/success?order_id=${order_id}`);
             
         } catch (error) {
             console.error("Checkout error:", error);
