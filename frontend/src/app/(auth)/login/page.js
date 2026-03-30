@@ -89,11 +89,44 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="relative py-4">
+        <div className="relative py-2">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-[var(--input-border)]"></div>
           </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background px-4 text-foreground/40 font-bold tracking-widest leading-none py-1">Or immediate access</span>
+          </div>
         </div>
+
+        <button 
+          type="button"
+          disabled={loading}
+          onClick={async () => {
+            setLoading(true);
+            setError('');
+            try {
+              const { guestLogin } = await import('@/services/api');
+              const data = await guestLogin();
+              login(data);
+              toast.success("Logged in as Guest Admin!", {
+                icon: '🔑',
+              });
+              router.push('/');
+            } catch (err) {
+              setError(err.message || "Guest login failed. Please try again.");
+            } finally {
+              setLoading(false);
+            }
+          }}
+          className={`w-full py-4 rounded-2xl border-2 border-vibrant-teal text-vibrant-teal font-black text-lg hover:bg-vibrant-teal/5 active:scale-[0.98] transition-all flex items-center justify-center gap-3 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+        >
+          {loading ? 'Accessing...' : (
+            <>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              GUEST LOGIN
+            </>
+          )}
+        </button>
       </div>
     </AuthLayout>
   );

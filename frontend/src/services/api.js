@@ -121,6 +121,23 @@ export const loginUser = async (email, password) => {
     return data;
 };
 
+export const guestLogin = async () => {
+    const response = await fetch(`${API_URL}/auth/guest-login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || "Guest login failed");
+    }
+
+    const data = await response.json();
+    setTokens(data.access_token, data.refresh_token, data.user?.role);
+    
+    return data;
+};
+
 export const registerUser = async (userData) => {
     const response = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',

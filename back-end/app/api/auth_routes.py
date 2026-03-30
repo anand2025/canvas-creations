@@ -159,3 +159,47 @@ async def reset_password(token: str = Body(..., embed=True), new_password: str =
         raise HTTPException(status_code=500, detail="Failed to update password")
         
     return {"message": "Password updated successfully"}
+
+@router.post("/guest-login", description="Authenticate as a guest admin for inspection purposes.")
+async def guest_login():
+    guest_email = "guest@canvascreations.com"
+    
+    # Check if guest user exists
+    user = await db["users"].find_one({"email": guest_email})
+    
+    if not user:
+        # Create a new guest admin user
+        from app.schemas.user import UserRole
+        import secrets
+        import string
+        
+        # Generate a random password that won't be used anyway
+        random_password = ''.join(secrets.choice(string.ascii_letters + string.digits) for i in range(12))
+        
+        guest_user = {
+            "name": "Guest Admin",
+            "email": guest_email,
+            "password": get_password_hash(random_password),
+            "role": UserRole.ADMIN,
+            "is_disabled": False,
+            "is_verified": True,
+            "created_at": datetime.utcnow()
+        }
+        
+        res = await db["users"].insert_one(guest_user)
+        user = await db["users"].find_one({"_id": res.inserted_id})
+    
+    user_id = str(user["_id"])
+    access_token = create_access_token(data={"sub": user_id})
+    refresh_token = create_refresh_token(data={"sub": user_id})
+    
+    return {
+        "access_token": access_token, 
+        "refresh_token": refresh_token,
+        "token_type": "bearer",
+        "user": {
+            "id": user_id,
+            "email": user["email"],
+            "role": user.get("role", "admin")
+        }
+    }
