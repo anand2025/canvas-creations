@@ -38,22 +38,19 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-from fastapi.staticfiles import StaticFiles
-from app.api.upload_routes import router as upload_router
+
 
 # Simple health check to verify API connectivity
 @app.get("/health")
 async def health_check():
     return {"status": "ok", "message": "Backend is reachable"}
 
-app.mount("/static", StaticFiles(directory="uploads"), name="static")
 
 # include routers
 app.include_router(public_router, tags=["Public"])
 app.include_router(auth_router)
 app.include_router(admin_router, prefix="/admin", tags=["Admin"])
 app.include_router(seller_router, prefix="/seller", tags=["Seller"])
-app.include_router(upload_router, prefix="/api", tags=["Upload"])
 app.include_router(ai_router, prefix="/api/ai", tags=["AI"])
 
 if __name__ == "__main__":
