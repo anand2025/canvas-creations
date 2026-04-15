@@ -154,26 +154,30 @@ export const registerUser = async (userData) => {
 };
 
 export const uploadImage = async (file) => {
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+    const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+
+    if (!cloudName || !uploadPreset) {
+        throw new Error("Cloudinary is not configured. Check NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME and NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET in your .env.local");
+    }
+
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('upload_preset', uploadPreset);
 
-    const tokens = getTokens();
-    const headers = {};
-    if (tokens?.access) {
-        headers['Authorization'] = `Bearer ${tokens.access}`;
-    }
-
-    const response = await fetch(`${API_URL}/api/upload`, {
-        method: 'POST',
-        headers: headers, // Do NOT set Content-Type for FormData, browser sets it with boundary
-        body: formData,
-    });
+    const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        { method: 'POST', body: formData }
+    );
 
     if (!response.ok) {
-        throw new Error("Upload failed");
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.error?.message || "Cloudinary upload failed");
     }
 
-    return await response.json();
+    const data = await response.json();
+    // Return in same shape as before so ProductForm doesn't need changes
+    return { url: data.secure_url };
 };
 
 export const getCategories = async () => {
