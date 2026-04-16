@@ -20,45 +20,39 @@ function ShopContent() {
   const [sortBy, setSortBy] = useState("newest"); // Default sort
   const [visibleCount, setVisibleCount] = useState(6);
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const data = await getCategories();
-        if (data && data.length > 0) {
-          const newCats = data.map(c => c.name);
-          setCategories(Array.from(new Set([...defaultCategories, ...newCats])));
-        }
-      } catch (err) {
-        console.error("Failed to fetch custom categories:", err);
-      }
-    };
-    fetchCategories();
-  }, []);
-
-  useEffect(() => {
-    const getProducts = async () => {
+    const loadShopData = async () => {
       try {
         setLoading(true);
-        // Build query params
+
+        // Build product query params
         const params = new URLSearchParams();
         if (selectedCategory !== "All") params.append("category", selectedCategory);
         if (sortBy) params.append("sort_by", sortBy);
         if (searchUrlParam) params.append("search", searchUrlParam);
-        
-        const endpoint = `/paintings?${params.toString()}`;
-            
-        const data = await apiRequest(endpoint);
-        setProducts(data);
+
+        // Fetch categories and products in PARALLEL
+        const [categoryData, productData] = await Promise.all([
+          getCategories().catch(() => []),
+          apiRequest(`/paintings?${params.toString()}`),
+        ]);
+
+        if (categoryData && categoryData.length > 0) {
+          const newCats = categoryData.map((c) => c.name);
+          setCategories(Array.from(new Set([...defaultCategories, ...newCats])));
+        }
+
+        setProducts(productData);
         setVisibleCount(6);
       } catch (err) {
-        console.error("Failed to fetch products:", err);
+        console.error("Failed to fetch shop data:", err);
         setError("Could not load products. Please try again later.");
       } finally {
         setLoading(false);
       }
     };
 
-    getProducts();
-  }, [selectedCategory, sortBy, searchUrlParam]); // Re-run when category, sort or search URL param changes
+    loadShopData();
+  }, [selectedCategory, sortBy, searchUrlParam]);
 
   return (
     <div className="bg-background min-h-screen py-20 px-6">

@@ -8,8 +8,10 @@ import Navbar from "@/components/layout/Navbar";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishlistContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 import { Toaster } from 'react-hot-toast';
-import AiAssistant from "@/components/ui/AiAssistant";
+import { Suspense } from "react";
+import AiAssistantLoader from "@/components/ui/AiAssistantLoader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,9 +22,6 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
-import { ThemeProvider } from "@/context/ThemeContext";
-import { Suspense } from "react";
 
 export const metadata = {
   title: "Canvas & Creations | Vibrant Handcrafted Art",
@@ -62,7 +61,7 @@ export default function RootLayout({ children }) {
                   <Navbar />
                 </Suspense>
                 {children}
-                <AiAssistant />
+                <AiAssistantLoader />
               </WishlistProvider>
             </CartProvider>
           </AuthProvider>

@@ -2,6 +2,7 @@
  * Hero Component
  * A bold, vibrant hero section to grab attention.
  */
+"use client";
 import React from 'react';
 import Link from 'next/link';
 

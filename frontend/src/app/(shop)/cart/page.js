@@ -133,7 +133,7 @@ export default function CartPage() {
                                     <div className="flex items-center justify-center md:justify-start gap-8">
                                         <div className="flex items-center bg-card rounded-full p-2 border border-[var(--border-color)]">
                                             <button 
-                                                onClick={() => updateQuantity(item.painting_id, Math.max(1, item.quantity - 1))}
+                                                onClick={() => item.quantity === 1 ? removeFromCart(item.painting_id) : updateQuantity(item.painting_id, item.quantity - 1)}
                                                 className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-secondary-hover transition-colors font-black text-xl"
                                             >
                                                 -
