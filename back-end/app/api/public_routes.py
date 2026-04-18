@@ -43,6 +43,7 @@ from app.utils import convert_dates
 from app.utilities.email import send_welcome_email
 from app.payments.razorpay_service import create_razorpay_order, verify_razorpay_payment
 from fastapi import Request
+from app.utilities.cache import alru_cache
 
 router = APIRouter()
 
@@ -109,10 +110,11 @@ async def create_painting(painting: PaintingCreate, current_user: dict = Depends
     return await create_painting_logic(painting)
 
 @router.get("/paintings", response_model=list[PaintingOut], description="Retrieve a list of all paintings.")
-async def get_paintings(category: str = None, sort_by: str = None, search: str = None):
-    return await get_all_paintings_logic(category, sort_by, search)
+async def get_paintings(category: str = None, sort_by: str = None, search: str = None, skip: int = 0, limit: int = 100):
+    return await get_all_paintings_logic(category, sort_by, search, skip, limit)
 
 @router.get("/paintings/bestsellers", response_model=list[PaintingOut], description="Retrieve a list of bestseller paintings.")
+@alru_cache(ttl=300)
 async def get_bestsellers():
     try:
         paintings = []
@@ -214,6 +216,7 @@ async def create_category(category: CategoryCreate, current_user: dict = Depends
     return await create_category_logic(category)
 
 @router.get("/categories", response_model=list[CategoryOut], description="Retrieve a list of all painting categories.")
+@alru_cache(ttl=300)
 async def get_categories():
     return await get_categories_logic()
 
@@ -240,6 +243,7 @@ async def subscribe_newsletter(newsletter: NewsletterCreate, background_tasks: B
 
 # -------------------- STATISTICS --------------------
 @router.get("/stats", description="Get public statistics like total product count.")
+@alru_cache(ttl=300)
 async def get_public_stats():
     try:
         count = await db["paintings"].count_documents({})
