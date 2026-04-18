@@ -14,7 +14,7 @@ async def create_painting_logic(painting):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-async def get_all_paintings_logic(category: str = None, sort_by: str = None, search: str = None):
+async def get_all_paintings_logic(category: str = None, sort_by: str = None, search: str = None, skip: int = 0, limit: int = 10):
     try:
         paintings = []
         query = {}
@@ -24,11 +24,8 @@ async def get_all_paintings_logic(category: str = None, sort_by: str = None, sea
             query["category"] = {"$regex": f"^{base_category}s?$", "$options": "i"}
             
         if search:
-            # Case-insensitive regex search on title and description
-            query["$or"] = [
-                {"title": {"$regex": search, "$options": "i"}},
-                {"description": {"$regex": search, "$options": "i"}}
-            ]
+            # Leverage MongoDB text index for vastly improved search speed
+            query["$text"] = {"$search": search}
             
         cursor = db["paintings"].find(query)
         
@@ -39,6 +36,10 @@ async def get_all_paintings_logic(category: str = None, sort_by: str = None, sea
             cursor = cursor.sort("price", 1)
         elif sort_by == "price_desc":
             cursor = cursor.sort("price", -1)
+            
+        # Apply pagination
+        cursor = cursor.skip(skip).limit(limit)
+        
         async for doc in cursor:
             paintings.append(serialize_doc(doc))
         return paintings

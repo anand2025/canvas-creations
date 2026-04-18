@@ -13,8 +13,14 @@ from app.api.seller_routes import router as seller_router
 from app.api.ai_routes import router as ai_router
 from app.utilities.rate_limiter import init_rate_limiting
 from slowapi.middleware import SlowAPIMiddleware
+from app.utilities.init_db import init_indexes
 
 app = FastAPI()
+
+@app.on_event("startup")
+async def startup_event():
+    await init_indexes()
+
 
 # Initialize rate limiting
 init_rate_limiting(app)

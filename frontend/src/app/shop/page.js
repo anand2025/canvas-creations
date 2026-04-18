@@ -15,22 +15,28 @@ function ShopContent() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState(defaultCategories);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortBy, setSortBy] = useState("newest"); // Default sort
-  const [visibleCount, setVisibleCount] = useState(6);
+  const [skip, setSkip] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const LIMIT = 6;
+
+  // Initial fetch and filter change
   useEffect(() => {
-    const loadShopData = async () => {
+    const fetchInitialData = async () => {
       try {
         setLoading(true);
+        setSkip(0);
 
-        // Build product query params
         const params = new URLSearchParams();
         if (selectedCategory !== "All") params.append("category", selectedCategory);
         if (sortBy) params.append("sort_by", sortBy);
         if (searchUrlParam) params.append("search", searchUrlParam);
+        params.append("skip", 0);
+        params.append("limit", LIMIT);
 
-        // Fetch categories and products in PARALLEL
         const [categoryData, productData] = await Promise.all([
           getCategories().catch(() => []),
           apiRequest(`/paintings?${params.toString()}`),
@@ -42,7 +48,7 @@ function ShopContent() {
         }
 
         setProducts(productData);
-        setVisibleCount(6);
+        setHasMore(productData.length === LIMIT);
       } catch (err) {
         console.error("Failed to fetch shop data:", err);
         setError("Could not load products. Please try again later.");
@@ -51,8 +57,32 @@ function ShopContent() {
       }
     };
 
-    loadShopData();
+    fetchInitialData();
   }, [selectedCategory, sortBy, searchUrlParam]);
+
+  // Load More function
+  const loadMore = async () => {
+    try {
+      setLoadingMore(true);
+      const newSkip = skip + LIMIT;
+      const params = new URLSearchParams();
+      if (selectedCategory !== "All") params.append("category", selectedCategory);
+      if (sortBy) params.append("sort_by", sortBy);
+      if (searchUrlParam) params.append("search", searchUrlParam);
+      params.append("skip", newSkip);
+      params.append("limit", LIMIT);
+
+      const productData = await apiRequest(`/paintings?${params.toString()}`);
+      
+      setProducts(prev => [...prev, ...productData]);
+      setSkip(newSkip);
+      setHasMore(productData.length === LIMIT);
+    } catch (err) {
+      console.error("Failed to load more products:", err);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   return (
     <div className="bg-background min-h-screen py-20 px-6">
@@ -115,7 +145,7 @@ function ShopContent() {
           <>
             {products.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-12">
-                {products.slice(0, visibleCount).map((product) => (
+                {products.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
               </div>
@@ -130,13 +160,18 @@ function ShopContent() {
         )}
         
         {/* Load More */}
-        {products.length > visibleCount && (
+        {products.length > 0 && hasMore && !loading && (
           <div className="mt-20 text-center">
             <button 
-              onClick={() => setVisibleCount(prev => prev + 6)}
-              className="px-12 py-4 rounded-full border-2 border-foreground font-black hover:bg-foreground hover:text-background transition-all"
+              onClick={loadMore}
+              disabled={loadingMore}
+              className={`px-12 py-4 rounded-full border-2 border-foreground font-black transition-all ${
+                loadingMore 
+                  ? "bg-foreground/5 text-foreground/50 cursor-not-allowed" 
+                  : "hover:bg-foreground hover:text-background"
+              }`}
             >
-              Load More Products
+              {loadingMore ? "Loading..." : "Load More Products"}
             </button>
           </div>
         )}
